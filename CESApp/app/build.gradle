@@ -29,6 +29,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:9.6.1'
     implementation 'com.google.firebase:firebase-auth:9.6.1'
     implementation 'com.google.firebase:firebase-database:9.6.1'
+    implementation 'com.google.firebase:firebase-ml-model-interpreter:16.2.2'
+
 //    implementation 'com.google.android.gms:play-services-auth:16.0.1'
 
 
