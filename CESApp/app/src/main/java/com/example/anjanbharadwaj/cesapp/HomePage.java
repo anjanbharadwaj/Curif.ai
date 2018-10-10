@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -33,6 +34,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.ml.custom.FirebaseModelDataType;
+import com.google.firebase.ml.custom.FirebaseModelInputOutputOptions;
+import com.google.firebase.ml.custom.FirebaseModelInterpreter;
+import com.google.firebase.ml.custom.FirebaseModelManager;
+import com.google.firebase.ml.custom.FirebaseModelOptions;
+import com.google.firebase.ml.custom.model.FirebaseLocalModelSource;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class HomePage extends AppCompatActivity {
@@ -204,6 +213,10 @@ public class HomePage extends AppCompatActivity {
         startActivityForResult(intent, TAKE_PICTURE);
     }
 
+    public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
+        return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -218,7 +231,30 @@ public class HomePage extends AppCompatActivity {
                         bitmap = android.provider.MediaStore.Images.Media
                                 .getBitmap(cr, selectedImage);
 
-                        
+                        FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_local_model")
+                                .setAssetFilePath("quantized_model.tflite")  // Or setFilePath if you downloaded from your host
+                                .build();
+                        FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
+
+                        FirebaseModelOptions options = new FirebaseModelOptions.Builder()
+                                .setLocalModelName("my_local_model")
+                                .build();
+                        FirebaseModelInterpreter firebaseInterpreter =
+                                FirebaseModelInterpreter.getInstance(options);
+
+                        FirebaseModelInputOutputOptions inputOutputOptions =
+                                new FirebaseModelInputOutputOptions.Builder()
+                                        .setInputFormat(0, FirebaseModelDataType.BYTE, new int[]{1, 56, 75, 3})
+                                        .setOutputFormat(0, FirebaseModelDataType.BYTE, new int[]{1, 4})
+                                        .build();
+
+                        Bitmap scaled_bitmap = getResizedBitmap(bitmap, 56, 75);
+
+                        ByteArrayOutputStream blob = new ByteArrayOutputStream();
+                        scaled_size_bitmap.compress(Bitmap.CompressFormat.PNG, 0 /* Ignored for PNGs */, blob);
+                        byte[][][][] input = blob.toByteArray();
+                        val image = FirebaseVisionImage.fromBitmap(bitmap);
+
 
                         //THE IMAGE BITMAP IS HERE
                         //
