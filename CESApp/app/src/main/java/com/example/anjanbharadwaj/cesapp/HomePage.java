@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -34,15 +36,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.custom.FirebaseModelDataType;
 import com.google.firebase.ml.custom.FirebaseModelInputOutputOptions;
+import com.google.firebase.ml.custom.FirebaseModelInputs;
 import com.google.firebase.ml.custom.FirebaseModelInterpreter;
 import com.google.firebase.ml.custom.FirebaseModelManager;
 import com.google.firebase.ml.custom.FirebaseModelOptions;
+import com.google.firebase.ml.custom.FirebaseModelOutputs;
 import com.google.firebase.ml.custom.model.FirebaseLocalModelSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Arrays;
 
 public class HomePage extends AppCompatActivity {
 
@@ -244,35 +252,74 @@ public class HomePage extends AppCompatActivity {
 
                         FirebaseModelInputOutputOptions inputOutputOptions =
                                 new FirebaseModelInputOutputOptions.Builder()
-                                        .setInputFormat(0, FirebaseModelDataType.BYTE, new int[]{1, 56, 75, 3})
-                                        .setOutputFormat(0, FirebaseModelDataType.BYTE, new int[]{1, 4})
+                                        .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 56, 75, 3})
+                                        .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
                                         .build();
 
                         Bitmap scaled_bitmap = getResizedBitmap(bitmap, 56, 75);
 
-                        ByteArrayOutputStream blob = new ByteArrayOutputStream();
-                        scaled_size_bitmap.compress(Bitmap.CompressFormat.PNG, 0 /* Ignored for PNGs */, blob);
-                        byte[][][][] input = blob.toByteArray();
-                        val image = FirebaseVisionImage.fromBitmap(bitmap);
+
+                        float[][][][] input = new float[1][56][75][3];
+
+                        //Converting bitmap to byte array for ML processing
+                        for(int y = 0; y < scaled_bitmap.getHeight(); y++) {
+                            for(int x = 0; x < scaled_bitmap.getWidth(); x++) {
+
+                                int color = scaled_bitmap.getPixel(x, y);
+
+                                float red = Color.red(color);
+                                float blue = Color.blue(color);
+                                float green = Color.green(color);
+                                float alpha = Color.alpha(color);
+
+                                input[0][x][y][0] = red;
+                                input[0][x][y][1] = green;
+                                input[0][x][y][2] = blue;
+                            }
+                        }
+
+                        System.out.println("Here before floating point model");
+
+                        // Floating-point model:
+                        float[][][][] postNormalizedInput = new float[1][56][75][3];
+                        for(int y = 0; y < scaled_bitmap.getHeight(); y++) {
+                            for(int x = 0; x < scaled_bitmap.getWidth(); x++) {
+                                for (int c = 0; c < 3; c++) {
+                                    // Normalize channel values to [-1.0, 1.0]
+                                    postNormalizedInput[0][x][y][c] = input[0][x][y][c] / 255.0f;
+                                }
+                            }
+                        }
+
+                        System.out.println("Normalized Data");
 
 
-                        //THE IMAGE BITMAP IS HERE
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        //
-                        Log.v("Bitmap",""+bitmap.getByteCount());
-                        Toast.makeText(this, selectedImage.toString(),
-                                Toast.LENGTH_LONG).show();
+                        FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
+                                .add(postNormalizedInput)  // add() as many input arrays as your model requires
+                                .build();
+                        Task<FirebaseModelOutputs> result =
+                                firebaseInterpreter.run(inputs, inputOutputOptions)
+                                        .addOnSuccessListener(
+                                                new OnSuccessListener<FirebaseModelOutputs>() {
+                                                    @Override
+                                                    public void onSuccess(FirebaseModelOutputs result) {
+                                                        System.out.println("Successfully got a result from ML Model");
+                                                        float[][] output = result.<float[][]>getOutput(0);
+                                                        float[] probabilities = output[0];
+
+                                                        System.out.println(Arrays.toString(probabilities));
+                                                        Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
+                                                    }
+                                                })
+                                        .addOnFailureListener(
+                                                new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                });
+
+
                     } catch (Exception e) {
                         Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
                                 .show();
