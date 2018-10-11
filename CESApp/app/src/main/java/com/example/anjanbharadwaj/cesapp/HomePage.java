@@ -308,6 +308,7 @@ public class HomePage extends AppCompatActivity {
                                                         float[] probabilities = output[0];
 
                                                         System.out.println(Arrays.toString(probabilities));
+
                                                         Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
                                                     }
                                                 })
