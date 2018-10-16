@@ -540,7 +540,7 @@ public class HomePage extends AppCompatActivity {
             if(probabilities[i]>probabilities[maxIndex]){
               maxIndex = i;
             }
-            ref.child("Users").child(uid).child("Pictures").child(time).child("FullPredictions").child(""+(i+1)).setValue(probabilities[i]);
+            ref.child("Users").child(uid).child("Pictures").child(time).child("FullPredictions").child("Diagnosis "+(i+1)).setValue(probabilities[i]);
         }
         maxIndex+=1;
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("Pictures");
