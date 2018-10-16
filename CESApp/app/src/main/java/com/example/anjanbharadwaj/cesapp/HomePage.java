@@ -585,6 +585,8 @@ public class HomePage extends AppCompatActivity {
             switch (position) {
                 case 0:
                     return new ProfileFragment();
+                case 1:
+                    return new ProgressFragment();
                 default:
                     return new PlaceholderFragment();
             }
@@ -600,6 +602,8 @@ public class HomePage extends AppCompatActivity {
             switch (position) {
                 case 0:
                     return "Profile";
+                case 1:
+                    return "Progress";
                 default:
                     return "Placeholder";
             }
