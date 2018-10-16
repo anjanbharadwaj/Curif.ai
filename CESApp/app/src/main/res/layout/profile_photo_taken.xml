@@ -7,6 +7,7 @@
     android:padding="12dp">
 
     <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/profileCardViewCheckedOut"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -15,7 +16,9 @@
         android:layout_marginTop="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        card_view:cardBackgroundColor="#fff"
+        >
 
         <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -32,6 +35,7 @@
                 android:maxLength="23"
                 android:text="Diagnosis"
                 android:textAppearance="@android:style/TextAppearance.Material.Title"
+                android:textColor="@color/black"
                 app:layout_constraintStart_toEndOf="@+id/picture"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,6 +54,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="20dp"
                 android:text="Date"
+                android:textColor="@color/black"
                 app:layout_constraintStart_toEndOf="@+id/picture"
                 app:layout_constraintTop_toBottomOf="@+id/diagnosis" />
         </android.support.constraint.ConstraintLayout>

@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,49 +71,53 @@ public class ProfileFragment extends Fragment {
     }
 
     public void loadData() {
+        if(HomePage.noReload){
+            Toast.makeText(this.context, "Analyzing picture - hold on!", Toast.LENGTH_LONG).show();
+            swipeRefreshLayout.setRefreshing(false);
+        }
+        else {
+            //Clear our arraylists that hold the old data
+            listData.clear();
 
+            //Instantiate the two array adapters that connect the arraylists to listviews
+            dataPointProfileArrayAdapter = new DataPointProfileArrayAdapter(context, 0, listData);
+            database = FirebaseDatabase.getInstance().getReference();
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            database.child("Users").child(uid).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+                    listData.clear();
+                    name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
 
-        //Clear our arraylists that hold the old data
-        listData.clear();
+                    //Notify the adapters that the arraylists have changed, and that they have to update info
+                    Iterator i = dataSnapshot.getChildren().iterator();
+                    while (i.hasNext()) {
+                        String key = ((DataSnapshot) (i.next())).getKey().toString();
+                        String diagnosis = dataSnapshot.child(key).child("Diagnosis").getValue().toString();
+                        String url = dataSnapshot.child(key).child("URL").getValue().toString();
+                        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+                        String dateString = formatter.format(new Date(Long.valueOf(key)));
+                        DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString);
+                        listData.add(point);
 
-        //Instantiate the two array adapters that connect the arraylists to listviews
-        dataPointProfileArrayAdapter = new DataPointProfileArrayAdapter(context, 0, listData);
-        database = FirebaseDatabase.getInstance().getReference();
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database.child("Users").child(uid).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(final DataSnapshot dataSnapshot) {
-                listData.clear();
-                name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
+                    }
+                    dataPointProfileArrayAdapter.notifyDataSetChanged();
 
-                //Notify the adapters that the arraylists have changed, and that they have to update info
-                Iterator i = dataSnapshot.getChildren().iterator();
-                while(i.hasNext()){
-                    String key = ((DataSnapshot) (i.next())).getKey().toString();
-                    String diagnosis = dataSnapshot.child(key).child("Diagnosis").getValue().toString();
-                    String url = "https://www.selfcare4rsi.com/images/upper-arm-lift-300x297.jpg";
-                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-                    String dateString = formatter.format(new Date(Long.valueOf(key)));
-                    DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString);
-                    listData.add(point);
+                    listView.setAdapter(dataPointProfileArrayAdapter);
+
+                    setListViewHeight(listView);
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
                 }
-                dataPointProfileArrayAdapter.notifyDataSetChanged();
-
-                listView.setAdapter(dataPointProfileArrayAdapter);
-
-                setListViewHeight(listView);
-
-                swipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
 
 
-        });
+            });
+        }
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
