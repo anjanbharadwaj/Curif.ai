@@ -70,7 +70,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class HomePage extends AppCompatActivity {
+public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener{
     static boolean noReload = false;
     TabLayout tabLayout;
     ViewPager viewPager;
