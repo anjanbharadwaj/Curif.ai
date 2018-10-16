@@ -30,7 +30,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -129,7 +128,31 @@ public class ProfileFragment extends Fragment {
         listView = (ListView) view.findViewById(R.id.profileListView);
         share = (ImageView) view.findViewById(R.id.share);
 
-        //loading
+        //update text at the top of the screen
+        final TextView photos_text = (TextView) view.findViewById(R.id.profileTitle);
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference ref = database.getReference()
+                .child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
+                .child("Name");
+
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.getValue().toString();
+
+                photos_text.setText(name + "'s Pictures");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         loadData();
 
