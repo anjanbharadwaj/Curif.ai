@@ -27,8 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,7 +86,17 @@ public class ProfileFragment extends Fragment {
                 name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
 
                 //Notify the adapters that the arraylists have changed, and that they have to update info
+                Iterator i = dataSnapshot.getChildren().iterator();
+                while(i.hasNext()){
+                    String key = ((DataSnapshot) (i.next())).getKey().toString();
+                    String diagnosis = dataSnapshot.child(key).child("Diagnosis").getValue().toString();
+                    String url = "https://www.selfcare4rsi.com/images/upper-arm-lift-300x297.jpg";
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    String dateString = formatter.format(new Date(Long.valueOf(key)));
+                    DataPointProfile point = new DataPointProfile(url, diagnosis, dateString);
+                    listData.add(point);
 
+                }
                 dataPointProfileArrayAdapter.notifyDataSetChanged();
 
                 listView.setAdapter(dataPointProfileArrayAdapter);
@@ -114,12 +126,12 @@ public class ProfileFragment extends Fragment {
 
         //loading
 
-        //loadData();
+        loadData();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //loadData();
+                loadData();
             }
         });
 
