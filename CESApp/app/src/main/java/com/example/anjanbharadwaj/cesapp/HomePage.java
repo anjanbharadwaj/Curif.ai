@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -560,24 +561,16 @@ public class HomePage extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                //Toast.makeText(HomePage.this, "ON SUCCESS", Toast.LENGTH_SHORT).show();
-                taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+
+                Toast.makeText(HomePage.this, "ON SUCCESS", Toast.LENGTH_SHORT).show();
+
+                imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
-                    public void onSuccess(Uri uri) {
-                        Log.i("GOT URL", "VALUE IS" + String.valueOf(uri));
-                        ref.child(time).child("URL").setValue(uri.toString());
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        Toast.makeText(HomePage.this, task.getResult().toString(), Toast.LENGTH_SHORT).show();
+                        ref.child(time).child("URL").setValue(task.getResult().toString());
                     }
                 });
-
-
-
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
             }
         });
 
