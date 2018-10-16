@@ -3,19 +3,29 @@ package com.example.anjanbharadwaj.cesapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +38,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,16 +54,16 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
 
     SwipeRefreshLayout swipeRefreshLayout;
-
-    ListView listView;
-    ImageView share;
-    Context context;
+    String mode = "view";
+    RecyclerView listView;
+    TextView share;
+    static Context context;
 
     ArrayList<DataPointProfile> listData = new ArrayList<>();
 
     ArrayAdapter<DataPointProfile> dataPointProfileArrayAdapter;
     //ArrayList<String> listData1 = new ArrayList<>();
-
+    RecyclerViewClickListener listener;
     public DatabaseReference database;
     public static String name = "Profile";
 
@@ -68,6 +80,22 @@ public class ProfileFragment extends Fragment {
         // do your variables initialisations here except Views!!!
 
         context = getActivity().getApplicationContext();
+
+        listener = new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                DataPointProfileAdapter.DataPointViewHolder holder = (DataPointProfileAdapter.DataPointViewHolder)listView.findViewHolderForAdapterPosition(position);
+                if(mode.equals("select")) {
+                    Log.e("COLOR",""+holder.cardView.getCardBackgroundColor());
+                    if(holder.cardView.getCardBackgroundColor().getDefaultColor()==Color.YELLOW){
+                        holder.cardView.setCardBackgroundColor(Color.WHITE);
+
+                    } else {
+                        holder.cardView.setCardBackgroundColor(Color.YELLOW);
+                    }
+                }
+            }
+        };
     }
 
     public void loadData() {
@@ -78,9 +106,11 @@ public class ProfileFragment extends Fragment {
         else {
             //Clear our arraylists that hold the old data
             listData.clear();
+            listView.setVisibility(View.INVISIBLE);
 
             //Instantiate the two array adapters that connect the arraylists to listviews
             dataPointProfileArrayAdapter = new DataPointProfileArrayAdapter(context, 0, listData);
+
             database = FirebaseDatabase.getInstance().getReference();
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             database.child("Users").child(uid).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -101,13 +131,15 @@ public class ProfileFragment extends Fragment {
                         listData.add(point);
 
                     }
-                    dataPointProfileArrayAdapter.notifyDataSetChanged();
+                    //dataPointProfileArrayAdapter.notifyDataSetChanged();
 
-                    listView.setAdapter(dataPointProfileArrayAdapter);
+                    //listView.setAdapter(dataPointProfileArrayAdapter);
 
-                    setListViewHeight(listView);
-
+                    //setListViewHeight(listView);
+                    showCards();
                     swipeRefreshLayout.setRefreshing(false);
+                    listView.setVisibility(View.VISIBLE);
+
                 }
 
                 @Override
@@ -119,6 +151,10 @@ public class ProfileFragment extends Fragment {
             });
         }
     }
+    private void showCards() {
+        DataPointProfileAdapter dataPointProfileAdapter = new DataPointProfileAdapter(listData, listener);
+        listView.setAdapter(dataPointProfileAdapter);
+    }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -126,8 +162,26 @@ public class ProfileFragment extends Fragment {
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.profileSwipeRefresh);
 
-        listView = (ListView) view.findViewById(R.id.profileListView);
-        share = (ImageView) view.findViewById(R.id.share);
+        listView = (RecyclerView) view.findViewById(R.id.profileListView);
+        listView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        listView.setLayoutManager(llm);
+
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                if(mode.equals("select")){
+//                    Toast.makeText(getContext(),"Click",Toast.LENGTH_SHORT).show();
+//                    view.setSelected(true);
+//                    //parent.getItemAtPosition(position);
+//                    //((CardView)(view.getItemAtPosition(position))).setCardBackgroundColor(Color.YELLOW);
+//                }
+//
+//            }
+//        });
+        share = (TextView) view.findViewById(R.id.select);
+
 
         //loading
 
@@ -144,8 +198,13 @@ public class ProfileFragment extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
+                if(mode.equals("select")){
+                    mode = "view";
+                    share.setTextColor(Color.BLACK);
+                } else {
+                    mode = "select";
+                    share.setTextColor(Color.BLUE);
+                }
             }
         });
     }
@@ -226,5 +285,80 @@ class DataPointProfileArrayAdapter extends ArrayAdapter<DataPointProfile> {
         date.setText(dataPoint.date);
 
         return view;
+    }
+}
+
+class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapter.DataPointViewHolder> {
+    private ArrayList<DataPointProfile> datapoints;
+    private RecyclerViewClickListener mListener;
+    //Default constructor
+    DataPointProfileAdapter(ArrayList<DataPointProfile> datapoints, RecyclerViewClickListener listener) {
+        this.datapoints = datapoints;
+        mListener = listener;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public int getItemCount() {
+        return datapoints.size();
+    }
+
+    @Override
+    public void onBindViewHolder(DataPointViewHolder pointViewHolder, int i) {
+        //Set each field to its corresponding attribute
+        DataPointProfile point = datapoints.get(i);
+        pointViewHolder.diagnosis.setText(point.diagnosis);
+        pointViewHolder.date.setText(point.date);
+        //Load the proper image into the imageView using the Glide framework
+        Glide.with(ProfileFragment.context)
+                .load(point.url)
+                .into(pointViewHolder.image);
+    }
+
+    @Override
+    public DataPointViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        //Inflate the view using the proper xml layout
+        View itemView = LayoutInflater.
+                from(viewGroup.getContext()).
+                inflate(R.layout.profile_photo_taken, viewGroup, false);
+
+        return new DataPointViewHolder(itemView, mListener);
+    }
+
+    static class DataPointViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public CardView cardView;
+        public TextView diagnosis;
+        public TextView date;
+        public ImageView image;
+
+        private RecyclerViewClickListener mListener;
+
+        DataPointViewHolder(View v, RecyclerViewClickListener mListener) {
+            super(v);
+            cardView = v.findViewById(R.id.profileCardView);
+            diagnosis = v.findViewById(R.id.diagnosis);
+            date = v.findViewById(R.id.date);
+            image = v.findViewById(R.id.picture);
+            //instantiation of views
+//            cardView = (CardView)       v.findViewById(R.id.cardView);
+//            title =  (TextView)         v.findViewById(R.id.bookTitle);
+//            author = (TextView)         v.findViewById(R.id.bookAuthor);
+//            description = (TextView)    v.findViewById(R.id.bookDescription);
+//            ratingBar = (RatingBar)     v.findViewById(R.id.ratingBar);
+//            bookImage = (ImageView)     v.findViewById(R.id.bookImageView);
+
+            this.mListener = mListener;
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onClick(v, getAdapterPosition());
+        }
     }
 }
