@@ -570,24 +570,6 @@ public class HomePage extends AppCompatActivity {
                         ref.child(time).child("URL").setValue(task.getResult().toString());
                     }
                 });
-
-//                taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//                        Log.i("GOT URL", "VALUE IS" + String.valueOf(uri));
-//                        ref.child(time).child("URL").setValue(uri);
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception exception) {
-//                        // Handle any errors
-//                    }
-//                });
-
-
-
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
             }
         });
 
