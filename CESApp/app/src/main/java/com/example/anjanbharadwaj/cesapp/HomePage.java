@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -560,7 +561,16 @@ public class HomePage extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                //Toast.makeText(HomePage.this, "ON SUCCESS", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HomePage.this, "ON SUCCESS", Toast.LENGTH_SHORT).show();
+
+                imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        Toast.makeText(HomePage.this, task.getResult().toString(), Toast.LENGTH_SHORT).show();
+                        ref.child(time).child("URL").setValue(task.getResult().toString());
+                    }
+                });
+
 //                taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
 //                    @Override
 //                    public void onSuccess(Uri uri) {
