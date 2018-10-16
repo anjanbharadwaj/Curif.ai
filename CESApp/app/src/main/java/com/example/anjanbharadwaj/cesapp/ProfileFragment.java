@@ -91,7 +91,7 @@ public class ProfileFragment extends Fragment {
                     String key = ((DataSnapshot) (i.next())).getKey().toString();
                     String diagnosis = dataSnapshot.child(key).child("Diagnosis").getValue().toString();
                     String url = "https://www.selfcare4rsi.com/images/upper-arm-lift-300x297.jpg";
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
                     String dateString = formatter.format(new Date(Long.valueOf(key)));
                     DataPointProfile point = new DataPointProfile(url, diagnosis, dateString);
                     listData.add(point);
