@@ -71,6 +71,7 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class HomePage extends AppCompatActivity {
+    static boolean noReload = false;
     TabLayout tabLayout;
     ViewPager viewPager;
     Toolbar toolbar;
@@ -509,8 +510,8 @@ public class HomePage extends AppCompatActivity {
 
                                                         Log.e("PROBS",Arrays.toString(probabilities));
                                                         System.out.println(Arrays.toString(probabilities));
-
-                                                        Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
+                                                        noReload = true;
+                                                        //Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
                                                         saveData(probabilities,bitmap);
 
                                                     }
@@ -551,24 +552,22 @@ public class HomePage extends AppCompatActivity {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
-
         UploadTask uploadTask = imagesRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
+                noReload = false;
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                Toast.makeText(HomePage.this, "ON SUCCESS", Toast.LENGTH_SHORT).show();
 
                 imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
-                        Toast.makeText(HomePage.this, task.getResult().toString(), Toast.LENGTH_SHORT).show();
                         ref.child(time).child("URL").setValue(task.getResult().toString());
+                        noReload = false;
                     }
                 });
             }
