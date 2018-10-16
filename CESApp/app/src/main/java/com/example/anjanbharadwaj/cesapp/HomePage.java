@@ -66,8 +66,11 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener{
@@ -80,7 +83,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
     FloatingActionButton fab;
-    static ArrayList<Person> suggestions = new ArrayList<>();
+    static ArrayList<DataPointProfile> suggestions = new ArrayList<>();
 
     final int VOICE_SEARCH_CODE = 3012;
 
@@ -266,39 +269,27 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
     private void updateSearches(String query) {
 
         final String newQuery = query;
-        final DatabaseReference searchRef = database.getReference();
+        final DatabaseReference searchRef = database.getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
+                .child("Pictures");
 
         searchRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 suggestions.clear();
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    String isbn = d.getKey();
-                    String title = d.child("Title").getValue(String.class);
-                    String author = d.child("Author").getValue(String.class);
-                    String description = d.child("Description").getValue(String.class);
-                    double rating = d.child("Rating").getValue(Double.class);
-                    String url = d.child("URL").getValue(String.class);
-                    String lQuery = newQuery.toLowerCase();
-                    StringTokenizer st = new StringTokenizer(lQuery);
 
-                    boolean allTokens = false;
+                    String dateText = d.getKey().toString();
+                    String diagnosis = d.child("Diagnosis").getValue().toString();
+                    String url = d.child("URL").getValue().toString();
 
-                    while (st.hasMoreTokens()) {
-                        String currToken = st.nextToken();
-                        if (title.toLowerCase().contains(currToken) || author.toLowerCase().contains(currToken) || description.toLowerCase().contains(currToken)) {
-                            allTokens = true;
-                        } else {
-                            allTokens = false;
-                            break;
-                        }
+                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+                    String dateString = formatter.format(new Date(Long.valueOf(dateText)));
+
+
+                    if(diagnosis.equals(newQuery)) {
+                        suggestions.add(new DataPointProfile(url, diagnosis, dateString));
                     }
-
-                    if (allTokens) {
-                        suggestions.add(new Person(isbn, title, author, description, rating, url));
-                    }
-
-
                 }
 
             }
