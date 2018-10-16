@@ -19,11 +19,13 @@
         card_view:cardCornerRadius="10dp"
         card_view:layout_constraintEnd_toEndOf="parent">
 
+
         <TextView
             android:id="@+id/info_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_marginTop="8dp"
             android:text="Lesion Health Over Time"
             android:textColor="#FFFFFF" />
 
