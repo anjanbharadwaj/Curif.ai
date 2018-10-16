@@ -1,12 +1,31 @@
 package com.example.anjanbharadwaj.cesapp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.google.firebase.FirebaseApiNotAvailableException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -52,15 +71,85 @@ public class ProgressFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Pictures").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<Double> percentages = new ArrayList<Double>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String key = snapshot.getKey().toString();
+
+                    Log.v("Progress", "In the loop");
+
+                    int diagnosis = Integer.parseInt(snapshot.child("Diagnosis").getValue().toString());
+
+                    double class_one_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 1").getValue().toString());
+                    double class_two_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 2").getValue().toString());
+                    double class_three_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 3").getValue().toString());
+                    double class_four_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 4").getValue().toString());
+
+                    double percent_disease = 0;
+
+                    if(diagnosis == 1){
+                        percent_disease = class_one_percent;
+                    } else if(diagnosis == 2) {
+                        percent_disease = class_two_percent;
+                    } else if(diagnosis == 3) {
+                        percent_disease = class_three_percent;
+                    } else if(diagnosis == 4) {
+                        percent_disease = class_four_percent;
+                    }
+                    percentages.add(percent_disease);
+
+                    Log.v("Progress", ""+percent_disease*100);
+
+
+                }
+
+                // in this example, a LineChart is initialized from xml
+                LineChart chart = (LineChart) getView().findViewById(R.id.chart);
+                Log.v("Progress", chart.toString());
+                List<Entry> entries = new ArrayList<Entry>();
+
+                for(int i = 0; i < percentages.size(); i++) {
+                    entries.add(new Entry(i, percentages.get(i).floatValue()));
+                }
+
+                LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
+                dataSet.setColor(Color.BLACK);
+                dataSet.setValueTextColor(Color.BLUE); // styling, ...
+                LineData lineData = new LineData(dataSet);
+                chart.setData(lineData);
+                chart.invalidate(); // refresh
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
-
     }
 
     @Override
