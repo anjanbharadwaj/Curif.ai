@@ -561,6 +561,7 @@ public class HomePage extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                 Toast.makeText(HomePage.this, "ON SUCCESS", Toast.LENGTH_SHORT).show();
 
                 imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
