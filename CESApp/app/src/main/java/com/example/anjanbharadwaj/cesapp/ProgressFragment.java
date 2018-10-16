@@ -121,9 +121,9 @@ public class ProgressFragment extends Fragment {
                     entries.add(new Entry(i, percentages.get(i).floatValue()));
                 }
 
-                LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-                dataSet.setColor(Color.BLACK);
-                dataSet.setValueTextColor(Color.BLUE); // styling, ...
+                LineDataSet dataSet = new LineDataSet(entries, "Recovery Over Time"); // add entries to dataset
+                dataSet.setColor(Color.WHITE);
+                dataSet.setValueTextColor(Color.WHITE); // styling, ...
                 LineData lineData = new LineData(dataSet);
                 chart.setData(lineData);
                 chart.invalidate(); // refresh
