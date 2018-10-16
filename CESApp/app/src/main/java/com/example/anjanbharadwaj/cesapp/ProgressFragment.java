@@ -59,7 +59,7 @@ public class ProgressFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        
+
 
     }
 
