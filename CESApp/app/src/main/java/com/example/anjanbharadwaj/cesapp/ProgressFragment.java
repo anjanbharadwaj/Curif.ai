@@ -77,7 +77,7 @@ public class ProgressFragment extends Fragment {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Pictures").addValueEventListener(new ValueEventListener() {
+        ref.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Double> percentages = new ArrayList<Double>();
