@@ -73,7 +73,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener{
+public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener{
     static boolean noReload = false;
     TabLayout tabLayout;
     ViewPager viewPager;
@@ -576,9 +576,11 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new ProfileFragment();
+                    return new HomeFragment();
                 case 1:
                     return new ProgressFragment();
+                case 2:
+                    return new ProfileFragment();
                 default:
                     return new PlaceholderFragment();
             }
@@ -593,9 +595,11 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Profile";
+                    return "Home";
                 case 1:
                     return "Progress";
+                case 2:
+                    return "Profile";
                 default:
                     return "Placeholder";
             }
