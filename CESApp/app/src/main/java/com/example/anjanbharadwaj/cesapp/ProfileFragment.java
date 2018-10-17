@@ -30,6 +30,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -222,11 +223,24 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(mode.equals("select")){
+
                     mode = "view";
+                    loadData();
+                    //Log.e("COUNT",""+listView.getChildCount());
+//                    for(int i = 0; i<listView.getAdapter().getItemCount(); i++){
+//                        DataPointProfileAdapter.DataPointViewHolder holder = (DataPointProfileAdapter.DataPointViewHolder)listView.findViewHolderForAdapterPosition(i);
+//                        holder.cardView.setCardBackgroundColor(Color.WHITE);
+//                    }
                     share.setTextColor(Color.BLACK);
+                    share.setText("Select");
+                    HomePage.fab.setImageResource(R.drawable.camera);
+
                 } else {
+                    HomePage.fab.setImageResource(R.drawable.send1);
+
                     mode = "select";
                     share.setTextColor(Color.BLUE);
+                    share.setText("Cancel");
                 }
             }
         });
@@ -261,17 +275,7 @@ public class ProfileFragment extends Fragment {
 }
 
 //Wrapper class for book information.
-class DataPointProfile {
-    String url;
-    String diagnosis;
-    String date;
 
-    public DataPointProfile(String url, String diagnosis, String date) {
-        this.url = url;
-        this.diagnosis = diagnosis;
-        this.date = date;
-    }
-}
 
 //adapter which manages the data in the profile fragment list view.
 class DataPointProfileArrayAdapter extends ArrayAdapter<DataPointProfile> {

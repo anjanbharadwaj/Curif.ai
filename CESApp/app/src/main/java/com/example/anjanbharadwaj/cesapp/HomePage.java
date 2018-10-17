@@ -82,7 +82,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
     CoordinatorLayout coordinatorLayout;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
-    FloatingActionButton fab;
+    static FloatingActionButton fab;
     static ArrayList<DataPointProfile> suggestions = new ArrayList<>();
 
     final int VOICE_SEARCH_CODE = 3012;
@@ -176,8 +176,8 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                         //Send a bug report via email using email intent.
                         Intent intent = new Intent(Intent.ACTION_SEND);
                         intent.setType("text/html");
-                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"biblioflyfbla@gmail.com"});
-                        intent.putExtra(Intent.EXTRA_SUBJECT, "Bibliofly Bug Report");
+                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cesapp@gmail.com"});
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "CES App Bug Report");
                         intent.putExtra(Intent.EXTRA_TEXT, "My bug...");
 
                         startActivity(Intent.createChooser(intent, "Send Email"));
@@ -291,7 +291,8 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                         suggestions.add(new DataPointProfile(url, diagnosis, dateString));
                     }
                 }
-
+                searchView.swapSuggestions(suggestions);
+                searchView.hideProgress();
             }
 
             @Override
