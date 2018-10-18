@@ -2,7 +2,9 @@ package com.example.anjanbharadwaj.cesapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,12 +45,14 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     SwipeRefreshLayout swipeRefreshLayout;
-    String mode = "view";
+    static String mode = "view";
     RecyclerView listView;
     TextView share;
     static Context context;
 
     ArrayList<DataPointProfile> listData = new ArrayList<>();
+
+    static ArrayList<DiagnosisListItemInfo> selectedInformation = new ArrayList<>();
 
     ArrayAdapter<DataPointProfile> dataPointProfileArrayAdapter;
     //ArrayList<String> listData1 = new ArrayList<>();
@@ -76,11 +80,20 @@ public class HomeFragment extends Fragment {
                 DataPointProfileAdapter.DataPointViewHolder holder = (DataPointProfileAdapter.DataPointViewHolder)listView.findViewHolderForAdapterPosition(position);
                 if(mode.equals("select")) {
                     Log.e("COLOR",""+holder.cardView.getCardBackgroundColor());
+
                     if(holder.cardView.getCardBackgroundColor().getDefaultColor()==Color.YELLOW){
                         holder.cardView.setCardBackgroundColor(Color.WHITE);
-
                     } else {
                         holder.cardView.setCardBackgroundColor(Color.YELLOW);
+
+                        String diagnosis = ((TextView)holder.cardView.findViewById(R.id.diagnosis)).getText().toString();
+                        String date = ((TextView)holder.cardView.findViewById(R.id.date)).getText().toString();
+
+                        BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView)(holder.cardView.findViewById(R.id.picture))).getDrawable();
+                        Bitmap bitmap = bitmapDrawable.getBitmap();
+
+
+                        selectedInformation.add(new DiagnosisListItemInfo(diagnosis, date, bitmap));
                     }
                 }
             }
@@ -263,7 +276,42 @@ public class HomeFragment extends Fragment {
     }
 }
 
-//Wrapper class for book information.
+
+class DiagnosisListItemInfo {
+    private String diagnosis;
+    private String date;
+    private Bitmap photo;
+
+    public DiagnosisListItemInfo(String diagnosis, String date, Bitmap photo) {
+        this.diagnosis = diagnosis;
+        this.date = date;
+        this.photo = photo;
+    }
+
+    public String getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(String diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public Bitmap getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Bitmap photo) {
+        this.photo = photo;
+    }
+}
 
 
 //adapter which manages the data in the profile fragment list view.

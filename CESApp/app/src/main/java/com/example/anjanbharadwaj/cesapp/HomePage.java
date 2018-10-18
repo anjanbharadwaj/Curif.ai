@@ -1,13 +1,17 @@
 package com.example.anjanbharadwaj.cesapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -65,6 +69,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -157,7 +163,14 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takePhoto(view);
+
+                Log.v("SELECTION", HomeFragment.mode);
+
+                if(HomeFragment.mode.equals("view")) {
+                    takePhoto(view);
+                } else {
+                    createAndSendReport();
+                }
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                   //      .setAction("Action", null).show();
             }
@@ -261,6 +274,71 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
     }
 
+    private void createAndSendReport() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                500);
+
+        Log.v("SELECTION", "In create and send report");
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{"[doctor's email]@gmail.com"});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[Patient Name]'s Lesion Report");
+        String body = "";
+
+        Log.v("SELECTION", ""+HomeFragment.selectedInformation.size());
+
+
+        for(int i = 0; i < HomeFragment.selectedInformation.size(); i++) {
+            DiagnosisListItemInfo selectedItem = HomeFragment.selectedInformation.get(i);
+
+            String diagnosis = selectedItem.getDiagnosis();
+            String date = selectedItem.getDate();
+            Bitmap photo = selectedItem.getPhoto();
+
+            Log.v("SELECTION", diagnosis + " - " + date);
+
+            body += diagnosis + " - " + date + "(photo " + i + " attached):" + "\n";
+
+            String saved_photo_directory = saveToInternalStorage(photo);
+
+            File file = new File(saved_photo_directory,"profile.jpg");
+            Uri pngUri = Uri.fromFile(file);
+
+            emailIntent.putExtra(Intent.EXTRA_STREAM, pngUri);
+        }
+
+        emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        startActivityForResult(Intent.createChooser(emailIntent, "Send report..."),12);
+
+    }
+
+    private String saveToInternalStorage(Bitmap bitmapImage){
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath=new File(directory,"profile.jpg");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
 
     public void onFragmentInteraction(Uri uri) {
 
