@@ -1,12 +1,10 @@
 package com.example.anjanbharadwaj.cesapp;
-/*
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -31,9 +29,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.chsfbla.chs_mobileapplicationdevelopment_17_18.Book;
-import com.example.chsfbla.chs_mobileapplicationdevelopment_17_18.Librarian.StatisticUtils;
-import com.example.chsfbla.chs_mobileapplicationdevelopment_17_18.Librarian.StatisticsCallback;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,7 +45,7 @@ import java.util.Iterator;
 
 public class DataDetailActivity extends SlidingActivity {
     int position = -1;
-
+    int primaryColorDark;
     ProgressBar detailProgressBar;
     Button detailPlaceHoldButton;
     ImageView detailHoldImageView;
@@ -92,7 +88,7 @@ public class DataDetailActivity extends SlidingActivity {
 
                         int def = 0xffffff;
                         final int primaryColor = p.getDominantColor(def);
-                        int primaryColorDark = manipulateColor(primaryColor, 0.5f);
+                        primaryColorDark = manipulateColor(primaryColor, 0.5f);
 
                         if (primaryColor != def) {
                             setPrimaryColors(primaryColor, primaryColorDark);
@@ -105,8 +101,6 @@ public class DataDetailActivity extends SlidingActivity {
         //userHold = reference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("BooksOnHold");
 
         setTitle(date);
-        /*Get the data that represents the Image in byte array form (since you can't put a Bitmap extra).
-            Then, convert it to a Bitmap
 
         //Glide.with(getApplicationContext()).
 //        byte[] byteArray = getIntent().getByteArrayExtra("Image");
@@ -511,4 +505,3 @@ public class DataDetailActivity extends SlidingActivity {
     }
 
 }
-*/
