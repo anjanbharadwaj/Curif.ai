@@ -3,4 +3,14 @@
     <color name="colorPrimary">#6de147</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
+    <color name="blue">#3eacd4</color>
+    <color name="gold">#ffea00</color>
+    <color name="error">#c62828</color>
+
+    <color name="chart_green">#3cba54</color>
+    <color name="chart_yellow">#f4c20d</color>
+    <color name="chart_red">#db3236</color>
+    <color name="chart_blue">#4885ed</color>
 </resources>
