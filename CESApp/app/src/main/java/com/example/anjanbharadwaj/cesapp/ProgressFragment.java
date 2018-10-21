@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ramotion.foldingcell.FoldingCell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +128,16 @@ public class ProgressFragment extends Fragment {
                 LineData lineData = new LineData(dataSet);
                 chart.setData(lineData);
                 chart.invalidate(); // refresh
+
+                // get our folding cell
+                final FoldingCell fc = (FoldingCell) getView().findViewById(R.id.folding_cell);
+                // attach click listener to folding cell
+                fc.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        fc.toggle(false);
+                    }
+                });
 
 
 

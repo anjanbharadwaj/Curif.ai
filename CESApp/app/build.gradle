@@ -44,6 +44,7 @@ dependencies {
     implementation 'com.klinkerapps:sliding-activity:1.4.4'
     implementation 'com.github.sujithkanna:smileyrating:1.6.8'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.ramotion.foldingcell:folding-cell:1.2.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'com.android.support:palette-v7:25.3.1'
 

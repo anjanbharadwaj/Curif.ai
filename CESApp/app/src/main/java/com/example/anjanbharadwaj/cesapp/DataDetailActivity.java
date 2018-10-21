@@ -43,6 +43,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/*
 public class DataDetailActivity extends SlidingActivity {
     int position = -1;
     int primaryColorDark;
@@ -505,3 +506,4 @@ public class DataDetailActivity extends SlidingActivity {
     }
 
 }
+*/
