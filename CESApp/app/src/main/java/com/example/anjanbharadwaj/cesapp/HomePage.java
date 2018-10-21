@@ -98,6 +98,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
     private Context mContext=HomePage.this;
     private static final int REQUEST = 112;
+    RecyclerViewClickListener listener;
 
 
     @Override
