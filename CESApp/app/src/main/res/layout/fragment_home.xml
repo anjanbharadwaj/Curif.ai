@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_swipe">
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/profileSwipeRefresh"
         android:layout_width="match_parent"
@@ -74,5 +79,6 @@
         </ScrollView>
 
     </android.support.v4.widget.SwipeRefreshLayout>
+    </jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout>
 
 </android.support.constraint.ConstraintLayout>

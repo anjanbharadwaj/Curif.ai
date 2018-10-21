@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
 /*
     This is the StudentTeacherProfile Fragment. It is the rightmost screen in the home page, and has information about the
@@ -60,6 +64,7 @@ public class HomeFragment extends Fragment {
     RecyclerViewClickListener listener;
     public DatabaseReference database;
     public static String name = "Profile";
+    public WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
 
     int numCopies;
 
@@ -146,7 +151,7 @@ public class HomeFragment extends Fragment {
 
                     //setListViewHeight(listView);
                     showCards();
-                    swipeRefreshLayout.setRefreshing(false);
+                    mWaveSwipeRefreshLayout.setRefreshing(false);
                     listView.setVisibility(View.VISIBLE);
 
                 }
@@ -220,12 +225,22 @@ public class HomeFragment extends Fragment {
 
         loadData();
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                loadData();
+//            }
+//        });
+
+        mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) getView().findViewById(R.id.main_swipe);
+        mWaveSwipeRefreshLayout.setOnRefreshListener(new WaveSwipeRefreshLayout.OnRefreshListener() {
+            @Override public void onRefresh() {
+                // Do work to refresh the list here.
                 loadData();
             }
         });
+
+
 
         // Holds share button pressed
         share.setOnClickListener(new View.OnClickListener() {
@@ -282,6 +297,8 @@ public class HomeFragment extends Fragment {
         return name;
     }
 }
+
+
 
 
 class DiagnosisListItemInfo {
