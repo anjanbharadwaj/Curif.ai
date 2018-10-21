@@ -26,6 +26,11 @@
             android:label="@string/title_activity_home_page"
             android:theme="@style/AppTheme" />
         <activity android:name=".TestActivity"></activity>
+        <activity
+            android:name=".DataDetailActivity"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Sliding.Light" />
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.example.anjanbharadwaj.cesapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -77,8 +78,9 @@ public class HomeFragment extends Fragment {
         listener = new RecyclerViewClickListener() {
             @Override
             public void onClick(View view, int position) {
-                DataPointProfileAdapter.DataPointViewHolder holder = (DataPointProfileAdapter.DataPointViewHolder)listView.findViewHolderForAdapterPosition(position);
                 if(mode.equals("select")) {
+                    DataPointProfileAdapter.DataPointViewHolder holder = (DataPointProfileAdapter.DataPointViewHolder)listView.findViewHolderForAdapterPosition(position);
+
                     Log.e("COLOR",""+holder.cardView.getCardBackgroundColor());
 
                     if(holder.cardView.getCardBackgroundColor().getDefaultColor()==Color.YELLOW){
@@ -95,6 +97,11 @@ public class HomeFragment extends Fragment {
 
                         selectedInformation.add(new DiagnosisListItemInfo(diagnosis, date, bitmap));
                     }
+                } else{
+                    DataPointProfile dpp = listData.get(position);
+                    Intent intent = new Intent(getContext(),DataDetailActivity.class);
+                    intent.putExtra("DataPointProfile",dpp);
+                    startActivity(intent);
                 }
             }
         };

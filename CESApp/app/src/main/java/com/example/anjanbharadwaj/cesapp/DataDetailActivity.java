@@ -13,6 +13,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
@@ -36,6 +37,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.hsalf.smilerating.BaseRating;
+import com.hsalf.smilerating.SmileRating;
 import com.klinker.android.sliding.SlidingActivity;
 
 import java.util.ArrayList;
@@ -48,22 +51,16 @@ public class DataDetailActivity extends SlidingActivity {
     int position = -1;
     int primaryColorDark;
     ProgressBar detailProgressBar;
-    Button detailPlaceHoldButton;
-    ImageView detailHoldImageView;
-    TextView detailHoldPlacedLabel;
-    TextView detailAuthor;
-    ImageView detailAuthorImageView;
-    TextView detailDescriptionLabel;
-    TextView detailDescription;
-    TextView detailRatingLabel;
-    RatingBar detailRating;
-
+    TextView diagnosisValue;
+    TextView dateValue;
+    TextView dateExpectedValue;
+    SmileRating feelingValue;
+    CardView lastTreatmentCard;
+    TextView lastTreatmentValue;
+    TextView moreInfoValue;
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference holds;
-    DatabaseReference userHold;
-    boolean holdPlaced;
 
-    private int numCopies;
+    //private int numCopies;
 
     //the following init method is comparable to the onCreate() method of our other activites
     @Override
@@ -120,296 +117,50 @@ public class DataDetailActivity extends SlidingActivity {
         setContent(R.layout.activity_detail);
         //initialize views that will be used later
         detailProgressBar = (ProgressBar) findViewById(R.id.detailProgressBar);
-        detailPlaceHoldButton = (Button) findViewById(R.id.detailPlaceHoldButton);
-        detailHoldImageView = (ImageView) findViewById(R.id.detailHoldImageView);
-        detailHoldPlacedLabel = (TextView) findViewById(R.id.detailHoldPlacedLabel);
-        detailAuthor = (TextView) findViewById(R.id.detailAuthor);
-        detailAuthorImageView = (ImageView) findViewById(R.id.detailAuthorImageView);
-        detailDescriptionLabel = (TextView) findViewById(R.id.detailDescriptionLabel);
-        detailDescription = (TextView) findViewById(R.id.detailDescription);
-        detailRatingLabel = (TextView) findViewById(R.id.detailRatingLabel);
-        detailRating = (RatingBar) findViewById(R.id.detailRating);
+        diagnosisValue = (TextView)findViewById(R.id.detailDiagnosisText);
+        dateValue = (TextView)findViewById(R.id.detailDateText);
+        dateExpectedValue = (TextView)findViewById(R.id.detailExpectedDate);
+        feelingValue = (SmileRating)findViewById(R.id.smile_rating);
+        lastTreatmentCard = (CardView)findViewById(R.id.detailTreatmentCardView);
+        lastTreatmentValue = (TextView)findViewById(R.id.detailTreatmentText);
+        moreInfoValue = (TextView)findViewById(R.id.detailMoreInfo);
+
+        ImageView icon1 = (ImageView)findViewById(R.id.detailDiagnosisImageView);
+        ImageView icon2 = (ImageView)findViewById(R.id.detailDateImageView);
+        ImageView icon3 = (ImageView)findViewById(R.id.detailExpectedDateImageView);
+        ImageView icon4 = (ImageView)findViewById(R.id.detailFeelingImageView);
+        ImageView icon5 = (ImageView)findViewById(R.id.detailExpectedDateImageView);
+        ImageView icon6 = (ImageView)findViewById(R.id.detailMoreInfoImageView);
+
         //save the color of our button so that if the user holds and un-holds, we can keep this color scheme
-        final int buttonColor = detailPlaceHoldButton.getCurrentTextColor();
 
         //adjust the color scheme based on the values we extracted earlier - then, set the text/value for each view
-        detailHoldImageView.setColorFilter(primaryColorDark);
+        icon1.setColorFilter(primaryColorDark);
+        icon2.setColorFilter(primaryColorDark);
+        icon3.setColorFilter(primaryColorDark);
+        icon4.setColorFilter(primaryColorDark);
+        icon5.setColorFilter(primaryColorDark);
+        icon6.setColorFilter(primaryColorDark);
 
-        detailAuthor.setText(book.author);
-        detailAuthorImageView.setColorFilter(primaryColorDark);
+        diagnosisValue.setText(diagnosis);
+        dateValue.setText(date);
+        dateExpectedValue.setText("12/1/2018");
+        feelingValue.setSelectedSmile(BaseRating.OKAY);
+        lastTreatmentValue.setText("10/20/2018");
+        moreInfoValue.setText("According to Mayo Clinic, this disease is pretty common!");
 
-        detailDescriptionLabel.setTextColor(primaryColorDark);
-        detailDescription.setText(book.description);
-
-        detailRatingLabel.setText(String.valueOf(book.rating));
-        detailRating.setRating((float) book.rating);
-
-
-        //Show a progress bar until the data is loaded
+        diagnosisValue.setTextColor(primaryColorDark);
+        dateValue.setTextColor(primaryColorDark);
+        dateExpectedValue.setTextColor(primaryColorDark);
+        lastTreatmentValue.setTextColor(primaryColorDark);
+        moreInfoValue.setTextColor(primaryColorDark);
         show(detailProgressBar);
-
-        //Hide the following items (they should only be shown if a hold is placed)
-        hide(detailPlaceHoldButton);
-        hide(detailHoldImageView);
-        hide(detailHoldPlacedLabel);
 
 
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        holds.orderByValue().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //The following code finds which position the current user is in line for the book
-                int i = 1;
-                position = -1;
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    if (d.getKey().equals(uid)) {
-                        position = i;
-                        break;
-                    }
-                    i++;
-                }
-                //Show the hold views, and hide the progress bar
-                hide(detailProgressBar);
-                show(detailPlaceHoldButton);
-                show(detailHoldImageView);
-                //If the user has no hold on the book, hide hold views and set a boolean holdPlaced to false (and vice versa)
-                if (position == -1) {
-                    holdPlaced = false;
-                    detailPlaceHoldButton.setText("Place a Hold");
-                    detailPlaceHoldButton.setTextColor(buttonColor);
-                    detailHoldImageView.setImageResource(R.drawable.ic_bookmark_border_black_24dp);
-                    hide(detailHoldPlacedLabel);
 
-                } else {
-                    holdPlaced = true;
-                    detailPlaceHoldButton.setText("Cancel Hold");
-                    detailPlaceHoldButton.setTextColor(getResources().getColor(R.color.error));
-                    detailHoldImageView.setImageResource(R.drawable.ic_bookmark_black_24dp);
-                    show(detailHoldPlacedLabel);
-                    detailHoldPlacedLabel.setText("Hold placed. You are " + position + suffix(position) + " in line.");
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        detailPlaceHoldButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //if the user has placed a hold and they click the button, they intend to remove their hold, so we remove their uid from the hold list
-                if (holdPlaced) {
-                    holds.child(uid).removeValue();
-                    userHold.child(book.isbn).removeValue();
-                    //set notification
-                    holds.orderByValue().addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            position = 1;
-                            for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                String uid = d.getKey();
-                                reference.child("Users").child(uid).child("BooksOnHold").child(book.isbn).setValue(position);
-                                position++;
-                            }
-
-                            //Hold canceled so we need to decrement the value in firebase.
-                            StatisticUtils.getNumberOfHoldsForBook(book.isbn, new StatisticsCallback() {
-                                @Override
-                                public void onCallback(int value) {
-                                    reference.child("Statistics").child("MostNumberOfHolds").child(book.isbn).setValue(value - 1);
-                                }
-
-                                @Override
-                                public void onCallback(long value) {
-
-                                }
-
-                                @Override
-                                public void onCallback(ArrayList<String[]> value) {
-
-                                }
-
-                                @Override
-                                public void onCallback(HashMap<String, Integer> value) {
-
-                                }
-                            });
-                            StatisticUtils.getNumberOfCopiesOfBook(book.isbn, new StatisticsCallback() {
-                                @Override
-                                public void onCallback(int value) {
-                                    numCopies = value;
-                                    StatisticUtils.getNumberOfHoldsForBook(book.isbn, new StatisticsCallback() {
-                                        @Override
-                                        public void onCallback(int value) {
-                                            double databaseValue = (value == 0) ? 0 : ((double) numCopies) / value;
-                                            reference.child("Statistics").child("Backlog").child(book.isbn).setValue(databaseValue);
-                                        }
-
-                                        @Override
-                                        public void onCallback(long value) {
-
-                                        }
-
-                                        @Override
-                                        public void onCallback(ArrayList<String[]> value) {
-
-                                        }
-
-                                        @Override
-                                        public void onCallback(HashMap<String, Integer> value) {
-
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onCallback(long value) {
-
-                                }
-
-                                @Override
-                                public void onCallback(ArrayList<String[]> value) {
-
-                                }
-
-                                @Override
-                                public void onCallback(HashMap<String, Integer> value) {
-
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                } else {
-
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            DataSnapshot temp = dataSnapshot;
-                            if (dataSnapshot.child("Users").child(uid).hasChild("BooksCheckedOut")) {
-                                dataSnapshot = dataSnapshot.child("Users").child(uid).child("BooksCheckedOut");
-
-                                Iterator barcodes = dataSnapshot.getChildren().iterator();
-                                while (barcodes.hasNext()) {
-                                    String bc = ((DataSnapshot) (barcodes.next())).getKey().toString();
-
-                                    if (temp.child("Barcodes").child(bc).child("ISBN").getValue().toString().equals(book.isbn)) {
-                                        Toast.makeText(StudentTeacherBookDetailActivity.this, "Book already checked out",
-                                                Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                }
-                            }
-
-                            //this means that the user wants to PLACE a hold - add their UID as the key, and the current time as the value
-                            holds.child(uid).setValue("" + System.currentTimeMillis());
-                            setHoldNotification(getApplicationContext(), book.title, book.isbn, book.url);
-                            //find their current position in line, just like how do we did before
-                            holds.orderByValue().addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    int i = 1;
-                                    position = -1;
-                                    for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                        if (d.getKey().equals(uid)) {
-                                            position = i;
-                                            break;
-                                        }
-                                        i++;
-                                    }
-                                    userHold.child(book.isbn).setValue(position);
-
-                                    //Update Number of Holds for that Book by incrementing
-                                    StatisticUtils.getNumberOfHoldsForBook(book.isbn, new StatisticsCallback() {
-                                        @Override
-                                        public void onCallback(int value) {
-                                            reference.child("Statistics").child("MostNumberOfHolds").child(book.isbn.toString()).setValue(value + 1);
-                                        }
-
-                                        @Override
-                                        public void onCallback(long value) {
-
-                                        }
-
-                                        @Override
-                                        public void onCallback(ArrayList<String[]> value) {
-
-                                        }
-
-                                        @Override
-                                        public void onCallback(HashMap<String, Integer> value) {
-
-                                        }
-                                    });
-                                    StatisticUtils.getNumberOfCopiesOfBook(book.isbn, new StatisticsCallback() {
-                                        @Override
-                                        public void onCallback(int value) {
-                                            numCopies = value;
-                                            StatisticUtils.getNumberOfHoldsForBook(book.isbn, new StatisticsCallback() {
-                                                @Override
-                                                public void onCallback(int value) {
-                                                    double databaseValue = (value == 0) ? 0 : ((double) numCopies) / value;
-                                                    reference.child("Statistics").child("Backlog").child(book.isbn).setValue(databaseValue);
-                                                }
-
-                                                @Override
-                                                public void onCallback(long value) {
-
-                                                }
-
-                                                @Override
-                                                public void onCallback(ArrayList<String[]> value) {
-
-                                                }
-
-                                                @Override
-                                                public void onCallback(HashMap<String, Integer> value) {
-
-                                                }
-                                            });
-                                        }
-
-                                        @Override
-                                        public void onCallback(long value) {
-
-                                        }
-
-                                        @Override
-                                        public void onCallback(ArrayList<String[]> value) {
-
-                                        }
-
-                                        @Override
-                                        public void onCallback(HashMap<String, Integer> value) {
-
-                                        }
-                                    });
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-        });
     }
 
     //a simple function to convert any integer to a string with a suffix after ("st", "nd", etc)
@@ -484,26 +235,6 @@ public class DataDetailActivity extends SlidingActivity {
 
     }
 
-    public static void setHoldNotification(final Context c, final String title, final String isbn, final String link) {
-        if(FirebaseAuth.getInstance().getCurrentUser() == null) return;
-        final AlarmManager alarmManager = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
-        final Intent notificationIntent = new Intent(c, AlarmReceiver.class);
-        notificationIntent.putExtra("ISBN", isbn);
-        notificationIntent.putExtra("Title", title);
-
-        notificationIntent.putExtra("User", FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-        notificationIntent.putExtra("link", link);
-        Log.v("Hold Notif", title);
-        //Check if they are a student/teacher and add appropriate # weeks
-        PendingIntent broadcast = PendingIntent.getBroadcast(c, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        //cal.add(Calendar.SECOND, 10);
-        Log.v("HoldNotifTime", "" + cal.getTimeInMillis());
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
-
-
-    }
 
 }
 */
