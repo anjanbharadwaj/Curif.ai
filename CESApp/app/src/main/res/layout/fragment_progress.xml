@@ -8,6 +8,14 @@
     android:clipToPadding="false"
     >
 
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/progress_recycler_view"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
     <android.support.v7.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
@@ -15,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="264dp"
         app:cardBackgroundColor="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,8 +35,8 @@
             android:id="@+id/info_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_marginTop="8dp"
+            android:gravity="center"
             android:text="Lesion Health Over Time"
             android:textColor="#FFFFFF" />
 
@@ -38,45 +46,6 @@
             android:layout_height="200dp"
             android:layout_marginTop="30dp" />
     </android.support.v7.widget.CardView>
-
-
-    <com.ramotion.foldingcell.FoldingCell xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/folding_cell"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_view">
-        ​
-
-        <FrameLayout
-            android:id="@+id/cell_content_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/holo_green_dark"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="250dp" />
-        </FrameLayout>
-        ​
-
-        <FrameLayout
-            android:id="@+id/cell_title_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="@android:color/holo_blue_dark" />
-        </FrameLayout>
-        ​
-    </com.ramotion.foldingcell.FoldingCell>
-
-
 
 
 </android.support.constraint.ConstraintLayout>
