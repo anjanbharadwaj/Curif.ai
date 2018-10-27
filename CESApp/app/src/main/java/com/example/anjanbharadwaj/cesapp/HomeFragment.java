@@ -43,10 +43,7 @@ import java.util.List;
 
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
-/*
-    This is the StudentTeacherProfile Fragment. It is the rightmost screen in the home page, and has information about the
-    current user, include their holds/checked out books and more.
- */
+
 public class HomeFragment extends Fragment {
 
 //    SwipeRefreshLayout swipeRefreshLayout;
@@ -182,18 +179,7 @@ public class HomeFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         listView.setLayoutManager(llm);
 
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if(mode.equals("select")){
-//                    Toast.makeText(getContext(),"Click",Toast.LENGTH_SHORT).show();
-//                    view.setSelected(true);
-//                    //parent.getItemAtPosition(position);
-//                    //((CardView)(view.getItemAtPosition(position))).setCardBackgroundColor(Color.YELLOW);
-//                }
-//
-//            }
-//        });
+
         share = (TextView) view.findViewById(R.id.select);
 
 
