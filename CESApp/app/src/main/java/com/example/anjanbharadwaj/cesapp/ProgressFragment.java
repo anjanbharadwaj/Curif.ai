@@ -145,18 +145,6 @@ public class ProgressFragment extends Fragment {
         });
 
 
-        mRecyclerView = (RecyclerView) getView().findViewById(R.id.progress_recycler_view);
-
-
-        mRecyclerView.setAdapter(mAdapter);
-
-        mLayoutManager = new LinearLayoutManager(getActivity());
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-
-
         ArrayList<Double> diseasePercentages = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
             diseasePercentages.add(new Double(i));
@@ -171,6 +159,20 @@ public class ProgressFragment extends Fragment {
 
             }
         });
+
+        mRecyclerView = (RecyclerView) getView().findViewById(R.id.progress_recycler_view);
+
+
+        mRecyclerView.setAdapter(mAdapter);
+
+        mLayoutManager = new LinearLayoutManager(getActivity());
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+
+
+
+
 
 
 
