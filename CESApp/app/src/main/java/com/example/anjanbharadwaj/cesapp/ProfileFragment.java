@@ -9,7 +9,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -93,7 +98,7 @@ public class ProfileFragment extends Fragment {
 
         final TextView profile_name = view.findViewById(R.id.nameTag);
 
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
 
         database.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -105,12 +110,59 @@ public class ProfileFragment extends Fragment {
 
 
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+
+
+        RadioGroup group = (RadioGroup) view.findViewById(R.id.radioGroup);
+
+        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                RadioButton button_checked = radioGroup.findViewById(id);
+
+                boolean can_we_share_data_with_researchers = false;
+
+                if (id == R.id.radio_no) {
+                    if (button_checked.isChecked()) {
+                        can_we_share_data_with_researchers = false;
+                    }
+                } else if (id == R.id.radio_yes) {
+                    if(button_checked.isChecked()) {
+                        can_we_share_data_with_researchers = true;
+                    }
+                }
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+                database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
+                database.child("DataControlSettings").child("can_share_with_researchers").setValue(can_we_share_data_with_researchers);
+
+                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        CheckBox checkBox = (CheckBox) view.findViewById(R.id.public_checkbox);
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+                database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
+                if (compoundButton.isChecked()) {
+                    database.child("DataControlSettings").child("is_profile_searchable").setValue(true);
+                } else {
+                    database.child("DataControlSettings").child("is_profile_searchable").setValue(false);
+                }
+
+                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
 
 
     }
