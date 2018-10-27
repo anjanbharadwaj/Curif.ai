@@ -46,38 +46,26 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ProgressFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    ArrayAdapter<GraphCardInformation> mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<GraphCardInformation> graphListData = new ArrayList<>();
+    private ArrayList<GraphCardInformation> graphListData;
 
     private RecyclerViewClickListener listener;
 
     public ProgressFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProgressFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ProgressFragment newInstance(String param1, String param2) {
         ProgressFragment fragment = new ProgressFragment();
         Bundle args = new Bundle();
@@ -146,23 +134,22 @@ public class ProgressFragment extends Fragment {
             }
         });
 
-
+        graphListData = new ArrayList<>();
 
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.progress_recycler_view);
-
-        mRecyclerView.setAdapter(mAdapter);
+        load_data();
 
         mLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        load_data();
 
     }
 
     public void load_data() {
 
         graphListData.clear();
+        mAdapter = new ProgressArrayAdapter(getContext(), 0, graphListData);
 
 
         ArrayList<Double> diseasePercentages = new ArrayList<>();
@@ -172,21 +159,13 @@ public class ProgressFragment extends Fragment {
 
         graphListData.add(new GraphCardInformation("Hello", diseasePercentages, "title"));
 
-        mAdapter = new GraphCardAdapter(graphListData, new RecyclerViewClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                System.out.println("Clicked!");
-
-            }
-        });
-
         showCards();
 
     }
 
     private void showCards() {
-        GraphCardAdapter dataPointProfileAdapter = new GraphCardAdapter(graphListData, listener);
-        mRecyclerView.setAdapter(dataPointProfileAdapter);
+        GraphCardAdapter adapter = new GraphCardAdapter(graphListData, listener);
+        mRecyclerView.setAdapter(adapter);
     }
 
     //adapter which manages the data in the profile fragment list view.
@@ -302,6 +281,7 @@ public class ProgressFragment extends Fragment {
     }
 }
 
+
 class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphCardViewHolder> {
     private ArrayList<GraphCardInformation> datapoints;
     private RecyclerViewClickListener mListener;
@@ -322,19 +302,20 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphCardVi
     }
 
     @Override
-    public void onBindViewHolder(GraphCardViewHolder pointViewHolder, int i) {
+    public void onBindViewHolder(GraphCardAdapter.GraphCardViewHolder pointViewHolder, int i) {
         //Set each field to its corresponding attribute
-        GraphCardInformation point = datapoints.get(i);
+        //DataPointProfile point = datapoints.get(i);
+        //pointViewHolder.graph
     }
 
     @Override
-    public GraphCardViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public GraphCardAdapter.GraphCardViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         //Inflate the view using the proper xml layout
         View itemView = LayoutInflater.
                 from(viewGroup.getContext()).
-                inflate(R.layout.blank_graph_slate, viewGroup, false);
+                inflate(R.layout.profile_photo_taken, viewGroup, false);
 
-        return new GraphCardViewHolder(itemView, mListener);
+        return new GraphCardAdapter.GraphCardViewHolder(itemView, mListener);
     }
 
     static class GraphCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -361,5 +342,32 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphCardVi
         public void onClick(View v) {
             mListener.onClick(v, getAdapterPosition());
         }
+    }
+}
+class GraphCardArrayAdapter extends ArrayAdapter<GraphCardInformation> {
+
+    private Context context;
+    private List<GraphCardInformation> dataList;
+
+    public GraphCardArrayAdapter(Context context, int resource, List<GraphCardInformation> dataList) {
+        super(context, resource, dataList);
+
+        this.context = context;
+        this.dataList = dataList;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        //inflates a card and populates/adds the proper information
+
+        GraphCardInformation dataPoint = dataList.get(position);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.profile_photo_taken, null);
+
+        //initializes the views on the card.
+
+
+        return view;
     }
 }
