@@ -8,23 +8,23 @@ import java.util.ArrayList;
 
 public class GraphCardInformation {
 
-    String which_diagnosis_is_being_trakced;
+    String which_diagnosis_is_being_tracked;
     ArrayList<Double> percentages = new ArrayList<Double>();
     String title;
 
-    public GraphCardInformation(String which_diagnosis_is_being_trakced,
+    public GraphCardInformation(String which_diagnosis_is_being_tracked,
                                 ArrayList<Double> percentages, String title) {
-        this.which_diagnosis_is_being_trakced = which_diagnosis_is_being_trakced;
+        this.which_diagnosis_is_being_tracked = which_diagnosis_is_being_tracked;
         this.percentages = percentages;
         this.title = title;
     }
 
-    public String getWhich_diagnosis_is_being_trakced() {
-        return which_diagnosis_is_being_trakced;
+    public String getWhich_diagnosis_is_being_tracked() {
+        return which_diagnosis_is_being_tracked;
     }
 
-    public void setWhich_diagnosis_is_being_trakced(String which_diagnosis_is_being_trakced) {
-        this.which_diagnosis_is_being_trakced = which_diagnosis_is_being_trakced;
+    public void setWhich_diagnosis_is_being_tracked(String which_diagnosis_is_being_trakced) {
+        this.which_diagnosis_is_being_tracked = which_diagnosis_is_being_trakced;
     }
 
     public ArrayList<Double> getPercentages() {

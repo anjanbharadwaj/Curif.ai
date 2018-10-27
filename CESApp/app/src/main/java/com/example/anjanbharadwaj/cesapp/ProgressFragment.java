@@ -196,6 +196,8 @@ public class ProgressFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             //inflates a card and populates/adds the proper information
+            GraphCardInformation graphCard = dataList.get(position);
+
 
             GraphCardInformation dataPoint = dataList.get(position);
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -203,16 +205,20 @@ public class ProgressFragment extends Fragment {
             View view = inflater.inflate(R.layout.blank_graph_slate, null);
 
             //initializes the views on the card.
-            ImageView picture = (ImageView) view.findViewById(R.id.picture);
-            TextView diagnosis = (TextView) view.findViewById(R.id.diagnosis);
-            TextView date = (TextView) view.findViewById(R.id.date);
+            LineChart chart = (LineChart) view.findViewById(R.id.graph);
 
-            //loading book image async with Glide loading library.
-            Glide.with(context).load(dataPoint.url).into(picture);
+            List<Entry> entries = new ArrayList<Entry>();
 
-            //adding proper data to views.
-            diagnosis.setText(dataPoint.diagnosis);
-            date.setText(dataPoint.date);
+            for(int i = 0; i < graphCard.getPercentages().size(); i++) {
+                entries.add(new Entry(i, graphCard.getPercentages().get(i).floatValue()));
+            }
+
+            LineDataSet dataSet = new LineDataSet(entries, dataPoint.getTitle().toString()); // add entries to dataset
+            dataSet.setColor(Color.WHITE);
+            dataSet.setValueTextColor(Color.WHITE); // styling, ...
+            LineData lineData = new LineData(dataSet);
+            chart.setData(lineData);
+            chart.invalidate(); // refresh
 
             return view;
         }
@@ -274,7 +280,7 @@ public class ProgressFragment extends Fragment {
     }
 }
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private String[] mDataset;
 
     // Provide a reference to the views for each data item
