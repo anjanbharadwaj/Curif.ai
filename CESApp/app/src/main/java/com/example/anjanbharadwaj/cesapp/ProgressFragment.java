@@ -63,6 +63,8 @@ public class ProgressFragment extends Fragment {
 
     private ArrayList<GraphCardInformation> graphListData = new ArrayList<>();
 
+    private RecyclerViewClickListener listener;
+
     public ProgressFragment() {
         // Required empty public constructor
     }
@@ -145,6 +147,24 @@ public class ProgressFragment extends Fragment {
         });
 
 
+
+        mRecyclerView = (RecyclerView) getView().findViewById(R.id.progress_recycler_view);
+
+        mRecyclerView.setAdapter(mAdapter);
+
+        mLayoutManager = new LinearLayoutManager(getActivity());
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        load_data();
+
+    }
+
+    public void load_data() {
+
+        graphListData.clear();
+
+
         ArrayList<Double> diseasePercentages = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
             diseasePercentages.add(new Double(i));
@@ -160,29 +180,14 @@ public class ProgressFragment extends Fragment {
             }
         });
 
-        mRecyclerView = (RecyclerView) getView().findViewById(R.id.progress_recycler_view);
-
-
-        mRecyclerView.setAdapter(mAdapter);
-
-        mLayoutManager = new LinearLayoutManager(getActivity());
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-
-
-
-
-
-
-
-
-
-
+        showCards();
 
     }
 
+    private void showCards() {
+        GraphCardAdapter dataPointProfileAdapter = new GraphCardAdapter(graphListData, listener);
+        mRecyclerView.setAdapter(dataPointProfileAdapter);
+    }
 
     //adapter which manages the data in the profile fragment list view.
     class ProgressArrayAdapter extends ArrayAdapter<GraphCardInformation> {
@@ -237,6 +242,17 @@ public class ProgressFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        listener = new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+
+                GraphCardAdapter.GraphCardViewHolder holder = (GraphCardAdapter.GraphCardViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position);
+
+            }
+        };
+
+
     }
 
     @Override
@@ -286,7 +302,7 @@ public class ProgressFragment extends Fragment {
     }
 }
 
-class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointViewHolder> {
+class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphCardViewHolder> {
     private ArrayList<GraphCardInformation> datapoints;
     private RecyclerViewClickListener mListener;
     //Default constructor
@@ -306,29 +322,29 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointVi
     }
 
     @Override
-    public void onBindViewHolder(DataPointViewHolder pointViewHolder, int i) {
+    public void onBindViewHolder(GraphCardViewHolder pointViewHolder, int i) {
         //Set each field to its corresponding attribute
         GraphCardInformation point = datapoints.get(i);
     }
 
     @Override
-    public DataPointViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public GraphCardViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         //Inflate the view using the proper xml layout
         View itemView = LayoutInflater.
                 from(viewGroup.getContext()).
                 inflate(R.layout.blank_graph_slate, viewGroup, false);
 
-        return new DataPointViewHolder(itemView, mListener);
+        return new GraphCardViewHolder(itemView, mListener);
     }
 
-    static class DataPointViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class GraphCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public CardView cardView;
         public LineChart graph;
 
         private RecyclerViewClickListener mListener;
 
-        DataPointViewHolder(View v, RecyclerViewClickListener mListener) {
+        GraphCardViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
             graph = v.findViewById(R.id.graph);
 
