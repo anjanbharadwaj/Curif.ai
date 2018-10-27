@@ -1,5 +1,6 @@
 package com.example.anjanbharadwaj.cesapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -13,8 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -163,7 +167,7 @@ public class ProgressFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ProgressAdapter();
+        mAdapter = new ProgressArrayAdapter();
         mRecyclerView.setAdapter(mAdapter);
 
 
@@ -171,6 +175,47 @@ public class ProgressFragment extends Fragment {
 
 
 
+    }
+
+
+    //adapter which manages the data in the profile fragment list view.
+    class ProgressArrayAdapter extends ArrayAdapter<GraphCardInformation> {
+
+        private Context context;
+        private List<GraphCardInformation> dataList;
+
+        public ProgressArrayAdapter(Context context, int resource, List<GraphCardInformation> dataList) {
+            super(context, resource, dataList);
+
+
+            this.context = context;
+            this.dataList = dataList;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            //inflates a card and populates/adds the proper information
+
+            GraphCardInformation dataPoint = dataList.get(position);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
+            View view = inflater.inflate(R.layout.blank_graph_slate, null);
+
+            //initializes the views on the card.
+            ImageView picture = (ImageView) view.findViewById(R.id.picture);
+            TextView diagnosis = (TextView) view.findViewById(R.id.diagnosis);
+            TextView date = (TextView) view.findViewById(R.id.date);
+
+            //loading book image async with Glide loading library.
+            Glide.with(context).load(dataPoint.url).into(picture);
+
+            //adding proper data to views.
+            diagnosis.setText(dataPoint.diagnosis);
+            date.setText(dataPoint.date);
+
+            return view;
+        }
     }
 
     @Override
