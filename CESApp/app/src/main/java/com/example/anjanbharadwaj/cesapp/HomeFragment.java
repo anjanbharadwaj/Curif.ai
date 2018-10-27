@@ -49,7 +49,7 @@ import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
  */
 public class HomeFragment extends Fragment {
 
-    SwipeRefreshLayout swipeRefreshLayout;
+//    SwipeRefreshLayout swipeRefreshLayout;
     static String mode = "view";
     RecyclerView listView;
     TextView share;
@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment {
     public void loadData() {
         if(HomePage.noReload){
             Toast.makeText(this.context, "Analyzing picture - hold on!", Toast.LENGTH_LONG).show();
-            swipeRefreshLayout.setRefreshing(false);
+            mWaveSwipeRefreshLayout.setRefreshing(false);
         }
         else {
             //Clear our arraylists that hold the old data
@@ -151,7 +151,9 @@ public class HomeFragment extends Fragment {
 
                     //setListViewHeight(listView);
                     showCards();
+
                     mWaveSwipeRefreshLayout.setRefreshing(false);
+
                     listView.setVisibility(View.VISIBLE);
 
                 }
@@ -173,8 +175,6 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // initialize our views
-
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.profileSwipeRefresh);
 
         listView = (RecyclerView) view.findViewById(R.id.profileListView);
         listView.setHasFixedSize(true);
@@ -223,15 +223,8 @@ public class HomeFragment extends Fragment {
         });
 
 
-        loadData();
 
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                loadData();
-//            }
-//        });
-
+        //OLD
         mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) getView().findViewById(R.id.main_swipe);
         mWaveSwipeRefreshLayout.setOnRefreshListener(new WaveSwipeRefreshLayout.OnRefreshListener() {
             @Override public void onRefresh() {
@@ -240,6 +233,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        loadData();
 
 
         // Holds share button pressed
