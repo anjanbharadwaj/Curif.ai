@@ -100,8 +100,6 @@ public class ProgressFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String key = snapshot.getKey().toString();
 
-                    Log.v("Progress", "In the loop");
-
                     int diagnosis = Integer.parseInt(snapshot.child("Diagnosis").getValue().toString());
 
                     double class_one_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 1").getValue().toString());
@@ -121,10 +119,6 @@ public class ProgressFragment extends Fragment {
                         percent_disease = class_four_percent;
                     }
                     percentages.add(percent_disease);
-
-                    Log.v("Progress", ""+percent_disease*100);
-
-
                 }
 
                 // in this example, a LineChart is initialized from xml
@@ -153,6 +147,9 @@ public class ProgressFragment extends Fragment {
 
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.progress_recycler_view);
 
+
+        mRecyclerView.setAdapter(mAdapter);
+
         mLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -160,6 +157,12 @@ public class ProgressFragment extends Fragment {
 
 
 
+        ArrayList<Double> diseasePercentages = new ArrayList<>();
+        for(int i = 0; i < 100; i++) {
+            diseasePercentages.add(new Double(i));
+        }
+
+        graphListData.add(new GraphCardInformation("Hello", diseasePercentages, "title"));
 
         mAdapter = new GraphCardAdapter(graphListData, new RecyclerViewClickListener() {
             @Override
@@ -170,7 +173,6 @@ public class ProgressFragment extends Fragment {
         });
 
 
-        mRecyclerView.setAdapter(mAdapter);
 
 
 
@@ -327,6 +329,10 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointVi
         DataPointViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
             graph = v.findViewById(R.id.graph);
+
+            //modify the graph
+
+            Log.v("PLEASE", "HERE!");
 
 
             this.mListener = mListener;
