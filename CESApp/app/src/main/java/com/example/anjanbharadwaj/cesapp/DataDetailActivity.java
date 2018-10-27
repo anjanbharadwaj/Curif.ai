@@ -12,6 +12,7 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v8.renderscript.Allocation;
@@ -69,9 +70,11 @@ public class DataDetailActivity extends SlidingActivity {
         final DataPointProfile dpp = getIntent().getParcelableExtra("DataPointProfile");
         //Set database references that we will use later; we do this here because we need to set them based on user id and book isbn
         String diagnosis = dpp.diagnosis;
-        String date = dpp.date;
+        final String date = dpp.date;
+        final String unformatdate = dpp.nonformatdate;
         String url = dpp.url;
         Bitmap bitmap = null;
+        primaryColorDark = Color.BLACK;
         Glide.with(this)
                 .asBitmap()
                 .load(url)
@@ -79,22 +82,22 @@ public class DataDetailActivity extends SlidingActivity {
                     @Override
                     public void onResourceReady(Bitmap image, Transition<? super Bitmap> transition) {
                         Bitmap original = image;
-                        image = darkenBitMap(image);
+//                        image = darkenBitMap(image);
                         image = blur(image);
                         setImage(image);
-                        Palette p = Palette.from(original).generate();
-
-                        int def = 0xffffff;
-                        final int primaryColor = p.getDominantColor(def);
-                        primaryColorDark = manipulateColor(primaryColor, 0.5f);
-
-                        if (primaryColor != def) {
-                            setPrimaryColors(primaryColor, primaryColorDark);
-                        }
+//                        Palette p = Palette.from(original).generate();
+//
+//                        int def = 0xffffff;
+//                        final int primaryColor = p.getDominantColor(def);
+//                        primaryColorDark = manipulateColor(primaryColor, 0.5f);
+//
+//                        if (primaryColor != def) {
+//                            setPrimaryColors(primaryColor, primaryColorDark);
+//                        }
 
                     }
                 });
-
+        //Toast.makeText(getApplicationContext(), ""+primaryColorDark, Toast.LENGTH_LONG).show();
                 //holds = reference.child("Books").child(dpp.).child("Holds");
         //userHold = reference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("BooksOnHold");
 
@@ -116,7 +119,7 @@ public class DataDetailActivity extends SlidingActivity {
 
         setContent(R.layout.activity_detail);
         //initialize views that will be used later
-        detailProgressBar = (ProgressBar) findViewById(R.id.detailProgressBar);
+
         diagnosisValue = (TextView)findViewById(R.id.detailDiagnosisText);
         dateValue = (TextView)findViewById(R.id.detailDateText);
         dateExpectedValue = (TextView)findViewById(R.id.detailExpectedDate);
@@ -124,13 +127,36 @@ public class DataDetailActivity extends SlidingActivity {
         lastTreatmentCard = (CardView)findViewById(R.id.detailTreatmentCardView);
         lastTreatmentValue = (TextView)findViewById(R.id.detailTreatmentText);
         moreInfoValue = (TextView)findViewById(R.id.detailMoreInfo);
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        reference.child("Users").child(uid).child("Pictures").child(unformatdate).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    Integer i = Integer.parseInt(dataSnapshot.child("Feeling").getValue().toString());
+                    feelingValue.setSelectedSmile(i);
+                } catch(Exception e){
 
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        feelingValue.setOnRatingSelectedListener(new SmileRating.OnRatingSelectedListener() {
+            @Override
+            public void onRatingSelected(int level, boolean reselected) {
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                reference.child("Users").child(uid).child("Pictures").child(unformatdate).child("Feeling").setValue(level);
+            }
+        });
         ImageView icon1 = (ImageView)findViewById(R.id.detailDiagnosisImageView);
         ImageView icon2 = (ImageView)findViewById(R.id.detailDateImageView);
         ImageView icon3 = (ImageView)findViewById(R.id.detailExpectedDateImageView);
         ImageView icon4 = (ImageView)findViewById(R.id.detailFeelingImageView);
-        ImageView icon5 = (ImageView)findViewById(R.id.detailExpectedDateImageView);
-        ImageView icon6 = (ImageView)findViewById(R.id.detailMoreInfoImageView);
+        ImageView icon5 = (ImageView)findViewById(R.id.detailMoreInfoImageView);
 
         //save the color of our button so that if the user holds and un-holds, we can keep this color scheme
 
@@ -140,8 +166,6 @@ public class DataDetailActivity extends SlidingActivity {
         icon3.setColorFilter(primaryColorDark);
         icon4.setColorFilter(primaryColorDark);
         icon5.setColorFilter(primaryColorDark);
-        icon6.setColorFilter(primaryColorDark);
-
         diagnosisValue.setText(diagnosis);
         dateValue.setText(date);
         dateExpectedValue.setText("12/1/2018");
@@ -149,15 +173,14 @@ public class DataDetailActivity extends SlidingActivity {
         lastTreatmentValue.setText("10/20/2018");
         moreInfoValue.setText("According to Mayo Clinic, this disease is pretty common!");
 
-        diagnosisValue.setTextColor(primaryColorDark);
+        //diagnosisValue.setTextColor(primaryColorDark);
         dateValue.setTextColor(primaryColorDark);
         dateExpectedValue.setTextColor(primaryColorDark);
         lastTreatmentValue.setTextColor(primaryColorDark);
         moreInfoValue.setTextColor(primaryColorDark);
-        show(detailProgressBar);
 
 
-        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
 

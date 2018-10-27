@@ -9,17 +9,21 @@ public class DataPointProfile implements SearchSuggestion {
     String url;
     String diagnosis;
     String date;
+    String nonformatdate;
 
-    public DataPointProfile(String url, String diagnosis, String date) {
+    public DataPointProfile(String url, String diagnosis, String date, String nonformatdate) {
         this.url = url;
         this.diagnosis = diagnosis;
         this.date = date;
+        this.nonformatdate = nonformatdate;
+
     }
 
     public DataPointProfile(Parcel parcel) {
         this.url = parcel.readString();
         this.diagnosis = parcel.readString();
         this.date = parcel.readString();
+        this.nonformatdate = parcel.readString();
 
     }
     @Override
@@ -38,6 +42,7 @@ public class DataPointProfile implements SearchSuggestion {
         dest.writeString(url);
         dest.writeString(diagnosis);
         dest.writeString(date);
+        dest.writeString(nonformatdate);
 
 
     }

@@ -367,7 +367,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
 
                     if(diagnosis.equals(newQuery)) {
-                        suggestions.add(new DataPointProfile(url, diagnosis, dateString));
+                        suggestions.add(new DataPointProfile(url, diagnosis, dateString, dateText));
                     }
                 }
                 searchView.swapSuggestions(suggestions);

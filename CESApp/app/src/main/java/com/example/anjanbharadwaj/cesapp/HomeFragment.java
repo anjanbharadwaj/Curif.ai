@@ -138,7 +138,7 @@ public class HomeFragment extends Fragment {
                         String url = dataSnapshot.child(key).child("URL").getValue().toString();
                         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
                         String dateString = formatter.format(new Date(Long.valueOf(key)));
-                        DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString);
+                        DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString, key);
                         listData.add(point);
 
                     }
