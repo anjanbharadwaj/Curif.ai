@@ -61,6 +61,8 @@ public class ProgressFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private ArrayList<GraphCardInformation> graphListData = new ArrayList<>();
+
     public ProgressFragment() {
         // Required empty public constructor
     }
@@ -140,19 +142,6 @@ public class ProgressFragment extends Fragment {
                 LineData lineData = new LineData(dataSet);
                 chart.setData(lineData);
                 chart.invalidate(); // refresh
-
-                // get our folding cell
-                final FoldingCell fc = (FoldingCell) getView().findViewById(R.id.folding_cell);
-                // attach click listener to folding cell
-                fc.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        fc.toggle(false);
-                    }
-                });
-
-
-
             }
 
             @Override
@@ -168,7 +157,19 @@ public class ProgressFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        //mAdapter = new ProgressArrayAdapter(this.getContext(), );
+
+
+
+
+        mAdapter = new GraphCardAdapter(graphListData, new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                System.out.println("Clicked!");
+
+            }
+        });
+
+
         mRecyclerView.setAdapter(mAdapter);
 
 
@@ -282,10 +283,10 @@ public class ProgressFragment extends Fragment {
 }
 
 class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointViewHolder> {
-    private ArrayList<DataPointProfile> datapoints;
+    private ArrayList<GraphCardInformation> datapoints;
     private RecyclerViewClickListener mListener;
     //Default constructor
-    GraphCardAdapter(ArrayList<DataPointProfile> datapoints, RecyclerViewClickListener listener) {
+    GraphCardAdapter(ArrayList<GraphCardInformation> datapoints, RecyclerViewClickListener listener) {
         this.datapoints = datapoints;
         mListener = listener;
     }
@@ -303,13 +304,7 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointVi
     @Override
     public void onBindViewHolder(DataPointViewHolder pointViewHolder, int i) {
         //Set each field to its corresponding attribute
-        DataPointProfile point = datapoints.get(i);
-        pointViewHolder.diagnosis.setText(point.diagnosis);
-        pointViewHolder.date.setText(point.date);
-        //Load the proper image into the imageView using the Glide framework
-        Glide.with(HomeFragment.context)
-                .load(point.url)
-                .into(pointViewHolder.image);
+        GraphCardInformation point = datapoints.get(i);
     }
 
     @Override
@@ -317,7 +312,7 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointVi
         //Inflate the view using the proper xml layout
         View itemView = LayoutInflater.
                 from(viewGroup.getContext()).
-                inflate(R.layout.profile_photo_taken, viewGroup, false);
+                inflate(R.layout.blank_graph_slate, viewGroup, false);
 
         return new DataPointViewHolder(itemView, mListener);
     }
@@ -325,25 +320,14 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointVi
     static class DataPointViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public CardView cardView;
-        public TextView diagnosis;
-        public TextView date;
-        public ImageView image;
+        public LineChart graph;
 
         private RecyclerViewClickListener mListener;
 
         DataPointViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
-            cardView = v.findViewById(R.id.profileCardView);
-            diagnosis = v.findViewById(R.id.diagnosis);
-            date = v.findViewById(R.id.date);
-            image = v.findViewById(R.id.picture);
-            //instantiation of views
-//            cardView = (CardView)       v.findViewById(R.id.cardView);
-//            title =  (TextView)         v.findViewById(R.id.bookTitle);
-//            author = (TextView)         v.findViewById(R.id.bookAuthor);
-//            description = (TextView)    v.findViewById(R.id.bookDescription);
-//            ratingBar = (RatingBar)     v.findViewById(R.id.ratingBar);
-//            bookImage = (ImageView)     v.findViewById(R.id.bookImageView);
+            graph = v.findViewById(R.id.graph);
+
 
             this.mListener = mListener;
             v.setOnClickListener(this);
