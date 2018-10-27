@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -167,7 +168,7 @@ public class ProgressFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ProgressArrayAdapter();
+        //mAdapter = new ProgressArrayAdapter(this.getContext(), );
         mRecyclerView.setAdapter(mAdapter);
 
 
@@ -280,50 +281,77 @@ public class ProgressFragment extends Fragment {
     }
 }
 
-class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private String[] mDataset;
-
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView mTextView;
-        public MyViewHolder(TextView v) {
-            super(v);
-            mTextView = v;
-        }
+class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.DataPointViewHolder> {
+    private ArrayList<DataPointProfile> datapoints;
+    private RecyclerViewClickListener mListener;
+    //Default constructor
+    GraphCardAdapter(ArrayList<DataPointProfile> datapoints, RecyclerViewClickListener listener) {
+        this.datapoints = datapoints;
+        mListener = listener;
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset) {
-        mDataset = myDataset;
-    }
-
-    // Create new views (invoked by the layout manager)
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
-        // create a new view
-        TextView v = (TextView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.my_text_view, parent, false);
-        ...
-        MyViewHolder vh = new MyViewHolder(v);
-        return vh;
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
-    @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataset[position]);
-
-    }
-
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return datapoints.size();
+    }
+
+    @Override
+    public void onBindViewHolder(DataPointViewHolder pointViewHolder, int i) {
+        //Set each field to its corresponding attribute
+        DataPointProfile point = datapoints.get(i);
+        pointViewHolder.diagnosis.setText(point.diagnosis);
+        pointViewHolder.date.setText(point.date);
+        //Load the proper image into the imageView using the Glide framework
+        Glide.with(HomeFragment.context)
+                .load(point.url)
+                .into(pointViewHolder.image);
+    }
+
+    @Override
+    public DataPointViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        //Inflate the view using the proper xml layout
+        View itemView = LayoutInflater.
+                from(viewGroup.getContext()).
+                inflate(R.layout.profile_photo_taken, viewGroup, false);
+
+        return new DataPointViewHolder(itemView, mListener);
+    }
+
+    static class DataPointViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public CardView cardView;
+        public TextView diagnosis;
+        public TextView date;
+        public ImageView image;
+
+        private RecyclerViewClickListener mListener;
+
+        DataPointViewHolder(View v, RecyclerViewClickListener mListener) {
+            super(v);
+            cardView = v.findViewById(R.id.profileCardView);
+            diagnosis = v.findViewById(R.id.diagnosis);
+            date = v.findViewById(R.id.date);
+            image = v.findViewById(R.id.picture);
+            //instantiation of views
+//            cardView = (CardView)       v.findViewById(R.id.cardView);
+//            title =  (TextView)         v.findViewById(R.id.bookTitle);
+//            author = (TextView)         v.findViewById(R.id.bookAuthor);
+//            description = (TextView)    v.findViewById(R.id.bookDescription);
+//            ratingBar = (RatingBar)     v.findViewById(R.id.ratingBar);
+//            bookImage = (ImageView)     v.findViewById(R.id.bookImageView);
+
+            this.mListener = mListener;
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onClick(v, getAdapterPosition());
+        }
     }
 }
