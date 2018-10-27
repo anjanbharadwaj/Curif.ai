@@ -1,5 +1,7 @@
 package com.example.anjanbharadwaj.cesapp;
 
+import com.github.mikephil.charting.data.Entry;
+
 import java.util.ArrayList;
 
 /**
@@ -9,11 +11,11 @@ import java.util.ArrayList;
 public class GraphCardInformation {
 
     String which_diagnosis_is_being_tracked;
-    ArrayList<Double> percentages = new ArrayList<Double>();
+    ArrayList<Entry> percentages = new ArrayList<Entry>();
     String title;
 
     public GraphCardInformation(String which_diagnosis_is_being_tracked,
-                                ArrayList<Double> percentages, String title) {
+                                ArrayList<Entry> percentages, String title) {
         this.which_diagnosis_is_being_tracked = which_diagnosis_is_being_tracked;
         this.percentages = percentages;
         this.title = title;
@@ -27,11 +29,11 @@ public class GraphCardInformation {
         this.which_diagnosis_is_being_tracked = which_diagnosis_is_being_trakced;
     }
 
-    public ArrayList<Double> getPercentages() {
+    public ArrayList<Entry> getPercentages() {
         return percentages;
     }
 
-    public void setPercentages(ArrayList<Double> percentages) {
+    public void setPercentages(ArrayList<Entry> percentages) {
         this.percentages = percentages;
     }
 
