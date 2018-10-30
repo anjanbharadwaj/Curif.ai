@@ -175,7 +175,7 @@ public class ProfileFragment extends Fragment {
 
                 database.child("DataControlSettings").child("can_share_with_researchers").setValue(can_we_share_data_with_researchers);
 
-                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -191,7 +191,7 @@ public class ProfileFragment extends Fragment {
                     database.child("DataControlSettings").child("is_profile_searchable").setValue(false);
                 }
 
-                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
 
             }
         });
