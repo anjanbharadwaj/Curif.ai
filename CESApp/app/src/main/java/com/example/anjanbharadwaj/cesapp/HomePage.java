@@ -79,7 +79,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener{
+public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener,
+NetworkFragment.OnFragmentInteractionListener{
     static boolean noReload = false;
     TabLayout tabLayout;
     ViewPager viewPager;
@@ -659,6 +660,8 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                 case 1:
                     return new ProgressFragment();
                 case 2:
+                    return new NetworkFragment();
+                case 3:
                     return new ProfileFragment();
                 default:
                     return new PlaceholderFragment();
@@ -667,7 +670,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -678,6 +681,8 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                 case 1:
                     return "Progress";
                 case 2:
+                    return "Network";
+                case 3:
                     return "Profile";
                 default:
                     return "Placeholder";
