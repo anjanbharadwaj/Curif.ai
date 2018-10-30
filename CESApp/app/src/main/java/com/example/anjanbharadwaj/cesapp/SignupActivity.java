@@ -1,5 +1,7 @@
 package com.example.anjanbharadwaj.cesapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,12 +31,17 @@ public class SignupActivity extends AppCompatActivity {
     EditText password;
     Button signup;
     private FirebaseAuth mAuth;
+    RadioGroup group;
+    CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         mAuth = FirebaseAuth.getInstance();
+
+
+
 
         if (mAuth.getCurrentUser() != null) {
             //they've already signed into the app
@@ -42,6 +51,10 @@ public class SignupActivity extends AppCompatActivity {
         email = (EditText)findViewById(R.id.email);
         password = (EditText)findViewById(R.id.password);
         signup = (Button)findViewById(R.id.signupButton);
+        group = (RadioGroup) findViewById(R.id.radioGroup);
+        checkBox = (CheckBox) findViewById(R.id.public_checkbox);
+
+
         hasAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,6 +86,26 @@ public class SignupActivity extends AppCompatActivity {
                                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                     Log.v("NameTxt", nametxt);
                                     ref.child("Users").child(uid).child("Name").setValue(nametxt);
+
+
+                                    //check the user privacy settings and update these in our database
+                                    boolean can_share_data = false;
+                                    boolean can_profile_searched = false;
+
+                                    if(group.getCheckedRadioButtonId() == R.id.radio_yes) {
+                                        can_share_data = true;
+                                    }
+
+                                    if(checkBox.isChecked()) {
+                                        can_profile_searched = true;
+                                    }
+
+                                    DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
+                                    database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
+                                    database.child("DataControlSettings").child("can_share_with_researchers").setValue(can_share_data);
+                                    database.child("DataControlSettings").child("is_profile_searchable").setValue(can_profile_searched);
 
                                     Intent intent = new Intent(getApplicationContext(), HomePage.class);
                                     startActivity(intent);

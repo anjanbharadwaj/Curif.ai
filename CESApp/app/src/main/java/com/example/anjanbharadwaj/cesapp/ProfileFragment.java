@@ -45,6 +45,7 @@ public class ProfileFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private DatabaseReference mReference;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -98,9 +99,9 @@ public class ProfileFragment extends Fragment {
 
         final TextView profile_name = view.findViewById(R.id.nameTag);
 
-        final DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+        mReference = FirebaseDatabase.getInstance().getReference();
 
-        database.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
+        mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -117,7 +118,39 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        RadioGroup group = (RadioGroup) view.findViewById(R.id.radioGroup);
+        final RadioGroup group = (RadioGroup) view.findViewById(R.id.radioGroup);
+
+
+        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.public_checkbox);
+
+
+        //update the UI buttons to match the options stored in the database.
+        final DatabaseReference data_control_ref = mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
+                .child("DataControlSettings");
+
+        data_control_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean can_share_data = Boolean.valueOf(dataSnapshot.child("can_share_with_researchers").getValue().toString());
+                boolean is_profile_searchable = Boolean.valueOf(dataSnapshot.child("is_profile_searchable").getValue().toString());
+
+                checkBox.setChecked(is_profile_searchable);
+
+                if(can_share_data) {
+                    group.check(R.id.radio_yes);
+                } else {
+                    group.check(R.id.radio_no);
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
 
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -135,7 +168,9 @@ public class ProfileFragment extends Fragment {
                         can_we_share_data_with_researchers = true;
                     }
                 }
+
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
                 database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
 
                 database.child("DataControlSettings").child("can_share_with_researchers").setValue(can_we_share_data_with_researchers);
@@ -143,8 +178,6 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
             }
         });
-
-        CheckBox checkBox = (CheckBox) view.findViewById(R.id.public_checkbox);
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

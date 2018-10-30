@@ -84,6 +84,7 @@ public class ProgressFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 GraphCardInformation gci = listData.get(position);
+                Log.v("This passed", "initialization of listener ok");
                 Toast.makeText(context,"Clicked",Toast.LENGTH_LONG).show();
             }
         };
@@ -119,20 +120,6 @@ public class ProgressFragment extends Fragment {
                     percentages.get(1).add(class_two_percent);
                     percentages.get(2).add(class_three_percent);
                     percentages.get(3).add(class_four_percent);
-                    Log.v("Diag3",percentages.get(2).toString());
-
-//                    double percent_disease = 0;
-//
-//                    if(diagnosis == 1){
-//                        percent_disease = class_one_percent;
-//                    } else if(diagnosis == 2) {
-//                        percent_disease = class_two_percent;
-//                    } else if(diagnosis == 3) {
-//                        percent_disease = class_three_percent;
-//                    } else if(diagnosis == 4) {
-//                        percent_disease = class_four_percent;
-//                    }
-//                    percentages.add(percent_disease);
                 }
 
                 ArrayList<ArrayList<Entry>> entries = new ArrayList<>();
@@ -148,8 +135,6 @@ public class ProgressFragment extends Fragment {
                     listData.add(gci);
 
                 }
-                Log.v("Entries3",entries.get(2).toString());
-
                 Log.v("LISTData", listData.toString());
 
                 showCards();
@@ -241,7 +226,6 @@ class GraphCardArrayAdapter extends ArrayAdapter<GraphCardInformation> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //inflates a card and populates/adds the proper information
-
         GraphCardInformation dataPoint = dataList.get(position);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.blank_graph_slate, null);
@@ -281,6 +265,11 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
     @Override
     public void onBindViewHolder(GraphViewHolder pointViewHolder, int i) {
         //Set each field to its corresponding attribute
+
+        if(datapoints.size() == 0) {
+            return;
+        }
+
         GraphCardInformation point = datapoints.get(i);
 
         LineChart graph = pointViewHolder.graph;
