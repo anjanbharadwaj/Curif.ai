@@ -106,37 +106,37 @@ public class ProgressFragment extends Fragment {
                 percentages.add(new ArrayList<Double>());
                 percentages.add(new ArrayList<Double>());
                 percentages.add(new ArrayList<Double>());
+                if(dataSnapshot.hasChildren()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String key = snapshot.getKey().toString();
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String key = snapshot.getKey().toString();
-
-                    int diagnosis = Integer.parseInt(snapshot.child("Diagnosis").getValue().toString());
-                    Log.v("DiagnosisPred",""+diagnosis);
-                    double class_one_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 1").getValue().toString());
-                    double class_two_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 2").getValue().toString());
-                    double class_three_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 3").getValue().toString());
-                    double class_four_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 4").getValue().toString());
-                    percentages.get(0).add(class_one_percent);
-                    percentages.get(1).add(class_two_percent);
-                    percentages.get(2).add(class_three_percent);
-                    percentages.get(3).add(class_four_percent);
-                }
-
-                ArrayList<ArrayList<Entry>> entries = new ArrayList<>();
-                entries.add(new ArrayList<Entry>());
-                entries.add(new ArrayList<Entry>());
-                entries.add(new ArrayList<Entry>());
-                entries.add(new ArrayList<Entry>());
-                for(int j =0;j<entries.size(); j++) {
-                    for (int i = 0; i < percentages.get(j).size(); i++) {
-                        entries.get(j).add(new Entry(i, percentages.get(j).get(i).floatValue()));
+                        int diagnosis = Integer.parseInt(snapshot.child("Diagnosis").getValue().toString());
+                        Log.v("DiagnosisPred", "" + diagnosis);
+                        double class_one_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 1").getValue().toString());
+                        double class_two_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 2").getValue().toString());
+                        double class_three_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 3").getValue().toString());
+                        double class_four_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 4").getValue().toString());
+                        percentages.get(0).add(class_one_percent);
+                        percentages.get(1).add(class_two_percent);
+                        percentages.get(2).add(class_three_percent);
+                        percentages.get(3).add(class_four_percent);
                     }
-                    GraphCardInformation gci = new GraphCardInformation(""+j,entries.get(j),"Disease "+j+" progression");
-                    listData.add(gci);
 
+                    ArrayList<ArrayList<Entry>> entries = new ArrayList<>();
+                    entries.add(new ArrayList<Entry>());
+                    entries.add(new ArrayList<Entry>());
+                    entries.add(new ArrayList<Entry>());
+                    entries.add(new ArrayList<Entry>());
+                    for (int j = 0; j < entries.size(); j++) {
+                        for (int i = 0; i < percentages.get(j).size(); i++) {
+                            entries.get(j).add(new Entry(i, percentages.get(j).get(i).floatValue()));
+                        }
+                        GraphCardInformation gci = new GraphCardInformation("" + j, entries.get(j), "Disease " + j + " progression");
+                        listData.add(gci);
+
+                    }
+                    Log.v("LISTData", listData.toString());
                 }
-                Log.v("LISTData", listData.toString());
-
                 showCards();
 
             }
