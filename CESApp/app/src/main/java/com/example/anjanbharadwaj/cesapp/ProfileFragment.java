@@ -25,6 +25,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import co.chatsdk.core.error.ChatSDKException;
+import co.chatsdk.core.session.ChatSDK;
+import co.chatsdk.core.session.Configuration;
+import co.chatsdk.core.session.InterfaceManager;
+import co.chatsdk.firebase.FirebaseNetworkAdapter;
+import co.chatsdk.firebase.file_storage.FirebaseFileStorageModule;
+import co.chatsdk.ui.manager.BaseInterfaceAdapter;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -195,9 +203,6 @@ public class ProfileFragment extends Fragment {
 
             }
         });
-
-
-
     }
 
     @Override
