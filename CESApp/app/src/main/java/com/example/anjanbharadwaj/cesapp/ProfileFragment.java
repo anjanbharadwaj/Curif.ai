@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
@@ -242,8 +243,19 @@ public class ProfileFragment extends Fragment {
             this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
             int displayWidth = metrics.widthPixels;
 
+            double current_width = profile_image.getWidth();
+            double current_height = profile_image.getHeight();
+
+            Bitmap current_bitmap = ((BitmapDrawable)profile_image.getDrawable()).getBitmap();
+
+            double width_scaling_factor = current_bitmap.getWidth()/current_width;
+            double height_scaling_factor = current_bitmap.getHeight()/current_height;
+
+
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-                    imageBitmap, (int)(((double)(imageBitmap.getWidth())/displayWidth) * 150), (int)(((double)(imageBitmap.getHeight())/displayWidth) * 150), false);
+                    imageBitmap, (int)(width_scaling_factor * current_width), (int) (height_scaling_factor * current_height), false);
+
+
             profile_image.setImageBitmap(resizedBitmap);
         }
     }
