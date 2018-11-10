@@ -256,6 +256,7 @@ public class ProfileFragment extends Fragment {
                     imageBitmap, (int)(width_scaling_factor * current_width), (int) (height_scaling_factor * current_height), false);
 
 
+            
             profile_image.setImageBitmap(resizedBitmap);
         }
     }
