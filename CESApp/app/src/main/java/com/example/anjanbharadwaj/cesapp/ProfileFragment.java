@@ -3,6 +3,8 @@ package com.example.anjanbharadwaj.cesapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,14 +37,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
-
-import co.chatsdk.core.error.ChatSDKException;
-import co.chatsdk.core.session.ChatSDK;
-import co.chatsdk.core.session.Configuration;
-import co.chatsdk.core.session.InterfaceManager;
-import co.chatsdk.firebase.FirebaseNetworkAdapter;
-import co.chatsdk.firebase.file_storage.FirebaseFileStorageModule;
-import co.chatsdk.ui.manager.BaseInterfaceAdapter;
 
 
 /**
@@ -66,6 +61,8 @@ public class ProfileFragment extends Fragment {
     private DatabaseReference mReference;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private ImageView profile_image;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -120,6 +117,9 @@ public class ProfileFragment extends Fragment {
         final TextView profile_name = view.findViewById(R.id.nameTag);
 
         mReference = FirebaseDatabase.getInstance().getReference();
+
+        profile_image = (ImageView) view.findViewById(R.id.imageView);
+
 
         mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -222,19 +222,30 @@ public class ProfileFragment extends Fragment {
 
                 Log.v("Camera", "clicked");
 
-               
-                if ( Build.VERSION.SDK_INT >= 23 &&
-                        ContextCompat.checkSelfPermission( view.getContext(), android.Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
 
 
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                }
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            DisplayMetrics metrics = new DisplayMetrics();
+            this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int displayWidth = metrics.widthPixels;
+
+            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
+                    imageBitmap, (int)(((double)(imageBitmap.getWidth())/displayWidth) * 150), (int)(((double)(imageBitmap.getHeight())/displayWidth) * 150), false);
+            profile_image.setImageBitmap(resizedBitmap);
+        }
     }
 
     @Override
