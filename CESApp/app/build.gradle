@@ -60,6 +60,7 @@ dependencies {
     compile 'co.chatsdk.chatsdk:chat-sdk-ui:4.3.4'
     compile 'co.chatsdk.chatsdk:chat-sdk-firebase-adapter:4.3.4'
     compile 'co.chatsdk.chatsdk:chat-sdk-firebase-file-storage:4.3.4'
+    compile 'com.google.android.gms:play-services-location:11.4.2'
 
 
 //    implementation 'com.google.android.gms:play-services-auth:16.0.1'
