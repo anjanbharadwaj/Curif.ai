@@ -3,20 +3,14 @@ package com.example.anjanbharadwaj.cesapp;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,17 +22,22 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.location.LocationServices;
+import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.internal.Storage;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import org.w3c.dom.Text;
+import java.io.ByteArrayOutputStream;
 
 
 /**
@@ -115,12 +114,14 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        StorageReference profileReference = FirebaseStorage.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Profile");
+        load_current_profile_image_from_firebase(profileReference);
 
         final TextView profile_name = view.findViewById(R.id.nameTag);
 
         mReference = FirebaseDatabase.getInstance().getReference();
 
-        profile_image = (ImageView) view.findViewById(R.id.imageView);
+        profile_image = (ImageView) view.findViewById(R.id.profile_picture);
 
 
         mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -233,8 +234,43 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+<<<<<<< HEAD
     private Uri picUri;
     final int PIC_CROP = 2;
+=======
+
+    private void load_current_profile_image_from_firebase(StorageReference profileRef1) {
+
+        // Create a storage reference from our app
+        //StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+
+        // Create a reference to "mountains.jpg"
+
+        //String UID = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+
+        //StorageReference profileRef = storageRef.child("Users/" + UID + "/Profile/pic.jpg");
+
+
+        // Reference to an image file in Cloud Storage
+        //StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference profileRef = profileRef1.child("profilepic.jpg");
+        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.v("OnSucess", ""+uri);
+                ImageView imageView = getActivity().findViewById(R.id.profile_picture);
+
+                Glide.with(getActivity().getApplicationContext() /* context */)
+                        .asBitmap()
+                        .load(uri.toString())
+                        .into(imageView);
+
+            }
+        });
+
+    }
+
+>>>>>>> 7ee14a810123f4a6a809a7bcb933921eb3c356ee
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
@@ -261,14 +297,52 @@ public class ProfileFragment extends Fragment {
                     imageBitmap, (int)(width_scaling_factor * current_width), (int) (height_scaling_factor * current_height), false);
 
 
-            
+
             profile_image.setImageBitmap(resizedBitmap);
+
+            upload_bitmap_to_firebase(resizedBitmap);
         }
         else if(requestCode == PIC_CROP){
             Bundle extras = data.getExtras();
 //get the cropped bitmap
             Bitmap thePic = extras.getParcelable("data");
         }
+    }
+
+    private void upload_bitmap_to_firebase(Bitmap resizedBitmap) {
+
+        // Create a storage reference from our app
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+
+        // Create a reference to "mountains.jpg"
+
+        String UID = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+
+        StorageReference profileRef = storageRef.child("Users/" + UID + "/Profile/profilepic.jpg");
+
+        // Get the data from an ImageView as bytes
+        profile_image.setDrawingCacheEnabled(true);
+        profile_image.buildDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) profile_image.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = profileRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+            }
+        });
+
+
     }
 
     @Override
