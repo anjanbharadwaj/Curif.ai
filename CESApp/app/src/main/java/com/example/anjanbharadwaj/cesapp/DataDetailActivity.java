@@ -81,19 +81,7 @@ public class DataDetailActivity extends SlidingActivity {
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap image, Transition<? super Bitmap> transition) {
-                        Bitmap original = image;
-//                        image = darkenBitMap(image);
-                        image = blur(image);
                         setImage(image);
-//                        Palette p = Palette.from(original).generate();
-//
-//                        int def = 0xffffff;
-//                        final int primaryColor = p.getDominantColor(def);
-//                        primaryColorDark = manipulateColor(primaryColor, 0.5f);
-//
-//                        if (primaryColor != def) {
-//                            setPrimaryColors(primaryColor, primaryColorDark);
-//                        }
 
                     }
                 });

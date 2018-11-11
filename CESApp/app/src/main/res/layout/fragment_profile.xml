@@ -39,7 +39,7 @@
                     android:adjustViewBounds="true"
                     android:maxHeight="150dp"
                     android:maxWidth="150dp"
-                    android:scaleType="centerCrop"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/guest_user"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
