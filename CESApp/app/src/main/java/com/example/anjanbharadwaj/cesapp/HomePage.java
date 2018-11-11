@@ -622,7 +622,7 @@ NetworkFragment.OnFragmentInteractionListener{
 
         final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("Users").child(uid).child("Pictures").child(time);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 25, baos);
         byte[] data = baos.toByteArray();
         UploadTask uploadTask = imagesRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
