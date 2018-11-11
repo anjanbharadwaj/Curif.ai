@@ -1,5 +1,6 @@
 package com.example.anjanbharadwaj.cesapp;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -232,10 +233,14 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-
+    private Uri picUri;
+    final int PIC_CROP = 2;
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
+
+            picUri = data.getData();
+            performCrop();
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
 
@@ -258,6 +263,11 @@ public class ProfileFragment extends Fragment {
 
             
             profile_image.setImageBitmap(resizedBitmap);
+        }
+        else if(requestCode == PIC_CROP){
+            Bundle extras = data.getExtras();
+//get the cropped bitmap
+            Bitmap thePic = extras.getParcelable("data");
         }
     }
 
@@ -291,5 +301,30 @@ public class ProfileFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+    private void performCrop(){
+        try {
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            //indicate image type and Uri
+            cropIntent.setDataAndType(picUri, "image/*");
+            //set crop properties
+            cropIntent.putExtra("crop", "true");
+            //indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1);
+            cropIntent.putExtra("aspectY", 1);
+            //indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            //retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            //start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, PIC_CROP);
+        }
+        catch(ActivityNotFoundException anfe){
+            //display an error message
+            String errorMessage = "Whoops - your device doesn't support the crop action!";
+            Toast toast = Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }
