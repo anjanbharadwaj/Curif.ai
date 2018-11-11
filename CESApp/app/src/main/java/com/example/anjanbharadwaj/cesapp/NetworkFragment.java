@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,7 +27,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -41,6 +45,8 @@ import es.dmoral.toasty.Toasty;
  * create an instance of this fragment.
  */
 public class NetworkFragment extends Fragment {
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -56,9 +62,75 @@ public class NetworkFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private NetworkUserAdapter adapter;
+    ArrayList<NetworkUser> listData = new ArrayList<>();
+    RecyclerViewClickListener listener;
 
 
     private OnFragmentInteractionListener mListener;
+
+    DatabaseReference database;
+
+    public void loadData() {
+        if(HomePage.noReload){
+            Toast.makeText(getContext(), "Analyzing picture - hold on!", Toast.LENGTH_LONG).show();
+        }
+        else {
+            //Clear our arraylists that hold the old data
+            listData.clear();
+            recyclerView.setVisibility(View.INVISIBLE);
+
+            //Instantiate the two array adapters that connect the arraylists to listviews
+            adapter = new NetworkUserAdapter(getContext(), 0, listData);
+
+            database = FirebaseDatabase.getInstance().getReference();
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            database.child("Users").child(uid).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+                    listData.clear();
+                    name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
+
+                    //Notify the adapters that the arraylists have changed, and that they have to update info
+                    Iterator i = dataSnapshot.getChildren().iterator();
+                    while (i.hasNext()) {
+                        String key = ((DataSnapshot) (i.next())).getKey().toString();
+                        String diagnosis = dataSnapshot.child(key).child("Diagnosis").getValue().toString();
+                        String url = dataSnapshot.child(key).child("URL").getValue().toString();
+                        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+                        String dateString = formatter.format(new Date(Long.valueOf(key)));
+                        DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString, key);
+                        listData.add(point);
+
+                    }
+                    //dataPointProfileArrayAdapter.notifyDataSetChanged();
+
+                    //listView.setAdapter(dataPointProfileArrayAdapter);
+
+                    //setListViewHeight(listView);
+                    showCards();
+
+                    mWaveSwipeRefreshLayout.setRefreshing(false);
+
+                    listView.setVisibility(View.VISIBLE);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
+
+            });
+        }
+    }
+    private void showCards() {
+        NetworkUserAdapter networkUserAdapter = new NetworkUserAdapter(listData, getContext(), listener);
+        recyclerView.setAdapter(networkUserAdapter);
+    }
+
+
+
 
     public NetworkFragment() {
         // Required empty public constructor
@@ -211,26 +283,28 @@ class NetworkUser {
     }
 }
 
-class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.ViewHolder>{
+class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.NetworkUserViewHolder>{
 
     private List<NetworkUser> listItems;
     private Context context;
+    private RecyclerViewClickListener mListener;
 
-    public NetworkUserAdapter(List<NetworkUser> listItems, Context context) {
+    public NetworkUserAdapter(List<NetworkUser> listItems, Context context, RecyclerViewClickListener listener) {
         this.listItems = listItems;
         this.context = context;
+        mListener = listener;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public NetworkUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.network_profile, parent, false);
-        return new ViewHolder(v);
+        return new NetworkUserViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NetworkUserViewHolder holder, int position) {
         NetworkUser user = listItems.get(position);
         String name = user.getName();
 
@@ -243,16 +317,21 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.ViewHol
         return listItems.size();
     }
 
-
-    //this object represents the view item
-    class ViewHolder extends RecyclerView.ViewHolder {
-
+    static class NetworkUserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView name_textview;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
+        private RecyclerViewClickListener mListener;
 
+        NetworkUserViewHolder(View v, RecyclerViewClickListener mListener) {
+            super(v);
             name_textview = (TextView) itemView.findViewById(R.id.name);
+            this.mListener = mListener;
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onClick(v, getAdapterPosition());
         }
     }
 
