@@ -69,7 +69,7 @@ public class NetworkFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     DatabaseReference database;
-
+/*
     public void loadData() {
         if(HomePage.noReload){
             Toast.makeText(getContext(), "Analyzing picture - hold on!", Toast.LENGTH_LONG).show();
@@ -124,6 +124,7 @@ public class NetworkFragment extends Fragment {
             });
         }
     }
+   */
     private void showCards() {
         NetworkUserAdapter networkUserAdapter = new NetworkUserAdapter(listData, getContext(), listener);
         recyclerView.setAdapter(networkUserAdapter);
@@ -190,7 +191,7 @@ public class NetworkFragment extends Fragment {
         dummy_users.add(new NetworkUser("Sreehari Ram Mohan"));
         dummy_users.add(new NetworkUser("Johny English"));
 
-        adapter = new NetworkUserAdapter(dummy_users, this.getContext());
+        //adapter = new NetworkUserAdapter(dummy_users, this.getContext());
 
         recyclerView.setAdapter(adapter);
 
@@ -300,7 +301,7 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
     public NetworkUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.network_profile, parent, false);
-        return new NetworkUserViewHolder(v);
+        return new NetworkUserViewHolder(v, mListener);
     }
 
     @Override
