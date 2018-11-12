@@ -80,7 +80,7 @@ public class NetworkFragment extends Fragment {
             recyclerView.setVisibility(View.INVISIBLE);
 
             //Instantiate the two array adapters that connect the arraylists to listviews
-            adapter = new NetworkUserAdapter(getContext(), 0, listData);
+            adapter = new NetworkUserAdapter(getActivity().getApplicationContext(), 0, listData);
 
             database = FirebaseDatabase.getInstance().getReference();
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
