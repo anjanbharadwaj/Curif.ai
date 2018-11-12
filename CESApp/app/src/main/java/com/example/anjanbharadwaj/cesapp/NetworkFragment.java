@@ -80,7 +80,7 @@ public class NetworkFragment extends Fragment {
             recyclerView.setVisibility(View.INVISIBLE);
 
             //Instantiate the two array adapters that connect the arraylists to listviews
-            adapter = new NetworkUserAdapter(getActivity().getApplicationContext(), 0, listData);
+           // adapter = new NetworkUserAdapter(getActivity().getApplicationContext(), 0, listData);
 
             database = FirebaseDatabase.getInstance().getReference();
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -88,7 +88,7 @@ public class NetworkFragment extends Fragment {
                 @Override
                 public void onDataChange(final DataSnapshot dataSnapshot) {
                     listData.clear();
-                    name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
+                  //  name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
 
                     //Notify the adapters that the arraylists have changed, and that they have to update info
                     Iterator i = dataSnapshot.getChildren().iterator();
