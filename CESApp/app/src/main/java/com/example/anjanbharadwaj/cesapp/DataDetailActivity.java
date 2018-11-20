@@ -121,7 +121,22 @@ public class DataDetailActivity extends SlidingActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     Integer i = Integer.parseInt(dataSnapshot.child("Feeling").getValue().toString());
-                    feelingValue.setSelectedSmile(i);
+                    if(i==1){
+                        feelingValue.setSelectedSmile(BaseRating.TERRIBLE, true);
+
+                    } else if(i==2){
+                        feelingValue.setSelectedSmile(BaseRating.BAD, true);
+
+                    } else if(i==3){
+                        feelingValue.setSelectedSmile(BaseRating.OKAY, true);
+
+                    } else if(i==4){
+                        feelingValue.setSelectedSmile(BaseRating.GOOD, true);
+
+                    } else if(i==5){
+                        feelingValue.setSelectedSmile(BaseRating.GREAT, true);
+
+                    }
                 } catch(Exception e){
 
                 }
