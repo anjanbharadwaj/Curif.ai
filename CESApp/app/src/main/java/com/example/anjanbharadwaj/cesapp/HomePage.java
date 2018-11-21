@@ -72,8 +72,10 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -288,15 +290,14 @@ NetworkFragment.OnFragmentInteractionListener{
 
         Log.v("SELECTION", "In create and send report");
 
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("text/plain");
         emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{"[doctor's email]@gmail.com"});
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[Patient Name]'s Lesion Report");
         String body = "";
 
         Log.v("SELECTION", ""+HomeFragment.selectedInformation.size());
-
-
+        ArrayList<Uri> uris = new ArrayList<Uri>();
         for(int i = 0; i < HomeFragment.selectedInformation.size(); i++) {
             DiagnosisListItemInfo selectedItem = HomeFragment.selectedInformation.get(i);
 
@@ -307,27 +308,28 @@ NetworkFragment.OnFragmentInteractionListener{
             Log.v("SELECTION", diagnosis + " - " + date);
 
             body += diagnosis + " - " + date + "(photo " + i + " attached):" + "\n";
+            File file = saveToInternalStorage(diagnosis.trim() + "-" + date.replaceAll("/","_").trim(),photo);
 
-            String saved_photo_directory = saveToInternalStorage(photo);
+           // String saved_photo_directory = saveToInternalStorage(photo);
 
-            String[] s = new String[2];
+          //  String[] s = new String[2];
 
 // Type the path of the files in here
-            s[0] = saved_photo_directory;
+          //  s[0] = saved_photo_directory;
             //s[1] = inputPath + "/textfile.txt"; // /sdcard/ZipDemo/textfile.txt
 
 // first parameter is d files second parameter is zip file name
 
 // calling the zip function
-            String zipDir = saved_photo_directory;
-            zipDir = saved_photo_directory.substring(0,saved_photo_directory.lastIndexOf("/"))+"/"+System.currentTimeMillis();
-            zip(s, zipDir);
-            Toast.makeText(getApplicationContext(),"Dir: " + zipDir, Toast.LENGTH_LONG).show();
-            File file = new File(saved_photo_directory,"profile.jpg");
+           // String zipDir = saved_photo_directory;
+           // zipDir = saved_photo_directory.substring(0,saved_photo_directory.lastIndexOf("/"))+"/"+System.currentTimeMillis();
+           // zip(s, zipDir);
+           // Toast.makeText(getApplicationContext(),"Dir: " + zipDir, Toast.LENGTH_LONG).show();
+           // File file = new File(saved_photo_directory,"profile.jpg");
             Uri pngUri = Uri.fromFile(file);
-
-            emailIntent.putExtra(Intent.EXTRA_STREAM, pngUri);
+            uris.add(pngUri);
         }
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uris);
 
         emailIntent.putExtra(Intent.EXTRA_TEXT, body);
         emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -336,28 +338,19 @@ NetworkFragment.OnFragmentInteractionListener{
 
     }
 
-    private String saveToInternalStorage(Bitmap bitmapImage){
-        ContextWrapper cw = new ContextWrapper(getApplicationContext());
-        // path to /data/data/yourapp/app_data/imageDir
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        // Create imageDir
-        File mypath=new File(directory,"profile.jpg");
-
-        FileOutputStream fos = null;
+    private File saveToInternalStorage(String name, Bitmap bitmapImage){
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + name + "-- " + System.currentTimeMillis() + ".jpg");
+        OutputStream os = null;
         try {
-            fos = new FileOutputStream(mypath);
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            os = new BufferedOutputStream(new FileOutputStream(file));
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
+            os.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-        return directory.getAbsolutePath();
+        return file;
+
+
     }
 
     public void onFragmentInteraction(Uri uri) {
