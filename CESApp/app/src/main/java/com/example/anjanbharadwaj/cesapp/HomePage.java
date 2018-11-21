@@ -67,8 +67,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -78,6 +81,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener,
 NetworkFragment.OnFragmentInteractionListener{
@@ -305,6 +310,19 @@ NetworkFragment.OnFragmentInteractionListener{
 
             String saved_photo_directory = saveToInternalStorage(photo);
 
+            String[] s = new String[2];
+
+// Type the path of the files in here
+            s[0] = saved_photo_directory;
+            //s[1] = inputPath + "/textfile.txt"; // /sdcard/ZipDemo/textfile.txt
+
+// first parameter is d files second parameter is zip file name
+
+// calling the zip function
+            String zipDir = saved_photo_directory;
+            zipDir = saved_photo_directory.substring(0,saved_photo_directory.lastIndexOf("/"))+"/"+System.currentTimeMillis();
+            zip(s, zipDir);
+            Toast.makeText(getApplicationContext(),"Dir: " + zipDir, Toast.LENGTH_LONG).show();
             File file = new File(saved_photo_directory,"profile.jpg");
             Uri pngUri = Uri.fromFile(file);
 
@@ -345,7 +363,36 @@ NetworkFragment.OnFragmentInteractionListener{
     public void onFragmentInteraction(Uri uri) {
 
     }
+    public void zip(String[] _files, String zipFileName) {
+        int BUFFER = 2048;
 
+        try {
+            BufferedInputStream origin = null;
+            FileOutputStream dest = new FileOutputStream(zipFileName);
+            ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(
+                    dest));
+            byte data[] = new byte[BUFFER];
+
+            for (int i = 0; i < _files.length; i++) {
+                Log.v("Compress", "Adding: " + _files[i]);
+                FileInputStream fi = new FileInputStream(_files[i]);
+                origin = new BufferedInputStream(fi, BUFFER);
+
+                ZipEntry entry = new ZipEntry(_files[i].substring(_files[i].lastIndexOf("/") + 1));
+                out.putNextEntry(entry);
+                int count;
+
+                while ((count = origin.read(data, 0, BUFFER)) != -1) {
+                    out.write(data, 0, count);
+                }
+                origin.close();
+            }
+
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void updateSearches(String query) {
 
         final String newQuery = query;
