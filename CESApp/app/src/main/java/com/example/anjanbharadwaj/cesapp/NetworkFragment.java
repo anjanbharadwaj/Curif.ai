@@ -109,6 +109,9 @@ public class NetworkFragment extends Fragment {
                         if(uid.equals(uid1)){
                             continue;
                         }
+                        if(dataSnapshot.child(uid1).child("DataControlSettings").child("is_profile_searchable").getValue().toString().equals("false")){
+                            continue;
+                        }
                         ArrayList<String> conditions = new ArrayList<>();
                         Iterator conditionsI = dataSnapshot.child(uid1).child("Conditions").getChildren().iterator();
                         while(conditionsI.hasNext()){
