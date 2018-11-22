@@ -61,7 +61,6 @@ public class NetworkFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -81,10 +80,7 @@ public class NetworkFragment extends Fragment {
     DatabaseReference database;
 
     public void loadData() {
-        if(HomePage.noReload){
-            Toast.makeText(getContext(), "Analyzing picture - hold on!", Toast.LENGTH_LONG).show();
-        }
-        else {
+
             //Clear our arraylists that hold the old data
             listData.clear();
             recyclerView.setVisibility(View.INVISIBLE);
@@ -140,7 +136,7 @@ public class NetworkFragment extends Fragment {
                                     similarities = "You both have " + common.get(0);
                                 }
                                 if(common.size()!=0) {
-                                    NetworkUser nu = new NetworkUser(name, uri, similarities);
+                                    NetworkUser nu = new NetworkUser(name, uri, similarities, uid1);
                                     listData.add(nu);
                                     Log.v("NetUser", nu.getName() + "," + nu.getDescription() + "," + nu.getUri());
                                 }
@@ -168,7 +164,7 @@ public class NetworkFragment extends Fragment {
 
 
             });
-        }
+
     }
 
     private String convertToDesc(ArrayList<String> common) {
@@ -224,6 +220,29 @@ public class NetworkFragment extends Fragment {
         return fragment;
     }
 
+
+    public void emailIntent(NetworkUser user){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(user.uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String email = dataSnapshot.child("Email").getValue().toString();
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("text/plain");
+
+                emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{email});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Support Network Email - " );
+                String body = "Hi " + user.getName() + ", \n\n";
+                startActivity(emailIntent);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -237,13 +256,30 @@ public class NetworkFragment extends Fragment {
             public void onClick(View view, int position) {
                 NetworkUserAdapter.NetworkUserViewHolder holder = (NetworkUserAdapter.NetworkUserViewHolder)recyclerView.findViewHolderForAdapterPosition(position);
                 NetworkUser user = listData.get(position);
-                holder.easyFlipView.flipTheView(true);
+                Log.v("Perform","click-1");
 
+                //holder.easyFlipView.flipTheView(true);
+                Log.v("Perform","click0");
+
+                holder.email.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.v("Perform","onclick");
+
+                        Toast.makeText(getContext(), "PHONE INTENT HERE", Toast.LENGTH_LONG).show();
+                       emailIntent(user);
+                    }
+                });
+                holder.email.performClick();
+                Log.v("Perform","click");
             }
         };
 
     }
 
+    public static void phoneIntent(){
+
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -352,7 +388,7 @@ class NetworkUser {
     private String name;
     private Uri uri;
     private String description;
-
+    public String uid;
     public Uri getUri() {
         return uri;
     }
@@ -369,10 +405,11 @@ class NetworkUser {
         this.description = description;
     }
 
-    public NetworkUser(String name, Uri uri, String description) {
+    public NetworkUser(String name, Uri uri, String description, String uid) {
         this.name = name;
         this.uri = uri;
         this.description = description;
+        this.uid = uid;
     }
 
     public String getName() {
@@ -431,12 +468,18 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
         public EasyFlipView easyFlipView;
         private RecyclerViewClickListener mListener;
 
+        //-----------------------------------------------------
+        public ImageView email;
+        public ImageView phone;
         NetworkUserViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
-            name_textview = (TextView) itemView.findViewById(R.id.name_front);
-            description = (TextView) itemView.findViewById(R.id.description_front);
-            profilepic = (ImageView)itemView.findViewById(R.id.profile_image_front);
-            easyFlipView = (EasyFlipView)itemView.findViewById(R.id.flipview);
+            name_textview = (TextView) v.findViewById(R.id.name_front);
+            description = (TextView) v.findViewById(R.id.description_front);
+            profilepic = (ImageView)v.findViewById(R.id.profile_image_front);
+            easyFlipView = (EasyFlipView)v.findViewById(R.id.flipview);
+            email = (ImageView)v.findViewById(R.id.emailButton);
+            phone = (ImageView)v.findViewById(R.id.phoneButton);
+
             this.mListener = mListener;
             v.setOnClickListener(this);
         }
@@ -445,6 +488,8 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
         public void onClick(View v) {
             mListener.onClick(v, getAdapterPosition());
         }
+
     }
 
 }
+
