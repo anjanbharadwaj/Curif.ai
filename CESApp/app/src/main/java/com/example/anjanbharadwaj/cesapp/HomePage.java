@@ -109,7 +109,6 @@ NetworkFragment.OnFragmentInteractionListener{
     RecyclerViewClickListener listener;
 
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
@@ -183,7 +182,7 @@ NetworkFragment.OnFragmentInteractionListener{
                     createAndSendReport();
                 }
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                  //      .setAction("Action", null).show();
+                //      .setAction("Action", null).show();
             }
         });
         //set the behavior when the menu is clicked.
@@ -284,6 +283,8 @@ NetworkFragment.OnFragmentInteractionListener{
 
 
     }
+
+
 
     private void createAndSendReport() {
         ActivityCompat.requestPermissions(this,

@@ -28,6 +28,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -229,16 +231,6 @@ class GraphCardArrayAdapter extends ArrayAdapter<GraphCardInformation> {
         GraphCardInformation dataPoint = dataList.get(position);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.blank_graph_slate, null);
-        //initializes the views on the card.
-        LineChart graph = (LineChart)view.findViewById(R.id.graph);
-
-        LineDataSet dataSet = new LineDataSet(dataPoint.getPercentages(), dataPoint.getTitle().toString()); // add entries to dataset
-        dataSet.setColor(Color.WHITE);
-        dataSet.setValueTextColor(Color.WHITE); // styling, ...
-        LineData lineData = new LineData(dataSet);
-        graph.setData(lineData);
-        graph.invalidate(); // refresh
-
         return view;
     }
 }
@@ -280,7 +272,25 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         dataSet.setValueTextColor(Color.WHITE); // styling, ...
         LineData lineData = new LineData(dataSet);
         pointViewHolder.graph.setData(lineData);
-       // pointViewHolder.graph.invalidate(); // refresh
+
+        dataSet.setColor(Color.WHITE);
+
+        XAxis xAxis = graph.getXAxis();
+        xAxis.setTextSize(10f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.BLACK);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawGridLines(false);
+
+        graph.getAxisRight().setEnabled(false);
+        YAxis yAxis = graph.getAxisLeft();
+        yAxis.setTextSize(10f); // set the text size
+        yAxis.setTextColor(Color.BLACK);
+        yAxis.setGranularity(0.01f); // interval 1
+
+        graph.setData(lineData);
+        graph.invalidate(); // refresh
+
 
         pointViewHolder.title.setText(point.title);
         Log.v("InBindHolder",point.percentages.toString());
