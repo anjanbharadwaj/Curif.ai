@@ -105,15 +105,22 @@ public class ProgressFragment extends Fragment {
         ref.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<ArrayList<Double>> percentages = new ArrayList<>();
-                percentages.add(new ArrayList<Double>());
-                percentages.add(new ArrayList<Double>());
-                percentages.add(new ArrayList<Double>());
-                percentages.add(new ArrayList<Double>());
 
-                if(dataSnapshot.hasChildren()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String key = snapshot.getKey().toString();
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+
+
+                    String body_part = d.getKey().toString();
+
+
+                    for (DataSnapshot snapshot : d.getChildren()) {
+
+                        ArrayList<ArrayList<Double>> percentages = new ArrayList<>();
+                        percentages.add(new ArrayList<Double>());
+                        percentages.add(new ArrayList<Double>());
+                        percentages.add(new ArrayList<Double>());
+                        percentages.add(new ArrayList<Double>());
+
+
 
                         int diagnosis = Integer.parseInt(snapshot.child("Diagnosis").getValue().toString());
                         Log.v("DiagnosisPred", "" + diagnosis);
@@ -125,23 +132,15 @@ public class ProgressFragment extends Fragment {
                         percentages.get(1).add(class_two_percent);
                         percentages.get(2).add(class_three_percent);
                         percentages.get(3).add(class_four_percent);
-                    }
-
-                    ArrayList<ArrayList<Entry>> entries = new ArrayList<>();
-                    entries.add(new ArrayList<Entry>());
-                    entries.add(new ArrayList<Entry>());
-                    entries.add(new ArrayList<Entry>());
-                    entries.add(new ArrayList<Entry>());
-                    for (int j = 0; j < entries.size(); j++) {
-                        for (int i = 0; i < percentages.get(j).size(); i++) {
-                            entries.get(j).add(new Entry(i, percentages.get(j).get(i).floatValue()));
-                        }
-                        GraphCardInformation gci = new GraphCardInformation("" + j, entries.get(j), null, "Disease " + j + " progression");
-                        listData.add(gci);
 
                     }
-                    Log.v("LISTData", listData.toString());
+
+
+
                 }
+
+                Log.v("LISTData", listData.toString());
+
                 showCards();
 
             }

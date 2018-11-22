@@ -131,23 +131,39 @@ public class HomeFragment extends Fragment {
                     listData.clear();
                     name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
 
-                    //Notify the adapters that the arraylists have changed, and that they have to update info
-                    Iterator i = dataSnapshot.getChildren().iterator();
-                    while (i.hasNext()) {
-                        String key = ((DataSnapshot) (i.next())).getKey().toString();
-                        String diagnosis = dataSnapshot.child(key).child("Diagnosis").getValue().toString();
-                        String url = dataSnapshot.child(key).child("URL").getValue().toString();
-                        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-                        String dateString = formatter.format(new Date(Long.valueOf(key)));
-                        DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString, key);
-                        listData.add(point);
 
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        String body_part = d.getKey().toString();
+
+                        Log.v("body", body_part + " - " + d.hasChildren());
+
+
+
+                        for (DataSnapshot snapshot : d.getChildren()) {
+                            Log.v("body", "inside");
+
+                            String key = snapshot.getKey().toString();
+
+                            Log.v("body", key);
+
+                            String diagnosis = snapshot.child("Diagnosis").getValue().toString();
+                            String url = snapshot.child("URL").getValue().toString();
+                            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+                            String dateString = formatter.format(new Date(Long.valueOf(key)));
+                            DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString, key, body_part);
+                            listData.add(point);
+                        }
                     }
+
+
+
+
                     //dataPointProfileArrayAdapter.notifyDataSetChanged();
 
                     //listView.setAdapter(dataPointProfileArrayAdapter);
 
                     //setListViewHeight(listView);
+
                     showCards();
 
                     mWaveSwipeRefreshLayout.setRefreshing(false);

@@ -10,12 +10,16 @@ public class DataPointProfile implements SearchSuggestion {
     String diagnosis;
     String date;
     String nonformatdate;
+    String location;
 
-    public DataPointProfile(String url, String diagnosis, String date, String nonformatdate) {
+
+
+    public DataPointProfile(String url, String diagnosis, String date, String nonformatdate, String location) {
         this.url = url;
         this.diagnosis = diagnosis;
         this.date = date;
         this.nonformatdate = nonformatdate;
+        this.location = location;
 
     }
 
@@ -24,6 +28,7 @@ public class DataPointProfile implements SearchSuggestion {
         this.diagnosis = parcel.readString();
         this.date = parcel.readString();
         this.nonformatdate = parcel.readString();
+        this.location = parcel.readString();
 
     }
     @Override
@@ -67,6 +72,14 @@ public class DataPointProfile implements SearchSuggestion {
         DataPointProfile o = (DataPointProfile) obj;
 
         return date.equals(o.date);
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override
