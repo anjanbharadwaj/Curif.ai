@@ -28,11 +28,13 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -108,6 +110,7 @@ public class ProgressFragment extends Fragment {
                 percentages.add(new ArrayList<Double>());
                 percentages.add(new ArrayList<Double>());
                 percentages.add(new ArrayList<Double>());
+
                 if(dataSnapshot.hasChildren()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         String key = snapshot.getKey().toString();
@@ -133,7 +136,7 @@ public class ProgressFragment extends Fragment {
                         for (int i = 0; i < percentages.get(j).size(); i++) {
                             entries.get(j).add(new Entry(i, percentages.get(j).get(i).floatValue()));
                         }
-                        GraphCardInformation gci = new GraphCardInformation("" + j, entries.get(j), "Disease " + j + " progression");
+                        GraphCardInformation gci = new GraphCardInformation("" + j, entries.get(j), null, "Disease " + j + " progression");
                         listData.add(gci);
 
                     }
@@ -169,13 +172,7 @@ public class ProgressFragment extends Fragment {
 
         listView.setVisibility(View.VISIBLE);
 
-
-        //OLD
-
         loadData();
-
-
-        // Holds share button pressed
     }
 
     public static void setListViewHeight(ListView listView) {
@@ -273,7 +270,8 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         LineData lineData = new LineData(dataSet);
         pointViewHolder.graph.setData(lineData);
 
-        dataSet.setColor(Color.WHITE);
+        dataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+
 
         XAxis xAxis = graph.getXAxis();
         xAxis.setTextSize(10f);
@@ -282,11 +280,20 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
 
+
         graph.getAxisRight().setEnabled(false);
         YAxis yAxis = graph.getAxisLeft();
         yAxis.setTextSize(10f); // set the text size
         yAxis.setTextColor(Color.BLACK);
         yAxis.setGranularity(0.01f); // interval 1
+        yAxis.setDrawGridLines(false);
+
+        Legend legend = graph.getLegend();
+        legend.setEnabled(false);
+
+        graph.getDescription().setEnabled(false);
+
+        graph.setTouchEnabled(false);
 
         graph.setData(lineData);
         graph.invalidate(); // refresh
@@ -311,6 +318,7 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         public CardView cardView;
         public TextView title;
         public LineChart graph;
+        public LineChart graph2;
 
         private RecyclerViewClickListener mListener;
 
@@ -319,6 +327,7 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
             cardView = v.findViewById(R.id.profileCardView);
             title = v.findViewById(R.id.title);
             graph = v.findViewById(R.id.graph);
+            graph2 = v.findViewById(R.id.graph2);
             //instantiation of views
 
             this.mListener = mListener;
