@@ -113,8 +113,10 @@ NetworkFragment.OnFragmentInteractionListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+        Context context = getApplicationContext();
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder(); StrictMode.setVmPolicy(builder.build());
+        StrictMode.VmPolicy.Builder builder1 = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder1.build());
         if (Build.VERSION.SDK_INT >= 23) {
             String[] PERMISSIONS = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
             if (!hasPermissions(mContext, PERMISSIONS)) {

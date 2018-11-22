@@ -1,6 +1,10 @@
 package com.example.anjanbharadwaj.cesapp;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Network;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +42,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import co.chatsdk.core.session.InterfaceManager;
 import es.dmoral.toasty.Toasty;
 
 
@@ -226,6 +231,17 @@ public class NetworkFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        listener = new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+
+                InterfaceManager.shared().a.startLoginActivity(getContext(), true);
+
+
+            }
+        };
+
     }
 
     @Override
