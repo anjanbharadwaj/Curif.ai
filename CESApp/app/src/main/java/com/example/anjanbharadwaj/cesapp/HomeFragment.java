@@ -34,6 +34,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -403,11 +404,11 @@ class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapt
         public TextView diagnosis;
         public TextView date;
         public ImageView image;
-
         private RecyclerViewClickListener mListener;
 
         DataPointViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
+
             cardView = v.findViewById(R.id.profileCardView);
             diagnosis = v.findViewById(R.id.diagnosis);
             date = v.findViewById(R.id.date);

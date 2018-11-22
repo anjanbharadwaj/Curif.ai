@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         getstarted = (Button) findViewById(R.id.getstarted);
         getstarted.setVisibility(View.INVISIBLE);
         logout.setVisibility(View.INVISIBLE);
-        emailField = (EditText) findViewById(R.id.description);
+        emailField = (EditText) findViewById(R.id.description_front);
         passwordField = (EditText) findViewById(R.id.password);
         mAuth = FirebaseAuth.getInstance();
 

@@ -32,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import org.w3c.dom.Text;
 
@@ -42,7 +43,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import co.chatsdk.core.session.InterfaceManager;
 import es.dmoral.toasty.Toasty;
 
 
@@ -235,9 +235,9 @@ public class NetworkFragment extends Fragment {
         listener = new RecyclerViewClickListener() {
             @Override
             public void onClick(View view, int position) {
-
-                InterfaceManager.shared().a.startLoginActivity(getContext(), true);
-
+                NetworkUserAdapter.NetworkUserViewHolder holder = (NetworkUserAdapter.NetworkUserViewHolder)recyclerView.findViewHolderForAdapterPosition(position);
+                NetworkUser user = listData.get(position);
+                holder.easyFlipView.flipTheView(true);
 
             }
         };
@@ -428,13 +428,15 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
         public TextView name_textview;
         public TextView description;
         public ImageView profilepic;
+        public EasyFlipView easyFlipView;
         private RecyclerViewClickListener mListener;
 
         NetworkUserViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
-            name_textview = (TextView) itemView.findViewById(R.id.name);
-            description = (TextView) itemView.findViewById(R.id.description);
-            profilepic = (ImageView)itemView.findViewById(R.id.profile_image);
+            name_textview = (TextView) itemView.findViewById(R.id.name_front);
+            description = (TextView) itemView.findViewById(R.id.description_front);
+            profilepic = (ImageView)itemView.findViewById(R.id.profile_image_front);
+            easyFlipView = (EasyFlipView)itemView.findViewById(R.id.flipview);
             this.mListener = mListener;
             v.setOnClickListener(this);
         }

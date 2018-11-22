@@ -30,7 +30,7 @@ public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     RadioGroup group;
     CheckBox checkBox;
-
+    EditText phone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +44,13 @@ public class SignupActivity extends AppCompatActivity {
             //they've already signed into the app
         }
         hasAccount = (TextView)findViewById(R.id.hasAccountLabel);
-        name = (EditText)findViewById(R.id.name);
-        email = (EditText)findViewById(R.id.description);
+        name = (EditText)findViewById(R.id.name_front);
+        email = (EditText)findViewById(R.id.description_front);
         password = (EditText)findViewById(R.id.password);
         signup = (Button)findViewById(R.id.signupButton);
         group = (RadioGroup) findViewById(R.id.radioGroup);
         checkBox = (CheckBox) findViewById(R.id.public_checkbox);
-
+        phone = (EditText)findViewById(R.id.phone);
 
         hasAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,10 +65,11 @@ public class SignupActivity extends AppCompatActivity {
                 String emailtxt = email.getText().toString().trim();
                 String passwordtxt = password.getText().toString().trim();
                 final String nametxt = name.getText().toString().trim();
+                final String phonetxt = phone.getText().toString();
                 Log.v("Email",emailtxt);
                 Log.v("Pswd",passwordtxt);
                 Log.v("name", nametxt);
-                if (emailtxt.isEmpty() || passwordtxt.isEmpty() || nametxt.isEmpty()) {
+                if (emailtxt.isEmpty() || passwordtxt.isEmpty() || nametxt.isEmpty() || phonetxt.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -86,12 +87,7 @@ public class SignupActivity extends AppCompatActivity {
 
 
                                     //check the user privacy settings and update these in our database
-                                    boolean can_share_data = false;
                                     boolean can_profile_searched = false;
-
-                                    if(group.getCheckedRadioButtonId() == R.id.radio_yes) {
-                                        can_share_data = true;
-                                    }
 
                                     if(checkBox.isChecked()) {
                                         can_profile_searched = true;
@@ -99,9 +95,7 @@ public class SignupActivity extends AppCompatActivity {
 
                                     DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
 
-                                    database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-
-                                    database.child("DataControlSettings").child("can_share_with_researchers").setValue(can_share_data);
+                                    database.child("Phone").setValue(phonetxt);
                                     database.child("DataControlSettings").child("is_profile_searchable").setValue(can_profile_searched);
 
                                     Intent intent = new Intent(getApplicationContext(), HomePage.class);
