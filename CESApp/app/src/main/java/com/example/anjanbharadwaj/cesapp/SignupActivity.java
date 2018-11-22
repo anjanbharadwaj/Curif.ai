@@ -1,7 +1,5 @@
 package com.example.anjanbharadwaj.cesapp;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +13,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -48,7 +45,7 @@ public class SignupActivity extends AppCompatActivity {
         }
         hasAccount = (TextView)findViewById(R.id.hasAccountLabel);
         name = (EditText)findViewById(R.id.name);
-        email = (EditText)findViewById(R.id.email);
+        email = (EditText)findViewById(R.id.description);
         password = (EditText)findViewById(R.id.password);
         signup = (Button)findViewById(R.id.signupButton);
         group = (RadioGroup) findViewById(R.id.radioGroup);

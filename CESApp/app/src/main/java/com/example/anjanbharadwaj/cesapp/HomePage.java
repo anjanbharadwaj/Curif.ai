@@ -288,6 +288,7 @@ NetworkFragment.OnFragmentInteractionListener{
                 new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 500);
 
+
         Log.v("SELECTION", "In create and send report");
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);

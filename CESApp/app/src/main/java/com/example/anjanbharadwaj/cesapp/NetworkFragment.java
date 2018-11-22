@@ -18,15 +18,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,7 +74,7 @@ public class NetworkFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     DatabaseReference database;
-/*
+
     public void loadData() {
         if(HomePage.noReload){
             Toast.makeText(getContext(), "Analyzing picture - hold on!", Toast.LENGTH_LONG).show();
@@ -84,22 +89,57 @@ public class NetworkFragment extends Fragment {
 
             database = FirebaseDatabase.getInstance().getReference();
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            database.child("Users").child(uid).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+
+            database.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(final DataSnapshot dataSnapshot) {
                     listData.clear();
-                  //  name = "Profile";//dataSnapshot.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Name").getValue().toString();
 
-                    //Notify the adapters that the arraylists have changed, and that they have to update info
+
+                    Iterator diseasesI = dataSnapshot.child(uid).child("Conditions").getChildren().iterator();
+                    ArrayList<String> diseases = new ArrayList<>();
+                    while(diseasesI.hasNext()){
+                        String disease = ((DataSnapshot)(diseasesI.next())).getValue().toString();
+                        diseases.add(disease);
+                    }
+
                     Iterator i = dataSnapshot.getChildren().iterator();
                     while (i.hasNext()) {
-                        String key = ((DataSnapshot) (i.next())).getKey().toString();
-                        String diagnosis = dataSnapshot.child(key).child("Diagnosis").getValue().toString();
-                        String url = dataSnapshot.child(key).child("URL").getValue().toString();
-                        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-                        String dateString = formatter.format(new Date(Long.valueOf(key)));
-                        DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString, key);
-                        listData.add(point);
+                        String uid1 = ((DataSnapshot) (i.next())).getKey().toString();
+                        if(uid.equals(uid1)){
+                            continue;
+                        }
+                        ArrayList<String> conditions = new ArrayList<>();
+                        Iterator conditionsI = dataSnapshot.child(uid1).child("Conditions").getChildren().iterator();
+                        while(conditionsI.hasNext()){
+                            conditions.add( ((DataSnapshot)(conditionsI.next())).getValue().toString());
+                        }
+                        ArrayList<String> common = common(conditions,diseases);
+
+                        String name = dataSnapshot.child(uid1).child("Name").getValue().toString();
+
+                        StorageReference ref = FirebaseStorage.getInstance().getReference().child("Users").child(uid1).child("Profile").child("profilepic.jpg");
+                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String similarities = "";
+                                if(common.size()>2){
+                                    similarities = "You both have " + convertToDesc(common);
+                                } else if(common.size()==2){
+                                    similarities = "You both have " + common.get(0) + " and " + common.get(1);
+                                }
+                                else if(common.size()==1){
+                                    similarities = "You both have " + common.get(0);
+                                }
+                                if(common.size()!=0) {
+                                    NetworkUser nu = new NetworkUser(name, uri, similarities);
+                                    listData.add(nu);
+                                    Log.v("NetUser", nu.getName() + "," + nu.getDescription() + "," + nu.getUri());
+                                }
+                                showCards();
+
+                            }
+                        });
 
                     }
                     //dataPointProfileArrayAdapter.notifyDataSetChanged();
@@ -107,11 +147,9 @@ public class NetworkFragment extends Fragment {
                     //listView.setAdapter(dataPointProfileArrayAdapter);
 
                     //setListViewHeight(listView);
-                    showCards();
+                    //listView.setVisibility(View.VISIBLE);
+                    Log.v("Showing cards", "now");
 
-                    mWaveSwipeRefreshLayout.setRefreshing(false);
-
-                    listView.setVisibility(View.VISIBLE);
 
                 }
 
@@ -124,7 +162,30 @@ public class NetworkFragment extends Fragment {
             });
         }
     }
-   */
+
+    private String convertToDesc(ArrayList<String> common) {
+        String text = "";
+        for(int i = 0; i<common.size(); i++){
+            if(i==common.size()-1){
+                text += "and " + common.get(i);
+            } else{
+                text += common.get(i) + ", ";
+            }
+        }
+        return text;
+    }
+
+    private ArrayList<String> common(ArrayList<String> a, ArrayList<String> b){
+        ArrayList<String> c = new ArrayList<>();
+        Iterator i = a.iterator();
+        while(i.hasNext()){
+            String value = i.next().toString();
+            if(b.contains(value)){
+                c.add(value);
+            }
+        }
+        return c;
+    }
     private void showCards() {
         NetworkUserAdapter networkUserAdapter = new NetworkUserAdapter(listData, getContext(), listener);
         recyclerView.setAdapter(networkUserAdapter);
@@ -185,13 +246,13 @@ public class NetworkFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         //dummy data
-        List<NetworkUser> dummy_users = new ArrayList<>();
-        dummy_users.add(new NetworkUser("Billy Joe"));
-        dummy_users.add(new NetworkUser("John Morgan"));
-        dummy_users.add(new NetworkUser("Sreehari Ram Mohan"));
-        dummy_users.add(new NetworkUser("Johny English"));
-
-        //adapter = new NetworkUserAdapter(dummy_users, this.getContext());
+//        List<NetworkUser> dummy_users = new ArrayList<>();
+//        dummy_users.add(new NetworkUser("Billy Joe"));
+//        dummy_users.add(new NetworkUser("John Morgan"));
+//        dummy_users.add(new NetworkUser("Sreehari Ram Mohan"));
+//        dummy_users.add(new NetworkUser("Johny English"));
+        loadData();
+        adapter = new NetworkUserAdapter(listData, this.getContext(), listener);
 
         recyclerView.setAdapter(adapter);
 
@@ -270,9 +331,29 @@ public class NetworkFragment extends Fragment {
 
 class NetworkUser {
     private String name;
+    private Uri uri;
+    private String description;
 
-    public NetworkUser(String name) {
+    public Uri getUri() {
+        return uri;
+    }
+
+    public void setUri(Uri uri) {
+        this.uri = uri;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public NetworkUser(String name, Uri uri, String description) {
         this.name = name;
+        this.uri = uri;
+        this.description = description;
     }
 
     public String getName() {
@@ -282,6 +363,8 @@ class NetworkUser {
     public void setName(String name) {
         this.name = name;
     }
+
+
 }
 
 class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.NetworkUserViewHolder>{
@@ -308,9 +391,13 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
     public void onBindViewHolder(@NonNull NetworkUserViewHolder holder, int position) {
         NetworkUser user = listItems.get(position);
         String name = user.getName();
-
+        String description = user.getDescription();
+        Uri uri = user.getUri();
         //setting the textview to our data
         holder.name_textview.setText(name);
+        holder.description.setText(description);
+        Glide.with(context).load(uri).into(holder.profilepic);
+
     }
 
     @Override
@@ -320,12 +407,15 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
 
     static class NetworkUserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView name_textview;
-
+        public TextView description;
+        public ImageView profilepic;
         private RecyclerViewClickListener mListener;
 
         NetworkUserViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
             name_textview = (TextView) itemView.findViewById(R.id.name);
+            description = (TextView) itemView.findViewById(R.id.description);
+            profilepic = (ImageView)itemView.findViewById(R.id.profile_image);
             this.mListener = mListener;
             v.setOnClickListener(this);
         }

@@ -2,7 +2,6 @@ package com.example.anjanbharadwaj.cesapp;
 
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -53,7 +52,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         getstarted = (Button) findViewById(R.id.getstarted);
         getstarted.setVisibility(View.INVISIBLE);
         logout.setVisibility(View.INVISIBLE);
-        emailField = (EditText) findViewById(R.id.email);
+        emailField = (EditText) findViewById(R.id.description);
         passwordField = (EditText) findViewById(R.id.password);
         mAuth = FirebaseAuth.getInstance();
 
