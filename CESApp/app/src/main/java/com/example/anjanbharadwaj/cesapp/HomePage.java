@@ -111,177 +111,182 @@ NetworkFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_page);
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_home_page);
+            Context context = getApplicationContext();
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder(); StrictMode.setVmPolicy(builder.build());
-        if (Build.VERSION.SDK_INT >= 23) {
-            String[] PERMISSIONS = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-            if (!hasPermissions(mContext, PERMISSIONS)) {
-                ActivityCompat.requestPermissions((Activity) mContext, PERMISSIONS, REQUEST );
+            StrictMode.VmPolicy.Builder builder1 = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder1.build());
+            if (Build.VERSION.SDK_INT >= 23) {
+                String[] PERMISSIONS = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                if (!hasPermissions(mContext, PERMISSIONS)) {
+                    ActivityCompat.requestPermissions((Activity) mContext, PERMISSIONS, REQUEST );
+                } else {
+                    //do here
+                }
             } else {
                 //do here
             }
-        } else {
-            //do here
-        }
-        searchView = (FloatingSearchView) findViewById(R.id.searchView);
+            searchView = (FloatingSearchView) findViewById(R.id.searchView);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        coordinatorLayout.bringToFront();
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+            coordinatorLayout.bringToFront();
 
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+            viewPager = (ViewPager) findViewById(R.id.viewPager);
 
-        //set adapter to your ViewPager
-        viewPager.setAdapter(new PageAdapter(getSupportFragmentManager()));
+            //set adapter to your ViewPager
+            viewPager.setAdapter(new PageAdapter(getSupportFragmentManager()));
 
-        //intialize the tab layout
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+            //intialize the tab layout
+            tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
-        //add 3 new tabs.
-        tabLayout.addTab(tabLayout.newTab());
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setupWithViewPager(viewPager);
+            //add 3 new tabs.
+            tabLayout.addTab(tabLayout.newTab());
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            tabLayout.setupWithViewPager(viewPager);
 
-        //default tab that it loads on is the middle tab
-        viewPager.setCurrentItem(0);
+            //default tab that it loads on is the middle tab
+            viewPager.setCurrentItem(0);
 
 
-        //create page listener to return the tab at a certain position.
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            //create page listener to return the tab at a certain position.
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Log.v("SELECTION", HomeFragment.mode);
-
-                if(HomeFragment.mode.equals("view")) {
-                    takePhoto(view);
-                } else {
-                    createAndSendReport();
-                }
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                  //      .setAction("Action", null).show();
-            }
-        });
-        //set the behavior when the menu is clicked.
-        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
-            @Override
-            public void onActionMenuItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.voice:
-                        // Voice search
-                        startVoiceRecognition();
-                        searchView.setSearchFocused(true);
-                        break;
-                    case R.id.feedback:
-                        //Send a bug report via email using email intent.
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/html");
-                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cesapp@gmail.com"});
-                        intent.putExtra(Intent.EXTRA_SUBJECT, "CES App Bug Report");
-                        intent.putExtra(Intent.EXTRA_TEXT, "My bug...");
-
-                        startActivity(Intent.createChooser(intent, "Send Email"));
-                        break;
-                    case R.id.logout:
-                        Toast.makeText(HomePage.this, "LOGOUT", Toast.LENGTH_LONG).show();
-                        //use our authentication database to sign out.
-                        FirebaseAuth auth = FirebaseAuth.getInstance();
-                        auth.signOut();
-                        //move user to sign in page once signed out.
-                        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                        startActivity(i);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
-            @Override
-            public void onSearchTextChanged(String oldQuery, final String newQuery) {
-                updateSearches(newQuery);
-            }
-
-        });
-
-        searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
-            @Override
-            public void onFocus() {
-                updateSearches(searchView.getQuery());
-            }
-
-            @Override
-            public void onFocusCleared() {
-
-            }
-        });
-
-        //manages search query suggestions.
-        searchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
-            @Override
-            public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
-                String body = item.getBody();
-                String htmlText = body;
-                String query = searchView.getQuery();
-
-                if (query.length() == 0) return;
-
-                ArrayList<String> queryTokens = new ArrayList<>();
-
-                StringTokenizer st = new StringTokenizer(query);
-                while (st.hasMoreTokens()) {
-                    queryTokens.add(st.nextToken().toLowerCase());
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager.setCurrentItem(tab.getPosition());
                 }
 
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
 
-                for (String currQuery : queryTokens) {
-                    htmlText = htmlText.replaceAll("(?i)" + currQuery, "<font color=#999999>" + currQuery + "</font>");
                 }
 
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
 
-                textView.setText(Html.fromHtml(htmlText));
-            }
+                }
+            });
+            fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-        });
+                    Log.v("SELECTION", HomeFragment.mode);
 
-        searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
-            @Override
-            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                searchView.setSearchFocused(false);
-            }
+                    if(HomeFragment.mode.equals("view")) {
+                        takePhoto(view);
+                    } else {
+                        createAndSendReport();
+                    }
+                    //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                    //      .setAction("Action", null).show();
+                }
+            });
+            //set the behavior when the menu is clicked.
+            searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+                @Override
+                public void onActionMenuItemSelected(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.voice:
+                            // Voice search
+                            startVoiceRecognition();
+                            searchView.setSearchFocused(true);
+                            break;
+                        case R.id.feedback:
+                            //Send a bug report via email using email intent.
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setType("text/html");
+                            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cesapp@gmail.com"});
+                            intent.putExtra(Intent.EXTRA_SUBJECT, "CES App Bug Report");
+                            intent.putExtra(Intent.EXTRA_TEXT, "My bug...");
 
-            @Override
-            public void onSearchAction(String currentQuery) {
+                            startActivity(Intent.createChooser(intent, "Send Email"));
+                            break;
+                        case R.id.logout:
+                            Toast.makeText(HomePage.this, "LOGOUT", Toast.LENGTH_LONG).show();
+                            //use our authentication database to sign out.
+                            FirebaseAuth auth = FirebaseAuth.getInstance();
+                            auth.signOut();
+                            //move user to sign in page once signed out.
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(i);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
 
-            }
-        });
+            searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+                @Override
+                public void onSearchTextChanged(String oldQuery, final String newQuery) {
+                    updateSearches(newQuery);
+                }
+
+            });
+
+            searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+                @Override
+                public void onFocus() {
+                    updateSearches(searchView.getQuery());
+                }
+
+                @Override
+                public void onFocusCleared() {
+
+                }
+            });
+
+            //manages search query suggestions.
+            searchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+                @Override
+                public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
+                    String body = item.getBody();
+                    String htmlText = body;
+                    String query = searchView.getQuery();
+
+                    if (query.length() == 0) return;
+
+                    ArrayList<String> queryTokens = new ArrayList<>();
+
+                    StringTokenizer st = new StringTokenizer(query);
+                    while (st.hasMoreTokens()) {
+                        queryTokens.add(st.nextToken().toLowerCase());
+                    }
+
+
+                    for (String currQuery : queryTokens) {
+                        htmlText = htmlText.replaceAll("(?i)" + currQuery, "<font color=#999999>" + currQuery + "</font>");
+                    }
+
+
+                    textView.setText(Html.fromHtml(htmlText));
+                }
+
+            });
+
+            searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+                @Override
+                public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+                    searchView.setSearchFocused(false);
+                }
+
+                @Override
+                public void onSearchAction(String currentQuery) {
+
+                }
+            });
 
 
 
     }
+
+
+
 
     private void createAndSendReport() {
         ActivityCompat.requestPermissions(this,
