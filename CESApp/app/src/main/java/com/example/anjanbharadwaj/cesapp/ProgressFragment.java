@@ -106,6 +106,10 @@ public class ProgressFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                int numChildren = (int) dataSnapshot.getChildrenCount();
+
+                int k = 1;
+
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
 
 
@@ -113,6 +117,11 @@ public class ProgressFragment extends Fragment {
 
 
                     for (DataSnapshot snapshot : d.getChildren()) {
+
+                        String key = snapshot.getKey().toString();
+
+                        Log.v("hi", key);
+
 
                         ArrayList<ArrayList<Double>> percentages = new ArrayList<>();
                         percentages.add(new ArrayList<Double>());
@@ -133,15 +142,34 @@ public class ProgressFragment extends Fragment {
                         percentages.get(2).add(class_three_percent);
                         percentages.get(3).add(class_four_percent);
 
+                        ArrayList<ArrayList<Entry>> entries = new ArrayList<>();
+                        entries.add(new ArrayList<Entry>());
+                        entries.add(new ArrayList<Entry>());
+                        entries.add(new ArrayList<Entry>());
+                        entries.add(new ArrayList<Entry>());
+                        for (int j = 0; j < entries.size(); j++) {
+                            for (int i = 0; i < percentages.get(j).size(); i++) {
+                                entries.get(j).add(new Entry(i, percentages.get(j).get(i).floatValue()));
+                            }
+                            GraphCardInformation gci = new GraphCardInformation("" + j, entries.get(j), null, "Disease " + j + " progression");
+                            listData.add(gci);
+
+                        }
+
                     }
 
 
 
+
+                    if (k == numChildren) {
+                        showCards();
+                        break;
+                    }
+
+                    k++;
                 }
 
                 Log.v("LISTData", listData.toString());
-
-                showCards();
 
             }
 
