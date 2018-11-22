@@ -12,12 +12,15 @@ public class GraphCardInformation {
 
     String which_diagnosis_is_being_tracked;
     ArrayList<Entry> percentages = new ArrayList<Entry>();
+    ArrayList<Entry> feelings = new ArrayList<>();
+
     String title;
 
     public GraphCardInformation(String which_diagnosis_is_being_tracked,
-                                ArrayList<Entry> percentages, String title) {
+                                ArrayList<Entry> percentages, ArrayList<Entry> feelings, String title) {
         this.which_diagnosis_is_being_tracked = which_diagnosis_is_being_tracked;
         this.percentages = percentages;
+        this.feelings = feelings;
         this.title = title;
     }
 
