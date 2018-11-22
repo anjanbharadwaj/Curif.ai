@@ -233,6 +233,7 @@ public class NetworkFragment extends Fragment {
                 emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{email});
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Support Network Email - " );
                 String body = "Hi " + user.getName() + ", \n\n";
+                emailIntent.putExtra(Intent.EXTRA_TEXT, body);
                 startActivity(emailIntent);
             }
 
@@ -258,7 +259,7 @@ public class NetworkFragment extends Fragment {
                 NetworkUser user = listData.get(position);
                 Log.v("Perform","click-1");
 
-                //holder.easyFlipView.flipTheView(true);
+                holder.easyFlipView.flipTheView(true);
                 Log.v("Perform","click0");
 
                 holder.email.setOnClickListener(new View.OnClickListener() {
@@ -270,7 +271,6 @@ public class NetworkFragment extends Fragment {
                        emailIntent(user);
                     }
                 });
-                holder.email.performClick();
                 Log.v("Perform","click");
             }
         };
@@ -479,7 +479,8 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
             easyFlipView = (EasyFlipView)v.findViewById(R.id.flipview);
             email = (ImageView)v.findViewById(R.id.emailButton);
             phone = (ImageView)v.findViewById(R.id.phoneButton);
-
+            easyFlipView.setFlipOnTouch(false);
+            easyFlipView.setFlipTypeFromFront();
             this.mListener = mListener;
             v.setOnClickListener(this);
         }
