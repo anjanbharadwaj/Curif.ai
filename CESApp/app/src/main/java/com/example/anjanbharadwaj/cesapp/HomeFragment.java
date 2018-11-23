@@ -140,17 +140,16 @@ public class HomeFragment extends Fragment {
 
 
                         for (DataSnapshot snapshot : d.getChildren()) {
-                            Log.v("body", "inside");
 
                             String key = snapshot.getKey().toString();
 
-                            Log.v("body", key);
 
                             String diagnosis = snapshot.child("Diagnosis").getValue().toString();
                             String url = snapshot.child("URL").getValue().toString();
                             SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
                             String dateString = formatter.format(new Date(Long.valueOf(key)));
                             DataPointProfile point = new DataPointProfile(url, "Diagnosis " + diagnosis, dateString, key, body_part);
+                            Log.v("DPP",point.location);
                             listData.add(point);
                         }
                     }

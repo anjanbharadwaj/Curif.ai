@@ -48,6 +48,7 @@ public class DataPointProfile implements SearchSuggestion {
         dest.writeString(diagnosis);
         dest.writeString(date);
         dest.writeString(nonformatdate);
+        dest.writeString(location);
 
 
     }

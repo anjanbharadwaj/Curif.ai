@@ -72,6 +72,7 @@ public class DataDetailActivity extends SlidingActivity {
         String diagnosis = dpp.diagnosis;
         final String date = dpp.date;
         final String unformatdate = dpp.nonformatdate;
+        final String location = dpp.location;
         String url = dpp.url;
         Bitmap bitmap = null;
         primaryColorDark = Color.BLACK;
@@ -116,7 +117,7 @@ public class DataDetailActivity extends SlidingActivity {
         lastTreatmentValue = (TextView)findViewById(R.id.detailTreatmentText);
         moreInfoValue = (TextView)findViewById(R.id.detailMoreInfo);
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        reference.child("Users").child(uid).child("Pictures").child(unformatdate).addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child("Users").child(uid).child("Pictures").child(location).child(unformatdate).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
@@ -152,7 +153,7 @@ public class DataDetailActivity extends SlidingActivity {
             @Override
             public void onRatingSelected(int level, boolean reselected) {
                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                reference.child("Users").child(uid).child("Pictures").child(unformatdate).child("Feeling").child(""+System.currentTimeMillis()).setValue(level);
+                reference.child("Users").child(uid).child("Pictures").child(location).child(unformatdate).child("Feeling").child(""+System.currentTimeMillis()).setValue(level);
             }
         });
         ImageView icon1 = (ImageView)findViewById(R.id.detailDiagnosisImageView);
