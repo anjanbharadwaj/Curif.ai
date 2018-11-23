@@ -220,30 +220,6 @@ public class NetworkFragment extends Fragment {
         return fragment;
     }
 
-
-    public void emailIntent(NetworkUser user){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(user.uid);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String email = dataSnapshot.child("Email").getValue().toString();
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent.setType("text/plain");
-
-                emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{email});
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Support Network Email - " );
-                String body = "Hi " + user.getName() + ", \n\n";
-                emailIntent.putExtra(Intent.EXTRA_TEXT, body);
-                startActivity(emailIntent);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -257,27 +233,78 @@ public class NetworkFragment extends Fragment {
             public void onClick(View view, int position) {
                 NetworkUserAdapter.NetworkUserViewHolder holder = (NetworkUserAdapter.NetworkUserViewHolder)recyclerView.findViewHolderForAdapterPosition(position);
                 NetworkUser user = listData.get(position);
-                Log.v("Perform","click-1");
 
                 holder.easyFlipView.flipTheView(true);
-                Log.v("Perform","click0");
 
                 holder.email.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.v("Perform","onclick");
 
-                        Toast.makeText(getContext(), "PHONE INTENT HERE", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "EMAIL INTENT HERE", Toast.LENGTH_LONG).show();
                        emailIntent(user);
                     }
                 });
-                Log.v("Perform","click");
+                holder.phone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Toast.makeText(getContext(), "PHONE INTENT HERE", Toast.LENGTH_LONG).show();
+                        phoneIntent(user);
+                    }
+                });
             }
         };
 
     }
 
-    public static void phoneIntent(){
+    public void emailIntent(NetworkUser user){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(user.uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String email = dataSnapshot.child("Email").getValue().toString();
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("text/plain");
+
+                emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{email});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Support Network Email - " );
+                String body1 = "Hi " + user.getName() + ", \n\n";
+                emailIntent.putExtra(Intent.EXTRA_TEXT, body1.toString());
+
+                startActivity(emailIntent);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public void phoneIntent(NetworkUser user){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(user.uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String phone1 =  dataSnapshot.child("Phone").getValue().toString();
+                String body1 = "Hi " + user.getName() + ", \n\n";
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                sharingIntent.setType("vnd.android-dir/mms-sms");
+                sharingIntent.setData(Uri.parse("sms:"+phone1));
+
+                sharingIntent.putExtra("sms_body", body1);
+                startActivity(Intent.createChooser(sharingIntent, "Share"));
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
     }
     @Override
