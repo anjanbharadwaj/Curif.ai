@@ -144,15 +144,16 @@ public class ProgressFragment extends Fragment {
 
                     Log.v("max_key", max_key);
 
+                    ArrayList<Double> percentages = new ArrayList<>();
+                    ArrayList<Double> feelings = new ArrayList<>();
+                    ArrayList<Entry> data_graph_percentages = new ArrayList<>();
+                    ArrayList<Entry> data_feelings = new ArrayList<>();
+
                     for (DataSnapshot snapshot : d.getChildren()) {
 
                         String key = snapshot.getKey().toString();
 
                         Log.v("hi", key);
-
-                        ArrayList<Double> percentages = new ArrayList<>();
-                        ArrayList<Double> feelings = new ArrayList<>();
-
 
                         double percent_to_add = 0;
                         if(max_key.equals("1")) {
@@ -169,8 +170,7 @@ public class ProgressFragment extends Fragment {
 
                         feelings.add(Double.parseDouble(snapshot.child("Feeling").getValue().toString()));
 
-                        ArrayList<Entry> data_graph_percentages = new ArrayList<>();
-                        ArrayList<Entry> data_feelings = new ArrayList<>();
+
 
                         for (int i = 0; i < percentages.size(); i++) {
                             data_graph_percentages.add(new Entry(i, percentages.get(i).floatValue()));
@@ -180,11 +180,10 @@ public class ProgressFragment extends Fragment {
                             data_feelings.add(new Entry(j, feelings.get(j).floatValue()));
                         }
 
-
-                        GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings, "Disease " + max_key + " at " + body_part);
-                        listData.add(gci);
-
                     }
+
+                    GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings, "Disease " + max_key + " at " + body_part);
+                    listData.add(gci);
 
 
 
