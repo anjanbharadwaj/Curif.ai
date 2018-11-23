@@ -97,11 +97,11 @@ public class ProgressFragment extends Fragment {
     }
 
     public void loadData() {
-            //Clear our arraylists that hold the old data
-            listData.clear();
+        //Clear our arraylists that hold the old data
+        listData.clear();
 
-            //Instantiate the two array adapters that connect the arraylists to listviews
-            graphCardArrayAdapter = new GraphCardArrayAdapter(context, 0, listData);
+        //Instantiate the two array adapters that connect the arraylists to listviews
+        graphCardArrayAdapter = new GraphCardArrayAdapter(context, 0, listData);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -182,11 +182,10 @@ public class ProgressFragment extends Fragment {
 
                     }
 
+
+                    Log.v("help", body_part + data_graph_percentages.size());
                     GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings, "Disease " + max_key + " at " + body_part);
                     listData.add(gci);
-
-
-
 
                     if (k == numChildren) {
                         showCards();
