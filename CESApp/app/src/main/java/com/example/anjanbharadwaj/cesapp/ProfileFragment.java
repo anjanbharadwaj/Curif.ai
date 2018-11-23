@@ -153,17 +153,9 @@ public class ProfileFragment extends Fragment {
         data_control_ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean can_share_data = Boolean.valueOf(dataSnapshot.child("can_share_with_researchers").getValue().toString());
                 boolean is_profile_searchable = Boolean.valueOf(dataSnapshot.child("is_profile_searchable").getValue().toString());
 
                 checkBox.setChecked(is_profile_searchable);
-
-                if(can_share_data) {
-                    group.check(R.id.radio_yes);
-                } else {
-                    group.check(R.id.radio_no);
-
-                }
 
             }
             @Override
