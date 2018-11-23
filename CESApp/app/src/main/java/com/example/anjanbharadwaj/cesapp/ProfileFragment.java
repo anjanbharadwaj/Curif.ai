@@ -165,32 +165,6 @@ public class ProfileFragment extends Fragment {
         });
         
 
-        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int id) {
-                RadioButton button_checked = radioGroup.findViewById(id);
-
-                boolean can_we_share_data_with_researchers = false;
-
-                if (id == R.id.radio_no) {
-                    if (button_checked.isChecked()) {
-                        can_we_share_data_with_researchers = false;
-                    }
-                } else if (id == R.id.radio_yes) {
-                    if(button_checked.isChecked()) {
-                        can_we_share_data_with_researchers = true;
-                    }
-                }
-
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-
-                database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-
-                database.child("DataControlSettings").child("can_share_with_researchers").setValue(can_we_share_data_with_researchers);
-
-//                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
