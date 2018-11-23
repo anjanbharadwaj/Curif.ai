@@ -48,8 +48,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
@@ -115,6 +117,32 @@ public class ProgressFragment extends Fragment {
 
                     String body_part = d.getKey().toString();
 
+                    // count the majority diagnosis
+
+                    Map<String, Integer> diag_counts = new HashMap<String, Integer>();
+
+                    for (DataSnapshot dd : d.getChildren()) {
+
+                        String diagnosis = dd.child("Diagnosis").getValue().toString();
+
+                        if (!diag_counts.containsKey(diagnosis)) {
+                            diag_counts.put(diagnosis, 1);
+                        } else {
+                            diag_counts.put(diagnosis, diag_counts.get(diagnosis) + 1);
+                        }
+                    }
+
+                    String max_key = "";
+                    int max = -1;
+
+                    for (String key : diag_counts.keySet()) {
+                        if (diag_counts.get(key) > max) {
+                            max_key = key;
+                            max = diag_counts.get(key);
+                        }
+                    }
+
+                    Log.v("max_key", max_key);
 
                     for (DataSnapshot snapshot : d.getChildren()) {
 
@@ -122,39 +150,39 @@ public class ProgressFragment extends Fragment {
 
                         Log.v("hi", key);
 
-
-                        ArrayList<ArrayList<Double>> percentages = new ArrayList<>();
-                        percentages.add(new ArrayList<Double>());
-                        percentages.add(new ArrayList<Double>());
-                        percentages.add(new ArrayList<Double>());
-                        percentages.add(new ArrayList<Double>());
+                        ArrayList<Double> percentages = new ArrayList<>();
+                        ArrayList<Double> feelings = new ArrayList<>();
 
 
-
-                        int diagnosis = Integer.parseInt(snapshot.child("Diagnosis").getValue().toString());
-                        Log.v("DiagnosisPred", "" + diagnosis);
-                        double class_one_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 1").getValue().toString());
-                        double class_two_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 2").getValue().toString());
-                        double class_three_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 3").getValue().toString());
-                        double class_four_percent = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 4").getValue().toString());
-                        percentages.get(0).add(class_one_percent);
-                        percentages.get(1).add(class_two_percent);
-                        percentages.get(2).add(class_three_percent);
-                        percentages.get(3).add(class_four_percent);
-
-                        ArrayList<ArrayList<Entry>> entries = new ArrayList<>();
-                        entries.add(new ArrayList<Entry>());
-                        entries.add(new ArrayList<Entry>());
-                        entries.add(new ArrayList<Entry>());
-                        entries.add(new ArrayList<Entry>());
-                        for (int j = 0; j < entries.size(); j++) {
-                            for (int i = 0; i < percentages.get(j).size(); i++) {
-                                entries.get(j).add(new Entry(i, percentages.get(j).get(i).floatValue()));
-                            }
-                            GraphCardInformation gci = new GraphCardInformation("" + j, entries.get(j), null, "Disease " + j + " progression");
-                            listData.add(gci);
-
+                        double percent_to_add = 0;
+                        if(max_key.equals("1")) {
+                            percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 1").getValue().toString());
+                        } else if (max_key.equals("2")) {
+                            percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 2").getValue().toString());
+                        } else if (max_key.equals("3")) {
+                            percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 3").getValue().toString());
+                        } else if(max_key.equals("4")) {
+                            percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 4").getValue().toString());
                         }
+
+                        percentages.add(percent_to_add);
+
+                        feelings.add(Double.parseDouble(snapshot.child("Feeling").getValue().toString()));
+
+                        ArrayList<Entry> data_graph_percentages = new ArrayList<>();
+                        ArrayList<Entry> data_feelings = new ArrayList<>();
+
+                        for (int i = 0; i < percentages.size(); i++) {
+                            data_graph_percentages.add(new Entry(i, percentages.get(i).floatValue()));
+                        }
+
+                        for (int j = 0; j < feelings.size(); j++) {
+                            data_feelings.add(new Entry(j, feelings.get(j).floatValue()));
+                        }
+
+
+                        GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings, "Disease " + max_key + " at " + body_part);
+                        listData.add(gci);
 
                     }
 
@@ -289,7 +317,17 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         GraphCardInformation point = datapoints.get(i);
 
         LineChart graph = pointViewHolder.graph;
+
+        LineChart graph2 = pointViewHolder.graph2;
+
         TextView title = pointViewHolder.title;
+
+        LineDataSet dataset2 = new LineDataSet(point.feelings, point.getTitle().toString());
+        dataset2.setColor(Color.WHITE);
+        dataset2.setValueTextColor(Color.WHITE); // styling, ...
+        LineData lineData2 = new LineData(dataset2);
+        pointViewHolder.graph2.setData(lineData2);
+        graph2.setData(lineData2);
 
         LineDataSet dataSet = new LineDataSet(point.percentages, point.getTitle().toString()); // add entries to dataset
         dataSet.setColor(Color.WHITE);
@@ -323,7 +361,12 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         graph.setTouchEnabled(false);
 
         graph.setData(lineData);
+
+
+
+
         graph.invalidate(); // refresh
+        graph2.invalidate(); // refresh
 
 
         pointViewHolder.title.setText(point.title);
