@@ -684,7 +684,7 @@ NetworkFragment.OnFragmentInteractionListener{
         }
         maxIndex+=1;
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("Pictures").child(wound_location);
-        ref.child(time).child("Feeling").setValue("3");
+        ref.child(time).child("Feeling").setValue(3);
         ref.child(time).child("Diagnosis").setValue(""+maxIndex);
 
         final StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("Users").child(uid).child("Pictures").child(wound_location).child(time);
