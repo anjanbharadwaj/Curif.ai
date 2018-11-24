@@ -351,9 +351,9 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         //dataset2.setValueTextColor(Color.WHITE); // styling, ...
         LineData lineData2 = new LineData(dataset2);
         pointViewHolder.graph2.setData(lineData2);
+
+
         dataset2.setColors(ColorTemplate.LIBERTY_COLORS);
-
-
         XAxis xAxis2 = graph2.getXAxis();
         xAxis2.setTextSize(10f);
         xAxis2.setPosition(XAxis.XAxisPosition.BOTTOM);
