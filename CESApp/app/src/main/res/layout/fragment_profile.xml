@@ -444,7 +444,7 @@
                                 app:srcCompat="@drawable/data_privacy" />
 
                             <com.suke.widget.SwitchButton
-                                android:id="@+id/switch_button"
+                                android:id="@+id/profile_data_switch"
                                 android:layout_width="45dp"
                                 android:layout_height="24dp"
                                 android:layout_marginBottom="8dp"

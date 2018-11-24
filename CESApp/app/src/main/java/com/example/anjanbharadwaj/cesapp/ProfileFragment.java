@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -35,8 +36,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.suke.widget.SwitchButton;
 
 import java.io.ByteArrayOutputStream;
+
+import br.com.sapereaude.maskedEditText.MaskedEditText;
 
 
 /**
@@ -62,8 +66,11 @@ public class ProfileFragment extends Fragment {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
-    private ImageView profile_image;
-
+    ImageView profile_image;
+    MaskedEditText phoneNumber;
+    SwitchButton switchButton;
+    TextView profile_name;
+    ImageView change_profile_picture;
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -116,21 +123,29 @@ public class ProfileFragment extends Fragment {
         StorageReference profileReference = FirebaseStorage.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Profile");
         load_current_profile_image_from_firebase(profileReference);
 
-        final TextView profile_name = view.findViewById(R.id.nameTag);
+        profile_name = view.findViewById(R.id.nameTag);
 
         mReference = FirebaseDatabase.getInstance().getReference();
 
         profile_image = (ImageView) view.findViewById(R.id.imageView);
+        phoneNumber = (MaskedEditText)view.findViewById(R.id.profile_phone_text);
+        switchButton = (SwitchButton)view.findViewById(R.id.profile_data_switch);
+        change_profile_picture = (ImageView) view.findViewById(R.id.change_profile_picture);
 
-
-        mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
+        mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String name = dataSnapshot.getValue().toString();
+                String name = dataSnapshot.child("Name").getValue().toString();
                 profile_name.setText(name);
                 profile_name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
+
+                boolean is_profile_searchable = Boolean.valueOf(dataSnapshot.child("DataControlSettings").child("is_profile_searchable").getValue().toString());
+                switchButton.setChecked(is_profile_searchable);
+
+                String phoneNumberText = dataSnapshot.child("Phone").getValue().toString();
+                phoneNumber.setText(phoneNumberText);
 
             }
             @Override
@@ -139,50 +154,19 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        switchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+                database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
 
-
-//
-//        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.public_checkbox);
-//
-//
-//        //update the UI buttons to match the options stored in the database.
-//        final DatabaseReference data_control_ref = mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
-//                .child("DataControlSettings");
-//
-//        data_control_ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                boolean is_profile_searchable = Boolean.valueOf(dataSnapshot.child("is_profile_searchable").getValue().toString());
-//
-//                checkBox.setChecked(is_profile_searchable);
-//
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//
-//
-//        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-//                database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-//
-//                if (compoundButton.isChecked()) {
-//                    database.child("DataControlSettings").child("is_profile_searchable").setValue(true);
-//                } else {
-//                    database.child("DataControlSettings").child("is_profile_searchable").setValue(false);
-//                }
-//
-////                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-
-        ImageView change_profile_picture = (ImageView) view.findViewById(R.id.change_profile_picture);
+                if (isChecked) {
+                    database.child("DataControlSettings").child("is_profile_searchable").setValue(true);
+                } else {
+                    database.child("DataControlSettings").child("is_profile_searchable").setValue(false);
+                }
+            }
+        });
         change_profile_picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,6 +181,9 @@ public class ProfileFragment extends Fragment {
 
             }
         });
+
+
+
     }
 
     private void load_current_profile_image_from_firebase(StorageReference profileRef1) {
