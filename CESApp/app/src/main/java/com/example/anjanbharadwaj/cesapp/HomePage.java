@@ -259,20 +259,33 @@ NetworkFragment.OnFragmentInteractionListener{
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 searchView.setSearchFocused(false);
-                Log.v("searchingplzwork2", "onSuggestionClicked: " + searchSuggestion.getBody());
 
-                //launch an intent to send a text message.
+                PersonSearchItem personSearchItem = (PersonSearchItem) searchSuggestion;
 
-//                String phone1 =  dataSnapshot.child("Phone").getValue().toString();
-//                String body1 = "Hi " + user.getName() + ", \n\n";
-//                Intent sharingIntent = new Intent(android.content.Intent.ACTION_VIEW);
-//                sharingIntent.setType("vnd.android-dir/mms-sms");
-//                sharingIntent.setData(Uri.parse("sms:"+phone1));
-//
-//                sharingIntent.putExtra("sms_body", body1);
-//                startActivity(Intent.createChooser(sharingIntent, "Share"));
+                String uid = personSearchItem.getUid();
 
+                FirebaseDatabase.getInstance().getReference().child("Users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String name = dataSnapshot.child("Name").getValue().toString();
+                        String phoneNumber = dataSnapshot.child("Phone").getValue().toString();
 
+                        String body1 = "Hi " + name + ", \n\n";
+                        Intent sharingIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                        sharingIntent.setType("vnd.android-dir/mms-sms");
+                        sharingIntent.setData(Uri.parse("sms:"+phoneNumber));
+
+                        sharingIntent.putExtra("sms_body", body1);
+                        startActivity(Intent.createChooser(sharingIntent, "Share"));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                Log.v("searchingplzwork2", "onSuggestionClicked: " + personSearchItem.getUid());
             }
 
             @Override
