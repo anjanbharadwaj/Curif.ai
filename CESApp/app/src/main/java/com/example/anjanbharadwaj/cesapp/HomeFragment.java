@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
     RecyclerViewClickListener listener;
     public DatabaseReference database;
     public static String name = "Profile";
-    public WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
+    public SwipeRefreshLayout mWaveSwipeRefreshLayout;
 
     int numCopies;
 
@@ -227,10 +227,10 @@ public class HomeFragment extends Fragment {
 
 
         //OLD
-        mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) getView().findViewById(R.id.main_swipe);
-        mWaveSwipeRefreshLayout.setOnRefreshListener(new WaveSwipeRefreshLayout.OnRefreshListener() {
-            @Override public void onRefresh() {
-                // Do work to refresh the list here.
+        mWaveSwipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.profileSwipeRefresh);
+        mWaveSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
                 loadData();
             }
         });
