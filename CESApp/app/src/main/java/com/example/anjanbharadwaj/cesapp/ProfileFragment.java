@@ -140,48 +140,47 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        final RadioGroup group = (RadioGroup) view.findViewById(R.id.radioGroup);
 
-
-        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.public_checkbox);
-
-
-        //update the UI buttons to match the options stored in the database.
-        final DatabaseReference data_control_ref = mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
-                .child("DataControlSettings");
-
-        data_control_ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean is_profile_searchable = Boolean.valueOf(dataSnapshot.child("is_profile_searchable").getValue().toString());
-
-                checkBox.setChecked(is_profile_searchable);
-
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        
-
-
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-                database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-
-                if (compoundButton.isChecked()) {
-                    database.child("DataControlSettings").child("is_profile_searchable").setValue(true);
-                } else {
-                    database.child("DataControlSettings").child("is_profile_searchable").setValue(false);
-                }
-
-//                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
-
-            }
-        });
+//
+//        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.public_checkbox);
+//
+//
+//        //update the UI buttons to match the options stored in the database.
+//        final DatabaseReference data_control_ref = mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
+//                .child("DataControlSettings");
+//
+//        data_control_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                boolean is_profile_searchable = Boolean.valueOf(dataSnapshot.child("is_profile_searchable").getValue().toString());
+//
+//                checkBox.setChecked(is_profile_searchable);
+//
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//
+//
+//        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+//                database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+//
+//                if (compoundButton.isChecked()) {
+//                    database.child("DataControlSettings").child("is_profile_searchable").setValue(true);
+//                } else {
+//                    database.child("DataControlSettings").child("is_profile_searchable").setValue(false);
+//                }
+//
+////                Toast.makeText(getActivity().getApplicationContext(), "Updating Data Settings", Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
 
         ImageView change_profile_picture = (ImageView) view.findViewById(R.id.change_profile_picture);
         change_profile_picture.setOnClickListener(new View.OnClickListener() {
