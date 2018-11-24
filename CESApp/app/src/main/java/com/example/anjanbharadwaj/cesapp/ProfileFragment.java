@@ -120,7 +120,7 @@ public class ProfileFragment extends Fragment {
 
         mReference = FirebaseDatabase.getInstance().getReference();
 
-        profile_image = (ImageView) view.findViewById(R.id.profile_picture);
+        profile_image = (ImageView) view.findViewById(R.id.imageView);
 
 
         mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -219,7 +219,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 Log.v("OnSucess", ""+uri);
-                ImageView imageView = getActivity().findViewById(R.id.profile_picture);
+                ImageView imageView = getActivity().findViewById(R.id.imageView);
 
                 Glide.with(getActivity().getApplicationContext() /* context */)
                         .asBitmap()

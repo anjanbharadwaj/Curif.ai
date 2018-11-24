@@ -112,7 +112,6 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
 
                 int numChildren = (int) dataSnapshot.getChildrenCount();
 
-                int k = 1;
 
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
 
@@ -152,7 +151,7 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
                     ArrayList<Entry> data_feelings = new ArrayList<>();
 
                     for (DataSnapshot snapshot : d.getChildren()) {
-
+                        Log.v("EachPic","Prints once");
                         String key = snapshot.getKey().toString();
 
                         Log.v("hi", key);
@@ -174,28 +173,23 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
 
 
 
-                        for (int i = 0; i < percentages.size(); i++) {
-                            data_graph_percentages.add(new Entry(i, percentages.get(i).floatValue()));
-                        }
-
-                        for (int j = 0; j < feelings.size(); j++) {
-                            data_feelings.add(new Entry(j, feelings.get(j).floatValue()));
-                        }
-
                     }
 
+                    for (int i = 0; i < percentages.size(); i++) {
+                        data_graph_percentages.add(new Entry(i, percentages.get(i).floatValue()));
+                    }
+
+                    for (int j = 0; j < feelings.size(); j++) {
+                        data_feelings.add(new Entry(j, feelings.get(j).floatValue()));
+                    }
 
                     Log.v("help", body_part + data_graph_percentages.size());
                     GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings, "Disease " + max_key + " at " + body_part);
                     listData.add(gci);
 
-                    if (k == numChildren) {
-                        showCards();
-                        break;
-                    }
 
-                    k++;
                 }
+                showCards();
 
                 Log.v("LISTData", listData.toString());
 
