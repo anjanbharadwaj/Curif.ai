@@ -99,7 +99,7 @@ NetworkFragment.OnFragmentInteractionListener{
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
     static FloatingActionButton fab;
-    static ArrayList<DataPointProfile> suggestions = new ArrayList<>();
+    static ArrayList<PersonSearchItem> suggestions = new ArrayList<>();
 
     final int VOICE_SEARCH_CODE = 3012;
 
@@ -194,7 +194,6 @@ NetworkFragment.OnFragmentInteractionListener{
                 switch (item.getItemId()) {
                     case R.id.voice:
                         // Voice search
-                        startVoiceRecognition();
                         searchView.setSearchFocused(true);
                         break;
                     case R.id.feedback:
@@ -226,6 +225,8 @@ NetworkFragment.OnFragmentInteractionListener{
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
                 updateSearches(newQuery);
+                Log.v("searchingplzwork", "setOnQueryChangeListener");
+
             }
 
         });
@@ -234,11 +235,12 @@ NetworkFragment.OnFragmentInteractionListener{
             @Override
             public void onFocus() {
                 updateSearches(searchView.getQuery());
+                Log.v("searchingplzwork", "onFocus");
             }
 
             @Override
             public void onFocusCleared() {
-
+                Log.v("searchingplzwork", "onFocusCleared");
             }
         });
 
@@ -246,26 +248,9 @@ NetworkFragment.OnFragmentInteractionListener{
         searchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
             public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
-                String body = item.getBody();
-                String htmlText = body;
-                String query = searchView.getQuery();
 
-                if (query.length() == 0) return;
+                Log.v("searchingplzwork", "onBindSuggestion");
 
-                ArrayList<String> queryTokens = new ArrayList<>();
-
-                StringTokenizer st = new StringTokenizer(query);
-                while (st.hasMoreTokens()) {
-                    queryTokens.add(st.nextToken().toLowerCase());
-                }
-
-
-                for (String currQuery : queryTokens) {
-                    htmlText = htmlText.replaceAll("(?i)" + currQuery, "<font color=#999999>" + currQuery + "</font>");
-                }
-
-
-                textView.setText(Html.fromHtml(htmlText));
             }
 
         });
@@ -274,10 +259,25 @@ NetworkFragment.OnFragmentInteractionListener{
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 searchView.setSearchFocused(false);
+                Log.v("searchingplzwork2", "onSuggestionClicked: " + searchSuggestion.getBody());
+
+                //launch an intent to send a text message.
+
+//                String phone1 =  dataSnapshot.child("Phone").getValue().toString();
+//                String body1 = "Hi " + user.getName() + ", \n\n";
+//                Intent sharingIntent = new Intent(android.content.Intent.ACTION_VIEW);
+//                sharingIntent.setType("vnd.android-dir/mms-sms");
+//                sharingIntent.setData(Uri.parse("sms:"+phone1));
+//
+//                sharingIntent.putExtra("sms_body", body1);
+//                startActivity(Intent.createChooser(sharingIntent, "Share"));
+
+
             }
 
             @Override
             public void onSearchAction(String currentQuery) {
+                Log.v("searchingplzwork", "onSearchAction");
 
             }
         });
@@ -392,33 +392,72 @@ NetworkFragment.OnFragmentInteractionListener{
             e.printStackTrace();
         }
     }
+
     private void updateSearches(String query) {
 
+        searchView.showProgress();
+
         final String newQuery = query;
-        final DatabaseReference searchRef = database.getReference().child("Users")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
-                .child("Pictures");
+        final DatabaseReference searchRef = database.getReference().child("Users");
+               // .child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
 
         searchRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 suggestions.clear();
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
 
-                    String dateText = d.getKey().toString();
-                    String diagnosis = d.child("Diagnosis").getValue().toString();
-                    String url = d.child("URL").getValue().toString();
+                Log.v("viewPager", ""+viewPager.getCurrentItem());
 
+                switch (viewPager.getCurrentItem()) {
+                    case 0:
+                        //home search
+                        //suggestions.add(new DataPointProfile("url", "unimplemented", "9/12/12", "29239023", "butt"));
+                    case 1:
+                        //progress search
+                        //suggestions.add(new DataPointProfile("url", "constipation", "9/12/12", "29239023", "butt"));
+                    case 2:
+                        //network search
 
+                        for (DataSnapshot s : dataSnapshot.getChildren()) {
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-                    String dateString = formatter.format(new Date(Long.valueOf(dateText)));
+                            String UID = s.getKey();
 
+                            String name = s.child("Name").getValue().toString();
+                            String email = s.child("Email").getValue().toString();
+                            String phone = s.child("Phone").getValue().toString();
 
-                    if(diagnosis.equals(newQuery)) {
-                        suggestions.add(new DataPointProfile(url, diagnosis, dateString, dateText, "head"));
-                    }
+                            String lQuery = newQuery.toLowerCase();
+                            StringTokenizer st = new StringTokenizer(lQuery);
+
+                            boolean allTokens = false;
+
+                            while (st.hasMoreTokens()) {
+                                String currToken = st.nextToken();
+                                if (name.toLowerCase().contains(currToken) || email.toLowerCase().contains(currToken) || phone.toLowerCase().contains(currToken)) {
+                                    allTokens = true;
+                                } else {
+                                    allTokens = false;
+                                    break;
+                                }
+                            }
+
+                            if (allTokens) {
+                                suggestions.add(new PersonSearchItem(UID, name, email, phone));
+                            }
+
+                        }
+
+                    case 3:
+                        //profile search
+                        //suggestions.add(new DataPointProfile("url", "unimplemented", "9/12/12", "29239023", "butt"));
+                    default:
+                        //default search
                 }
+
+
+
+
+
                 searchView.swapSuggestions(suggestions);
                 searchView.hideProgress();
             }
