@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -34,15 +27,44 @@
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/gradient_1">
+                    android:background="@color/colorAccent3">
+
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/guideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.052083332" />
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/guideline2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.9557292" />
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="0dp"
+                        android:layout_height="139dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="100dp"
+                        android:background="@color/colorAccent2"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profile_picture"
+                        android:id="@+id/imageView"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="32dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/profile_bg"
                         android:maxHeight="150dp"
                         android:maxWidth="150dp"
                         android:src="@drawable/profile_default"
@@ -52,24 +74,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-
-                    <TextView
-                        android:id="@+id/nameTag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="125dp"
-                        android:layout_marginStart="126dp"
-                        android:layout_marginTop="8dp"
-                        android:text="User"
-                        android:textColor="#FFFFFF"
-                        android:textSize="24sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.489"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
-
                     <ImageView
                         android:id="@+id/change_profile_picture"
                         android:layout_width="30dp"
@@ -77,20 +81,42 @@
                         android:layout_marginEnd="60dp"
                         android:alpha="0.5"
                         android:src="@drawable/take_profile_picture"
-                        app:layout_constraintBottom_toBottomOf="@+id/profile_picture"
-                        app:layout_constraintEnd_toEndOf="@+id/profile_picture" />
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView" />
 
+                    <TextView
+                        android:id="@+id/nameTag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:text="John Doe"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorText"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView"
+                        app:layout_constraintStart_toStartOf="@+id/imageView"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
                 </android.support.constraint.ConstraintLayout>
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="@color/colorPrimary" />
 
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
                 android:orientation="vertical">
 
 
@@ -106,14 +132,20 @@
                         android:layout_marginEnd="24dp"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
+                        android:background="@color/colorAccent2"
                         card_view:cardCornerRadius="10dp"
+                        card_view:cardElevation="10dp"
                         card_view:layout_constraintEnd_toEndOf="parent"
                         card_view:layout_constraintStart_toStartOf="parent"
-                        card_view:layout_constraintTop_toTopOf="parent">
+                        card_view:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        >
 
                         <android.support.constraint.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent"
+                            android:background="@color/colorAccent2">
 
                             <TextView
                                 android:id="@+id/core_information"
@@ -121,6 +153,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:text="Sex, Height, Weight"
+                                android:textColor="@color/colorText"
                                 card_view:layout_constraintStart_toStartOf="parent"
                                 tools:layout_editor_absoluteY="41dp" />
 
@@ -132,6 +165,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Most Likely Diagnosis: "
+                                android:textColor="@color/colorText"
                                 card_view:layout_constraintStart_toStartOf="parent"
                                 card_view:layout_constraintTop_toBottomOf="@+id/core_information" />
 
@@ -142,6 +176,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Time to recovery: "
+                                android:textColor="@color/colorText"
                                 card_view:layout_constraintStart_toStartOf="parent"
                                 card_view:layout_constraintTop_toBottomOf="@+id/most_likely_diagnosis" />
 
@@ -152,6 +187,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Suggested Treatment"
+                                android:textColor="@color/colorText"
                                 card_view:layout_constraintStart_toStartOf="parent"
                                 card_view:layout_constraintTop_toBottomOf="@+id/estimated_recovery" />
 
@@ -174,17 +210,22 @@
                         android:layout_marginEnd="24dp"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
-                        android:background="@drawable/gradient_2"
+                        android:background="@color/colorAccent2"
                         card_view:cardCornerRadius="10dp"
                         card_view:layout_constraintEnd_toEndOf="parent"
                         card_view:layout_constraintStart_toStartOf="parent"
-                        card_view:layout_constraintTop_toTopOf="parent">
+                        card_view:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        card_view:cardElevation="10dp">
 
                         <android.support.constraint.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent"
+                            android:background="@color/colorAccent2">
 
                             <TextView
+                                android:textColor="@color/colorText"
                                 android:id="@+id/data_control_text"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -202,24 +243,26 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
                                 android:gravity="left"
                                 android:orientation="horizontal"
                                 card_view:layout_constraintEnd_toEndOf="parent"
                                 card_view:layout_constraintStart_toStartOf="parent"
-                                tools:layout_editor_absoluteY="85dp">
+                                card_view:layout_constraintTop_toBottomOf="@+id/data_control_text">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Make Profile Publicaly Searchable" />
+                                    android:text="Public Profile"
+                                    android:textColor="@color/colorText" />
 
                                 <CheckBox
                                     android:id="@+id/public_checkbox"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="" />
+                                    android:text=""
+                                    android:textColor="@color/colorText" />
                             </LinearLayout>
-
 
 
                         </android.support.constraint.ConstraintLayout>
@@ -238,19 +281,26 @@
                         android:layout_width="match_parent"
                         android:layout_height="130dp"
                         android:layout_gravity="center"
+                        android:layout_marginEnd="24dp"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
-                        android:background="@drawable/gradient_2"
+                        android:background="@color/colorAccent2"
                         card_view:cardCornerRadius="10dp"
                         card_view:layout_constraintEnd_toEndOf="parent"
                         card_view:layout_constraintStart_toStartOf="parent"
-                        card_view:layout_constraintTop_toTopOf="parent">
+                        card_view:layout_constraintTop_toTopOf="parent"
+                        card_view:cardElevation="10dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        >
 
                         <android.support.constraint.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent"
+                            android:background="@color/colorAccent2">
 
                             <TextView
+                                android:textColor="@color/colorText"
                                 android:id="@+id/textView6"
                                 android:layout_width="match_parent"
                                 android:layout_height="21dp"
@@ -258,13 +308,14 @@
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
-                                android:textSize="15dp"
                                 android:text="Dermatologist Contact"
+                                android:textSize="15dp"
                                 card_view:layout_constraintEnd_toEndOf="parent"
                                 card_view:layout_constraintStart_toStartOf="parent"
                                 card_view:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
+                                android:textColor="@color/colorText"
                                 android:id="@+id/dermatologist_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="21dp"
@@ -278,6 +329,7 @@
 
 
                             <TextView
+                                android:textColor="@color/colorText"
                                 android:id="@+id/dermatologist_email"
                                 android:layout_width="match_parent"
                                 android:layout_height="21dp"
@@ -291,6 +343,7 @@
 
 
                             <TextView
+                                android:textColor="@color/colorText"
                                 android:id="@+id/dermatologist_phonenumber"
                                 android:layout_width="match_parent"
                                 android:layout_height="21dp"
@@ -306,7 +359,6 @@
                 </android.support.constraint.ConstraintLayout>
 
 
-
             </LinearLayout>
         </LinearLayout>
 
@@ -314,3 +366,4 @@
 
 
 </LinearLayout>
+

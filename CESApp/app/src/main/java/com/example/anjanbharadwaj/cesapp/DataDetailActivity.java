@@ -1,9 +1,5 @@
 package com.example.anjanbharadwaj.cesapp;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,20 +9,15 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -41,11 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.hsalf.smilerating.BaseRating;
 import com.hsalf.smilerating.SmileRating;
 import com.klinker.android.sliding.SlidingActivity;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
 
 
 public class DataDetailActivity extends SlidingActivity {
@@ -158,7 +144,7 @@ public class DataDetailActivity extends SlidingActivity {
         });
         ImageView icon1 = (ImageView)findViewById(R.id.detailDiagnosisImageView);
         ImageView icon2 = (ImageView)findViewById(R.id.detailDateImageView);
-        ImageView icon3 = (ImageView)findViewById(R.id.detailExpectedDateImageView);
+        ImageView icon3 = (ImageView)findViewById(R.id.profile_bio_icon);
         ImageView icon4 = (ImageView)findViewById(R.id.detailFeelingImageView);
         ImageView icon5 = (ImageView)findViewById(R.id.detailMoreInfoImageView);
 

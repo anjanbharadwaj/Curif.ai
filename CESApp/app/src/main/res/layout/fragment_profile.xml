@@ -11,7 +11,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary">
 
         <!-- TODO: Update blank fragment layout -->
         <LinearLayout
@@ -47,10 +48,10 @@
                     <View
                         android:id="@+id/view"
                         android:layout_width="0dp"
-                        android:layout_height="139dp"
+                        android:layout_height="100dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="116dp"
+                        android:layout_marginTop="100dp"
                         android:background="@color/colorAccent2"
                         app:layout_constraintEnd_toStartOf="@+id/guideline2"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -63,7 +64,7 @@
                         android:layout_height="150dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="32dp"
+                        android:layout_marginTop="16dp"
                         android:background="@drawable/profile_bg"
                         android:maxHeight="150dp"
                         android:maxWidth="150dp"
@@ -92,7 +93,7 @@
                         android:layout_marginStart="8dp"
                         android:text="John Doe"
                         android:textAlignment="center"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/colorText"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="@+id/imageView"
@@ -103,229 +104,257 @@
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="@color/colorPrimary" />
 
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
                 android:orientation="vertical">
 
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/card_view_1"
-                        android:layout_width="match_parent"
-                        android:layout_height="170dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="24dp"
-                        card_view:cardCornerRadius="10dp"
-                        card_view:layout_constraintEnd_toEndOf="parent"
-                        card_view:layout_constraintStart_toStartOf="parent"
-                        card_view:layout_constraintTop_toTopOf="parent">
-
-                        <android.support.constraint.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/core_information"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:text="Sex, Height, Weight"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                tools:layout_editor_absoluteY="41dp" />
+                    android:layout_height="match_parent">
 
 
-                            <TextView
-                                android:id="@+id/most_likely_diagnosis"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Most Likely Diagnosis: "
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toBottomOf="@+id/core_information" />
-
-                            <TextView
-                                android:id="@+id/estimated_recovery"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Time to recovery: "
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toBottomOf="@+id/most_likely_diagnosis" />
-
-                            <TextView
-                                android:id="@+id/suggested_treatment"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Suggested Treatment"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toBottomOf="@+id/estimated_recovery" />
-
-
-                        </android.support.constraint.ConstraintLayout>
-
-
-                    </android.support.v7.widget.CardView>
-                </android.support.constraint.ConstraintLayout>
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/card_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="24dp"
-                        android:background="#14af14"
-                        card_view:cardCornerRadius="10dp"
-                        card_view:layout_constraintEnd_toEndOf="parent"
-                        card_view:layout_constraintStart_toStartOf="parent"
-                        card_view:layout_constraintTop_toTopOf="parent">
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/profile_bio_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
 
                         <android.support.constraint.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent">
 
                             <TextView
-                                android:id="@+id/data_control_text"
-                                android:layout_width="match_parent"
+                                android:id="@+id/profile_bio"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Data Control Options"
-                                android:textSize="15dp"
-                                card_view:layout_constraintEnd_toEndOf="parent"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toTopOf="parent" />
+                                android:layout_marginStart="24dp"
+                                android:layout_marginTop="4dp"
+                                android:text="Bio"
+                                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+                                app:layout_constraintStart_toEndOf="@+id/profile_bio_icon"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                            <LinearLayout
-                                android:id="@+id/linearLayout"
-                                android:layout_width="match_parent"
+                            <ImageView
+                                android:id="@+id/profile_bio_icon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginBottom="12dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginTop="12dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/description" />
+
+                            <EditText
+                                android:id="@+id/profile_bio_text"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginStart="8dp"
-                                android:gravity="left"
-                                android:orientation="horizontal"
-                                card_view:layout_constraintEnd_toEndOf="parent"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                tools:layout_editor_absoluteY="85dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Make Profile Publicaly Searchable" />
-
-                                <CheckBox
-                                    android:id="@+id/public_checkbox"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="" />
-                            </LinearLayout>
-
-
-
-                        </android.support.constraint.ConstraintLayout>
-
-
-                    </android.support.v7.widget.CardView>
-                </android.support.constraint.ConstraintLayout>
-
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/card_view_2"
-                        android:layout_width="match_parent"
-                        android:layout_height="130dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="24dp"
-                        android:background="@drawable/gradient_2"
-                        card_view:cardCornerRadius="10dp"
-                        card_view:layout_constraintEnd_toEndOf="parent"
-                        card_view:layout_constraintStart_toStartOf="parent"
-                        card_view:layout_constraintTop_toTopOf="parent">
-
-                        <android.support.constraint.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/textView6"
-                                android:layout_width="match_parent"
-                                android:layout_height="21dp"
                                 android:layout_marginBottom="8dp"
                                 android:layout_marginEnd="8dp"
-                                android:layout_marginStart="8dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_marginTop="8dp"
-                                android:textSize="15dp"
-                                android:text="Dermatologist Contact"
-                                card_view:layout_constraintEnd_toEndOf="parent"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toTopOf="parent" />
-
-                            <TextView
-                                android:id="@+id/dermatologist_name"
-                                android:layout_width="match_parent"
-                                android:layout_height="21dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                android:text="First Name, Last Name"
-                                card_view:layout_constraintEnd_toEndOf="parent"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toBottomOf="@+id/textView6" />
-
-
-                            <TextView
-                                android:id="@+id/dermatologist_email"
-                                android:layout_width="match_parent"
-                                android:layout_height="21dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="24dp"
-                                android:text="Dermatologist_Email@gmail.com"
-                                card_view:layout_constraintEnd_toEndOf="parent"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toTopOf="@+id/dermatologist_name" />
-
-
-                            <TextView
-                                android:id="@+id/dermatologist_phonenumber"
-                                android:layout_width="match_parent"
-                                android:layout_height="21dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="24dp"
-                                android:text="Phone Number"
-                                card_view:layout_constraintEnd_toEndOf="parent"
-                                card_view:layout_constraintStart_toStartOf="parent"
-                                card_view:layout_constraintTop_toTopOf="@+id/dermatologist_email" />
+                                android:text="Bio Text"
+                                android:textSize="12sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/profile_bio_icon"
+                                app:layout_constraintTop_toBottomOf="@+id/profile_bio" />
                         </android.support.constraint.ConstraintLayout>
+
                     </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/profile_phone_card"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/profile_bio_card">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/profile_phone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="24dp"
+                                android:layout_marginTop="4dp"
+                                android:text="Phone"
+                                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+                                app:layout_constraintStart_toEndOf="@+id/profile_phone_icon"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <ImageView
+                                android:id="@+id/profile_phone_icon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginBottom="12dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginTop="12dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/phone" />
+
+                            <EditText
+                                android:id="@+id/profile_phone_text"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginStart="24dp"
+                                android:text="Phone #"
+                                android:textSize="12sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toEndOf="@+id/profile_phone_icon"
+                                app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
+
+
+                        </android.support.constraint.ConstraintLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                    <View
+                        android:id="@+id/view2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@android:color/darker_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_phone_card" />
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/profile_health_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/profile_phone_card">
+
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <EditText
+                                android:id="@+id/profile_age_text"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginStart="24dp"
+                                android:layout_marginTop="8dp"
+                                android:text="Age years old"
+                                android:textSize="12sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/profile_health_icon"
+                                app:layout_constraintTop_toBottomOf="@+id/profile_health"
+                                app:layout_constraintVertical_bias="0.0" />
+
+                            <EditText
+                                android:id="@+id/profile_height_text"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginStart="24dp"
+                                android:layout_marginTop="8dp"
+                                android:text="Height"
+                                android:textSize="12sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/profile_health_icon"
+                                app:layout_constraintTop_toBottomOf="@+id/profile_age_text"
+                                app:layout_constraintVertical_bias="0.0" />
+
+                            <EditText
+                                android:id="@+id/profile_weight_text"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginStart="24dp"
+                                android:layout_marginTop="8dp"
+                                android:text="Weight"
+                                android:textSize="12sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/profile_health_icon"
+                                app:layout_constraintTop_toBottomOf="@+id/profile_height_text"
+                                app:layout_constraintVertical_bias="0.0" />
+
+
+                            <TextView
+                                android:id="@+id/profile_health"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="24dp"
+                                android:layout_marginTop="4dp"
+                                android:text="Health"
+                                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+                                app:layout_constraintStart_toEndOf="@+id/profile_health_icon"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <ImageView
+                                android:id="@+id/profile_health_icon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginBottom="12dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginTop="12dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/health" />
+
+                        </android.support.constraint.ConstraintLayout>
+
+                    </android.support.v7.widget.CardView>
+
+
                 </android.support.constraint.ConstraintLayout>
 
-
-
             </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
