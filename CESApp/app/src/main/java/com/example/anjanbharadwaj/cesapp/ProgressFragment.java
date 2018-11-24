@@ -56,7 +56,7 @@ import java.util.Map;
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
 
-public class ProgressFragment extends Fragment {
+public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
     //    SwipeRefreshLayout swipeRefreshLayout;
     static String mode = "view";
@@ -71,6 +71,8 @@ public class ProgressFragment extends Fragment {
     RecyclerViewClickListener listener;
     public DatabaseReference database;
     public static String name = "Progress";
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     int numCopies;
 
@@ -197,6 +199,8 @@ public class ProgressFragment extends Fragment {
 
                 Log.v("LISTData", listData.toString());
 
+                mSwipeRefreshLayout.setRefreshing(false);
+
             }
 
             @Override
@@ -225,6 +229,23 @@ public class ProgressFragment extends Fragment {
 
         listView.setVisibility(View.VISIBLE);
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.progress_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        mSwipeRefreshLayout.post(new Runnable() {
+
+            @Override
+            public void run() {
+
+                if(mSwipeRefreshLayout != null) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                }
+                loadData();
+            }
+        });
+
+
+
         loadData();
     }
 
@@ -243,6 +264,11 @@ public class ProgressFragment extends Fragment {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
+    }
+
+    @Override
+    public void onRefresh() {
+        loadData();
     }
 
     public interface OnFragmentInteractionListener {
@@ -321,11 +347,35 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         TextView title = pointViewHolder.title;
 
         LineDataSet dataset2 = new LineDataSet(point.feelings, point.getTitle().toString());
-        dataset2.setColor(Color.WHITE);
-        dataset2.setValueTextColor(Color.WHITE); // styling, ...
+        //dataset2.setColor(Color.WHITE);
+        //dataset2.setValueTextColor(Color.WHITE); // styling, ...
         LineData lineData2 = new LineData(dataset2);
         pointViewHolder.graph2.setData(lineData2);
-        graph2.setData(lineData2);
+        dataset2.setColors(ColorTemplate.LIBERTY_COLORS);
+
+
+        XAxis xAxis2 = graph2.getXAxis();
+        xAxis2.setTextSize(10f);
+        xAxis2.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis2.setTextColor(Color.BLACK);
+        xAxis2.setDrawAxisLine(true);
+        xAxis2.setDrawGridLines(false);
+
+
+        graph2.getAxisRight().setEnabled(false);
+        YAxis yAxis2 = graph2.getAxisLeft();
+        yAxis2.setTextSize(10f); // set the text size
+        yAxis2.setTextColor(Color.BLACK);
+        yAxis2.setGranularity(0.01f); // interval 1
+        yAxis2.setDrawGridLines(false);
+
+        Legend legend2 = graph2.getLegend();
+        legend2.setEnabled(false);
+
+        graph2.getDescription().setEnabled(false);
+
+        graph2.setTouchEnabled(false);
+
 
         LineDataSet dataSet = new LineDataSet(point.percentages, point.getTitle().toString()); // add entries to dataset
         dataSet.setColor(Color.WHITE);

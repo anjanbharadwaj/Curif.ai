@@ -153,7 +153,7 @@ public class DataDetailActivity extends SlidingActivity {
             @Override
             public void onRatingSelected(int level, boolean reselected) {
                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                reference.child("Users").child(uid).child("Pictures").child(location).child(unformatdate).child("Feeling").child(""+System.currentTimeMillis()).setValue(level);
+                reference.child("Users").child(uid).child("Pictures").child(location).child(unformatdate).child("Feeling").setValue(level);
             }
         });
         ImageView icon1 = (ImageView)findViewById(R.id.detailDiagnosisImageView);
