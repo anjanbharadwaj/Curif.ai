@@ -810,6 +810,8 @@ NetworkFragment.OnFragmentInteractionListener{
             ref.child("Users").child(uid).child("Pictures").child(wound_location).child(time).removeValue();
             noReload = false;
             return;
+        } else{
+            ref.child("Users").child(uid).child("Conditions").child(""+(maxIndex+1)).setValue((maxIndex+1));
         }
         maxIndex+=1;
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("Pictures").child(wound_location);
