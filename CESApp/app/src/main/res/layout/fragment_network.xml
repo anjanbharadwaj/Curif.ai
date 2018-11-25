@@ -68,7 +68,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif"
         android:gravity="center"
-        android:text="Find support from people who also have: "
+        android:text="Find a support network!"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
