@@ -198,7 +198,7 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
                 Log.v("LISTData", listData.toString());
 
                 mSwipeRefreshLayout.setRefreshing(false);
-
+                Log.v("LISTDATA",""+listData.size());
             }
 
             @Override
@@ -244,7 +244,6 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
 
 
 
-        loadData();
     }
 
     public static void setListViewHeight(ListView listView) {
