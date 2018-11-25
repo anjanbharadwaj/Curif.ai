@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,6 +37,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,6 +59,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
@@ -342,18 +349,26 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         LineChart graph2 = pointViewHolder.graph_feeling;
 
 
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            Log.v("graphingIssue", "here");
+            graph.setHardwareAccelerationEnabled(false);
+            graph2.setHardwareAccelerationEnabled(false);
+        }
+
+
+        List<Integer> colorArray = Arrays.asList(Color.RED, Color.BLUE, Color.BLACK, Color.CYAN, Color.DKGRAY,
+                Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.RED);
+
+
         TextView title = pointViewHolder.title_data;
 
         LineDataSet dataset2 = new LineDataSet(point.feelings, point.getTitle().toString());
-        //dataset2.setColor(Color.WHITE);
-        //dataset2.setValueTextColor(Color.WHITE); // styling, ...
+
+        dataset2.setDrawFilled(true);
+        dataset2.setFillColor(colorArray.get((int) (Math.random() * colorArray.size())));
+
         LineData lineData2 = new LineData(dataset2);
         pointViewHolder.graph_feeling.setData(lineData2);
-
-
-        dataset2.setColor(R.color.colorPrimary);
-        dataset2.setFillColor(R.color.colorPrimary);
-        dataset2.setDrawFilled(true);
 
 
         XAxis xAxis2 = graph2.getXAxis();
@@ -377,18 +392,17 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         graph2.setTouchEnabled(false);
 
 
+
+
+        //dataSet.setColor(ColorTemplate.VORDIPLOM_COLORS[(int) Math.random() * ColorTemplate.VORDIPLOM_COLORS.length]);
+        //dataSet.setFillColor(ColorTemplate.VORDIPLOM_COLORS[(int) Math.random() * ColorTemplate.VORDIPLOM_COLORS.length]);
         LineDataSet dataSet = new LineDataSet(point.percentages, point.getTitle().toString()); // add entries to dataset
-        dataSet.setColor(R.color.colorPrimary);
+
         dataSet.setDrawFilled(true);
-        dataSet.setFillColor(R.color.colorPrimary);
-        dataSet.setColor(Color.WHITE);
-        dataSet.setValueTextColor(Color.WHITE); // styling, ...
+        dataSet.setFillColor(colorArray.get((int) (Math.random() * colorArray.size())));
+
         LineData lineData = new LineData(dataSet);
         pointViewHolder.graph_data.setData(lineData);
-
-        dataSet.setColor(R.color.colorPrimary);
-        dataSet.setFillColor(R.color.colorPrimary);
-        dataSet.setDrawFilled(true);
 
 
         XAxis xAxis = graph.getXAxis();
