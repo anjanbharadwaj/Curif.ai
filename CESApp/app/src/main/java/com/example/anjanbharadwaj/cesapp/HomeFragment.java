@@ -94,12 +94,13 @@ public class HomeFragment extends Fragment {
 
                         String diagnosis = ((TextView)holder.cardView.findViewById(R.id.diagnosis)).getText().toString();
                         String date = ((TextView)holder.cardView.findViewById(R.id.date)).getText().toString();
+                        String location = ((TextView)holder.cardView.findViewById(R.id.location)).getText().toString();
 
                         BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView)(holder.cardView.findViewById(R.id.picture))).getDrawable();
                         Bitmap bitmap = bitmapDrawable.getBitmap();
 
 
-                        selectedInformation.add(new DiagnosisListItemInfo(diagnosis, date, bitmap));
+                        selectedInformation.add(new DiagnosisListItemInfo(diagnosis, date, bitmap, location));
                     }
                 } else{
                     DataPointProfile dpp = listData.get(position);
@@ -302,11 +303,21 @@ class DiagnosisListItemInfo {
     private String diagnosis;
     private String date;
     private Bitmap photo;
+    private String location;
 
-    public DiagnosisListItemInfo(String diagnosis, String date, Bitmap photo) {
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public DiagnosisListItemInfo(String diagnosis, String date, Bitmap photo, String location) {
         this.diagnosis = diagnosis;
         this.date = date;
         this.photo = photo;
+        this.location = location;
     }
 
     public String getDiagnosis() {
@@ -361,13 +372,14 @@ class DataPointProfileArrayAdapter extends ArrayAdapter<DataPointProfile> {
         ImageView picture = (ImageView) view.findViewById(R.id.picture);
         TextView diagnosis = (TextView) view.findViewById(R.id.diagnosis);
         TextView date = (TextView) view.findViewById(R.id.date);
-
+        TextView location = (TextView)view.findViewById(R.id.location);
         //loading book image async with Glide loading library.
         Glide.with(context).load(dataPoint.url).into(picture);
 
         //adding proper data to views.
         diagnosis.setText(dataPoint.diagnosis);
         date.setText(dataPoint.date);
+        location.setText(dataPoint.location);
 
         return view;
     }
@@ -398,6 +410,7 @@ class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapt
         DataPointProfile point = datapoints.get(i);
         pointViewHolder.diagnosis.setText(point.diagnosis);
         pointViewHolder.date.setText(point.date);
+        pointViewHolder.location.setText(point.location);
         //Load the proper image into the imageView using the Glide framework
         Glide.with(HomeFragment.context)
                 .load(point.url)
@@ -420,6 +433,7 @@ class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapt
         public TextView diagnosis;
         public TextView date;
         public ImageView image;
+        public TextView location;
         private RecyclerViewClickListener mListener;
 
         DataPointViewHolder(View v, RecyclerViewClickListener mListener) {
@@ -429,6 +443,7 @@ class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapt
             diagnosis = v.findViewById(R.id.diagnosis);
             date = v.findViewById(R.id.date);
             image = v.findViewById(R.id.picture);
+            location = v.findViewById(R.id.location);
             //instantiation of views
 //            cardView = (CardView)       v.findViewById(R.id.cardView);
 //            title =  (TextView)         v.findViewById(R.id.bookTitle);

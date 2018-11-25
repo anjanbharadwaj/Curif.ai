@@ -316,55 +316,56 @@ NetworkFragment.OnFragmentInteractionListener{
                 new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 500);
 
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid().toString());
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("Name").getValue().toString();
+                String doctor_email = dataSnapshot.child("DoctorInfo").child("Email").getValue().toString();
+                String doctor_name = dataSnapshot.child("DoctorInfo").child("Name").getValue().toString();
 
-        Log.v("SELECTION", "In create and send report");
 
-        Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        emailIntent.setType("text/plain");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{"[doctor's email]@gmail.com"});
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[Patient Name]'s Lesion Report");
-        String body = "";
 
-        Log.v("SELECTION", ""+HomeFragment.selectedInformation.size());
-        ArrayList<Uri> uris = new ArrayList<Uri>();
-        for(int i = 0; i < HomeFragment.selectedInformation.size(); i++) {
-            DiagnosisListItemInfo selectedItem = HomeFragment.selectedInformation.get(i);
 
-            String diagnosis = selectedItem.getDiagnosis();
-            String date = selectedItem.getDate();
-            Bitmap photo = selectedItem.getPhoto();
+                Log.v("SELECTION", "In create and send report");
 
-            Log.v("SELECTION", diagnosis + " - " + date);
+                Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                emailIntent.setType("text/plain");
 
-            body += diagnosis + " - " + date + "(photo " + i + " attached):" + "\n";
-            File file = saveToInternalStorage(diagnosis.trim() + "-" + date.replaceAll("/","_").trim(),photo);
+                emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{doctor_email});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, name+"'s Lesion Report");
+                String body = "Hi Dr. " + doctor_name + ",\nAttached are my selected images from Curif.ai!\n\n";
 
-           // String saved_photo_directory = saveToInternalStorage(photo);
+                Log.v("SELECTION", ""+HomeFragment.selectedInformation.size());
+                ArrayList<Uri> uris = new ArrayList<Uri>();
+                for(int i = 0; i < HomeFragment.selectedInformation.size(); i++) {
+                    DiagnosisListItemInfo selectedItem = HomeFragment.selectedInformation.get(i);
 
-          //  String[] s = new String[2];
+                    String diagnosis = selectedItem.getDiagnosis();
+                    String date = selectedItem.getDate();
+                    Bitmap photo = selectedItem.getPhoto();
+                    String location = selectedItem.getLocation();
 
-// Type the path of the files in here
-          //  s[0] = saved_photo_directory;
-            //s[1] = inputPath + "/textfile.txt"; // /sdcard/ZipDemo/textfile.txt
+                    body += "Photo " + (i+1) + ": taken on " + date + "\n\tDiagnosis: " + diagnosis + "\n\tLocation: " +location + "\n\n\n";
+                    File file = saveToInternalStorage(diagnosis.trim() + "-" + date.replaceAll("/","_").trim(),photo);
 
-// first parameter is d files second parameter is zip file name
+                    Uri pngUri = Uri.fromFile(file);
+                    uris.add(pngUri);
+                }
+                emailIntent.putExtra(Intent.EXTRA_STREAM, uris);
 
-// calling the zip function
-           // String zipDir = saved_photo_directory;
-           // zipDir = saved_photo_directory.substring(0,saved_photo_directory.lastIndexOf("/"))+"/"+System.currentTimeMillis();
-           // zip(s, zipDir);
-           // Toast.makeText(getApplicationContext(),"Dir: " + zipDir, Toast.LENGTH_LONG).show();
-           // File file = new File(saved_photo_directory,"profile.jpg");
-            Uri pngUri = Uri.fromFile(file);
-            uris.add(pngUri);
-        }
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uris);
+                emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+                emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        emailIntent.putExtra(Intent.EXTRA_TEXT, body);
-        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivityForResult(Intent.createChooser(emailIntent, "Send report..."),12);
 
-        startActivityForResult(Intent.createChooser(emailIntent, "Send report..."),12);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private File saveToInternalStorage(String name, Bitmap bitmapImage){
