@@ -168,24 +168,26 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
                         Log.v("hi", key);
 
                         double percent_to_add = 0;
-                        if(max_key.equals("1")) {
+                        if(max_key.equals("1") && snapshot.child("Diagnosis").getValue().toString().equals("1")) {
+                            Log.v("here","here1");
                             percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 1").getValue().toString());
-                        } else if (max_key.equals("2")) {
+                        } else if (max_key.equals("2") && snapshot.child("Diagnosis").getValue().toString().equals("2")) {
+                            Log.v("here","here2");
                             percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 2").getValue().toString());
-                        } else if (max_key.equals("3")) {
+                        } else if (max_key.equals("3") && snapshot.child("Diagnosis").getValue().toString().equals("3")) {
+                            Log.v("here","here3");
                             percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 3").getValue().toString());
-                        } else if(max_key.equals("4")) {
+                        } else if(max_key.equals("4") && snapshot.child("Diagnosis").getValue().toString().equals("4")) {
                             percent_to_add = Double.parseDouble(snapshot.child("FullPredictions").child("Diagnosis 4").getValue().toString());
                         }
-
+                        if(percent_to_add==0)continue;
                         percentages.add(percent_to_add);
-
                         feelings.add(Double.parseDouble(snapshot.child("Feeling").getValue().toString()));
 
 
 
                     }
-
+                    if(percentages.size()==0)continue;
                     for (int i = 0; i < percentages.size(); i++) {
                         data_graph_percentages.add(new Entry(i, percentages.get(i).floatValue()));
                     }
@@ -195,8 +197,8 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
                     }
 
                     Log.v("help", body_part + data_graph_percentages.size());
-                    GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings,  max_key, body_part);
-                    listData.add(gci);
+                        GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings, max_key, body_part);
+                        listData.add(gci);
 
 
                 }

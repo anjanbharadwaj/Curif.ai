@@ -50,11 +50,11 @@ public class HomeFragment extends Fragment {
 
 //    SwipeRefreshLayout swipeRefreshLayout;
     static String mode = "view";
-    RecyclerView listView;
+    static RecyclerView listView;
     TextView share;
     static Context context;
 
-    ArrayList<DataPointProfile> listData = new ArrayList<>();
+    static ArrayList<DataPointProfile> listData = new ArrayList<>();
 
     static ArrayList<DiagnosisListItemInfo> selectedInformation = new ArrayList<>();
 
@@ -374,6 +374,10 @@ class DataPointProfileArrayAdapter extends ArrayAdapter<DataPointProfile> {
         TextView date = (TextView) view.findViewById(R.id.date);
         TextView location = (TextView)view.findViewById(R.id.location);
         //loading book image async with Glide loading library.
+        dataPoint.url = dataPoint.url.replace("~",".");
+        dataPoint.url = dataPoint.url.replace("|","#");
+        dataPoint.url = dataPoint.url.replace("^","$");
+
         Glide.with(context).load(dataPoint.url).into(picture);
 
         //adding proper data to views.
@@ -412,6 +416,10 @@ class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapt
         pointViewHolder.date.setText(point.date);
         pointViewHolder.location.setText(point.location);
         //Load the proper image into the imageView using the Glide framework
+        point.url = point.url.replace("~",".");
+        point.url = point.url.replace("|","#");
+        point.url = point.url.replace("^","$");
+
         Glide.with(HomeFragment.context)
                 .load(point.url)
                 .into(pointViewHolder.image);
