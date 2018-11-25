@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
 
@@ -112,7 +113,7 @@ public class HomeFragment extends Fragment {
 
     public void loadData() {
         if(HomePage.noReload){
-            Toast.makeText(this.context, "Analyzing picture - hold on!", Toast.LENGTH_LONG).show();
+            Toasty.info(this.context, "Analyzing picture - hold on!", Toast.LENGTH_SHORT, true).show();
             mWaveSwipeRefreshLayout.setRefreshing(false);
         }
         else {
