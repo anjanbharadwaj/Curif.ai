@@ -42,8 +42,6 @@ public class DataDetailActivity extends SlidingActivity {
     TextView dateValue;
     TextView dateExpectedValue;
     SmileRating feelingValue;
-    CardView lastTreatmentCard;
-    TextView lastTreatmentValue;
     TextView moreInfoValue;
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
@@ -99,8 +97,6 @@ public class DataDetailActivity extends SlidingActivity {
         dateValue = (TextView)findViewById(R.id.detailDateText);
         dateExpectedValue = (TextView)findViewById(R.id.detailExpectedDate);
         feelingValue = (SmileRating)findViewById(R.id.smile_rating);
-        lastTreatmentCard = (CardView)findViewById(R.id.detailTreatmentCardView);
-        lastTreatmentValue = (TextView)findViewById(R.id.detailTreatmentText);
         moreInfoValue = (TextView)findViewById(R.id.detailMoreInfo);
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         reference.child("Users").child(uid).child("Pictures").child(location).child(unformatdate).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -160,13 +156,11 @@ public class DataDetailActivity extends SlidingActivity {
         dateValue.setText(date);
         dateExpectedValue.setText("12/1/2018");
         feelingValue.setSelectedSmile(BaseRating.OKAY);
-        lastTreatmentValue.setText("10/20/2018");
         moreInfoValue.setText("According to Mayo Clinic, this disease is pretty common!");
 
         //diagnosisValue.setTextColor(primaryColorDark);
         dateValue.setTextColor(primaryColorDark);
         dateExpectedValue.setTextColor(primaryColorDark);
-        lastTreatmentValue.setTextColor(primaryColorDark);
         moreInfoValue.setTextColor(primaryColorDark);
 
 

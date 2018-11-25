@@ -13,59 +13,6 @@
         tools:context="com.example.anjanbharadwaj.cesapp.DataDetailActivity">
 
         <android.support.v7.widget.CardView
-            android:id="@+id/detailTreatmentCardView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detailFeelingCardView">
-
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/detailTreatmentLabel"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Last Treatment"
-                    app:layout_constraintStart_toEndOf="@+id/detailTreatmentImageView"
-                    app:layout_constraintTop_toBottomOf="@+id/detailTreatmentText" />
-
-                <TextView
-                    android:id="@+id/detailTreatmentText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="4dp"
-                    android:text="Last Treatment"
-                    android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
-                    app:layout_constraintStart_toEndOf="@+id/detailTreatmentImageView"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/detailTreatmentImageView"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/bandage" />
-
-            </android.support.constraint.ConstraintLayout>
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
             android:id="@+id/detailDateCardView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -180,12 +127,11 @@
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detailTreatmentCardView"
+            app:layout_constraintTop_toBottomOf="@+id/detailFeelingCardView"
             app:layout_constraintVertical_bias="0.0">
 
             <android.support.constraint.ConstraintLayout

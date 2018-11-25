@@ -16,12 +16,22 @@ public class GraphCardInformation {
 
     String title;
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    String location;
     public GraphCardInformation(String which_diagnosis_is_being_tracked,
-                                ArrayList<Entry> percentages, ArrayList<Entry> feelings, String title) {
+                                ArrayList<Entry> percentages, ArrayList<Entry> feelings, String title, String location) {
         this.which_diagnosis_is_being_tracked = which_diagnosis_is_being_tracked;
         this.percentages = percentages;
         this.feelings = feelings;
         this.title = title;
+        this.location = location;
     }
 
     public String getWhich_diagnosis_is_being_tracked() {

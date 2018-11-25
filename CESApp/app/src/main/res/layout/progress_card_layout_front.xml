@@ -18,53 +18,52 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/profile_image_front"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="8dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:maxHeight="50dp"
-                android:maxWidth="50dp"
-                android:src="@drawable/guest_network_user"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/name_front"
+                android:gravity="center"
+                android:text="Diagnosis"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
-            <TextView
-                android:id="@+id/name_front"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/graphHolder"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:text="Firstname Lastname"
-                app:layout_constraintStart_toEndOf="@+id/profile_image_front"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/title">
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/graphData"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/description_front"
+                android:id="@+id/location_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="You both have"
+                android:gravity="center"
+                android:text="Location"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/profile_image_front"
-                app:layout_constraintTop_toBottomOf="@+id/name_front"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/graphHolder" />
+
+
+
 
         </android.support.constraint.ConstraintLayout>
-
-
     </android.support.v7.widget.CardView>
-
 </android.support.constraint.ConstraintLayout>

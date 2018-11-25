@@ -42,6 +42,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -92,8 +93,11 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void onClick(View view, int position) {
                 GraphCardInformation gci = listData.get(position);
-                Log.v("This passed", "initialization of listener ok");
-                Toast.makeText(context,"Clicked",Toast.LENGTH_LONG).show();
+
+                GraphCardAdapter.GraphViewHolder holder = (GraphCardAdapter.GraphViewHolder)listView.findViewHolderForAdapterPosition(position);
+
+                holder.easyFlipView.flipTheView(true);
+
             }
         };
     }
@@ -184,7 +188,7 @@ public class ProgressFragment extends Fragment implements SwipeRefreshLayout.OnR
                     }
 
                     Log.v("help", body_part + data_graph_percentages.size());
-                    GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings, "Disease " + max_key + " at " + body_part);
+                    GraphCardInformation gci = new GraphCardInformation("" + max_key, data_graph_percentages, data_feelings,  max_key, body_part);
                     listData.add(gci);
 
 
@@ -334,20 +338,25 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
 
         GraphCardInformation point = datapoints.get(i);
 
-        LineChart graph = pointViewHolder.graph;
+        LineChart graph = pointViewHolder.graph_data;
 
-        LineChart graph2 = pointViewHolder.graph2;
+        LineChart graph2 = pointViewHolder.graph_feeling;
 
-        TextView title = pointViewHolder.title;
+
+        TextView title = pointViewHolder.title_data;
 
         LineDataSet dataset2 = new LineDataSet(point.feelings, point.getTitle().toString());
         //dataset2.setColor(Color.WHITE);
         //dataset2.setValueTextColor(Color.WHITE); // styling, ...
         LineData lineData2 = new LineData(dataset2);
-        pointViewHolder.graph2.setData(lineData2);
+        pointViewHolder.graph_feeling.setData(lineData2);
 
 
-        dataset2.setColors(ColorTemplate.LIBERTY_COLORS);
+        dataset2.setColor(R.color.colorPrimary);
+        dataset2.setFillColor(R.color.colorPrimary);
+        dataset2.setDrawFilled(true);
+
+
         XAxis xAxis2 = graph2.getXAxis();
         xAxis2.setTextSize(10f);
         xAxis2.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -363,8 +372,6 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         yAxis2.setGranularity(0.01f); // interval 1
         yAxis2.setDrawGridLines(false);
 
-        Legend legend2 = graph2.getLegend();
-        legend2.setEnabled(false);
 
         graph2.getDescription().setEnabled(false);
 
@@ -372,12 +379,17 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
 
 
         LineDataSet dataSet = new LineDataSet(point.percentages, point.getTitle().toString()); // add entries to dataset
+        dataSet.setColor(R.color.colorPrimary);
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(R.color.colorPrimary);
         dataSet.setColor(Color.WHITE);
         dataSet.setValueTextColor(Color.WHITE); // styling, ...
         LineData lineData = new LineData(dataSet);
-        pointViewHolder.graph.setData(lineData);
+        pointViewHolder.graph_data.setData(lineData);
 
-        dataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+        dataSet.setColor(R.color.colorPrimary);
+        dataSet.setFillColor(R.color.colorPrimary);
+        dataSet.setDrawFilled(true);
 
 
         XAxis xAxis = graph.getXAxis();
@@ -395,8 +407,6 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         yAxis.setGranularity(0.01f); // interval 1
         yAxis.setDrawGridLines(false);
 
-        Legend legend = graph.getLegend();
-        legend.setEnabled(false);
 
         graph.getDescription().setEnabled(false);
 
@@ -404,6 +414,10 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
 
         graph.setData(lineData);
 
+        Legend legend = graph.getLegend();
+        legend.setEnabled(false);
+        Legend legend2 = graph2.getLegend();
+        legend2.setEnabled(false);
 
 
 
@@ -411,7 +425,10 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         graph2.invalidate(); // refresh
 
 
-        pointViewHolder.title.setText(point.title);
+        pointViewHolder.title_data.setText("Treatment Of " + point.title);
+        pointViewHolder.title_feeling.setText("Happiness Associated with " + point.title);
+        pointViewHolder.location_data.setText("Site of Picture: " + point.location);
+        pointViewHolder.location_feeling.setText("Site of Picture: " + point.location);
         Log.v("InBindHolder",point.percentages.toString());
     }
 
@@ -427,21 +444,31 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
 
     static class GraphViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public CardView cardView;
-        public TextView title;
-        public LineChart graph;
-        public LineChart graph2;
+        public EasyFlipView easyFlipView;
+        public TextView title_data;
+        public LineChart graph_data;
+        public TextView location_data;
+
+        public TextView title_feeling;
+        public LineChart graph_feeling;
+        public TextView location_feeling;
+
 
         private RecyclerViewClickListener mListener;
 
         GraphViewHolder(View v, RecyclerViewClickListener mListener) {
             super(v);
-            cardView = v.findViewById(R.id.profileCardView);
-            title = v.findViewById(R.id.title);
-            graph = v.findViewById(R.id.graph);
-            graph2 = v.findViewById(R.id.graph2);
-            //instantiation of views
+            easyFlipView = v.findViewById(R.id.flipviewprogress);
+            title_data = v.findViewById(R.id.title);
+            graph_data = v.findViewById(R.id.graphData);
+            location_data = v.findViewById(R.id.location_title);
 
+            title_feeling = v.findViewById(R.id.title_feeling);
+            graph_feeling = v.findViewById(R.id.graphFeeling);
+            location_feeling = v.findViewById(R.id.location_title_feeling);
+            //instantiation of views
+            easyFlipView.setFlipOnTouch(false);
+            easyFlipView.setFlipTypeFromFront();
             this.mListener = mListener;
             v.setOnClickListener(this);
         }
