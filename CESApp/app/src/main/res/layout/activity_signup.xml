@@ -83,7 +83,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="32dp"
         android:fontFamily="sans-serif"
-        android:text="CES App"
+        android:text="Curif.ai"
         android:textColor="#EEEEEE"
         android:textSize="24sp"
         android:textStyle="bold"

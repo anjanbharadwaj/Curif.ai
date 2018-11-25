@@ -29,7 +29,8 @@
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/colorAccent3">
+                    android:background="@color/colorDark"
+                    android:id="@+id/whitebox">
 
 
                     <android.support.constraint.Guideline
@@ -49,7 +50,7 @@
                     <View
                         android:id="@+id/view"
                         android:layout_width="0dp"
-                        android:layout_height="100dp"
+                        android:layout_height="150dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="100dp"
@@ -101,6 +102,23 @@
                         app:layout_constraintStart_toStartOf="@+id/imageView"
                         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
+
+                    <Button
+                        android:id="@+id/editProfileButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/roundshapebutton"
+                        android:text="                    Edit Profile                    "
+                        android:textColor="?android:attr/textColorPrimaryInverse"
+                        app:layout_constraintBottom_toBottomOf="@id/whitebox"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/nameTag" />
+
                 </android.support.constraint.ConstraintLayout>
 
             </RelativeLayout>
@@ -108,7 +126,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:background="@color/colorPrimary" />
+                android:background="@color/colorDark" />
 
             <View
                 android:layout_width="match_parent"
@@ -176,20 +194,29 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:srcCompat="@drawable/description" />
 
-                            <EditText
-                                android:id="@+id/profile_bio_text"
+                            <android.support.design.widget.TextInputLayout
+                                android:id="@+id/profile_bio_text_layout"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginStart="24dp"
-                                android:layout_marginTop="8dp"
-                                android:hint="Bio Text"
-                                android:textSize="12sp"
+                                app:counterEnabled="true"
+                                app:counterMaxLength="30"
+                                app:counterOverflowTextAppearance="@style/TextLimitError"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toEndOf="@+id/profile_bio_icon"
-                                app:layout_constraintTop_toBottomOf="@+id/profile_bio" />
+                                app:layout_constraintTop_toBottomOf="@+id/profile_bio"
+                                app:layout_constraintVertical_bias="0.0">
+
+                                <android.support.design.widget.TextInputEditText
+                                    android:id="@+id/profile_bio_text"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Say something about yourself"
+                                    android:textSize="12sp" />
+                            </android.support.design.widget.TextInputLayout>
+
                         </android.support.constraint.ConstraintLayout>
 
                     </android.support.v7.widget.CardView>

@@ -9,12 +9,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -71,6 +73,15 @@ public class ProfileFragment extends Fragment {
     SwitchButton switchButton;
     TextView profile_name;
     ImageView change_profile_picture;
+    Button editProfile;
+    TextInputEditText bio;
+    MaskedEditText height;
+    MaskedEditText weight;
+    MaskedEditText age;
+    EditText doctor_name;
+    EditText doctor_email;
+    MaskedEditText doctor_phone;
+    boolean editEnabled = false;
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -123,29 +134,137 @@ public class ProfileFragment extends Fragment {
         StorageReference profileReference = FirebaseStorage.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("Profile");
         load_current_profile_image_from_firebase(profileReference);
 
+
+        mReference = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
         profile_name = view.findViewById(R.id.nameTag);
-
-        mReference = FirebaseDatabase.getInstance().getReference();
-
         profile_image = (ImageView) view.findViewById(R.id.imageView);
         phoneNumber = (MaskedEditText)view.findViewById(R.id.profile_phone_text);
         switchButton = (SwitchButton)view.findViewById(R.id.profile_data_switch);
         change_profile_picture = (ImageView) view.findViewById(R.id.change_profile_picture);
+        editProfile = (Button)view.findViewById(R.id.editProfileButton);
+        bio = (TextInputEditText) view.findViewById(R.id.profile_bio_text);
+        height = (MaskedEditText)view.findViewById(R.id.profile_height_text);
+        weight = (MaskedEditText)view.findViewById(R.id.profile_weight_text);
+        age = (MaskedEditText)view.findViewById(R.id.profile_age_text);
+        doctor_email = (EditText)view.findViewById(R.id.profile_doctor_text_email);
+        doctor_name = (EditText)view.findViewById(R.id.profile_doctor_text_name);
+        doctor_phone = (MaskedEditText)view.findViewById(R.id.profile_doctor_text_phone);
+        profile_name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        setAllEditTextsEditStatus(false);
+        editProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editEnabled){
+                    editProfile.setText("                    Edit Profile                    ");
+                    saveValuesFromEditText(mReference);
+                    setAllEditTextsEditStatus(false);
+                    editProfile.setBackground(getResources().getDrawable(R.drawable.roundshapebutton));
 
-        mReference.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+
+                }else {
+                    editProfile.setText("                    Save Changes                    ");
+                    editProfile.setBackground(getResources().getDrawable(R.drawable.roundshapebuttonv2));
+                    setAllEditTextsEditStatus(true);
+
+                }
+                editEnabled=!editEnabled;
+            }
+        });
+        mReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 String name = dataSnapshot.child("Name").getValue().toString();
                 profile_name.setText(name);
-                profile_name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
 
                 boolean is_profile_searchable = Boolean.valueOf(dataSnapshot.child("DataControlSettings").child("is_profile_searchable").getValue().toString());
+                Log.v("DATAPUBLIC",""+is_profile_searchable);
                 switchButton.setChecked(is_profile_searchable);
 
                 String phoneNumberText = dataSnapshot.child("Phone").getValue().toString();
-                phoneNumber.setText(phoneNumberText);
+                if(!phoneNumberText.isEmpty()) {
+                    phoneNumber.setText(phoneNumberText);
+                }else{
+                    phoneNumber.setText("Add your phone number!");
+                }
+
+
+                try {
+                    String bioText = dataSnapshot.child("Bio").getValue().toString();
+                    if (!bioText.isEmpty()) {
+                        bio.setText(bioText);
+                    } else {
+                    }
+                }catch(Exception e){
+                }
+
+                try {
+                    String ageText = dataSnapshot.child("Age").getValue().toString();
+                    if (!ageText.isEmpty()) {
+                        age.setText(ageText);
+                    } else {
+                    }
+                }catch(Exception e){
+
+                }
+                try {
+                    String heightText = dataSnapshot.child("Height").getValue().toString();
+                    if (!heightText.isEmpty()) {
+                        height.setText(heightText);
+                    } else {
+                    }
+                }catch (Exception e){
+
+                }
+
+                try {
+                    String weightText = dataSnapshot.child("Weight").getValue().toString();
+                    if (!weightText.isEmpty()) {
+                        weight.setText(weightText);
+                    } else {
+                    }
+                }catch(Exception e){
+
+                }
+
+                try {
+                    String doctorNameText = dataSnapshot.child("DoctorInfo").child("Name").getValue().toString();
+                    if (!doctorNameText.isEmpty()) {
+                        doctor_name.setText(doctorNameText);
+                    } else {
+                    }
+                }catch(Exception e){
+
+                }
+
+                try {
+                    String doctorEmailText = dataSnapshot.child("DoctorInfo").child("Email").getValue().toString();
+                    if (!doctorEmailText.isEmpty()) {
+                        doctor_email.setText(doctorEmailText);
+                    } else {
+
+                    }
+                }catch(Exception e){
+
+                }
+
+                try {
+                    String doctorPhoneText = dataSnapshot.child("DoctorInfo").child("Phone").getValue().toString();
+                    if (doctorPhoneText.isEmpty()) {
+                        doctor_phone.setText(doctorPhoneText);
+                    } else {
+
+                    }
+                }catch(Exception e){
+
+                }
+
+
+
+
+
 
             }
             @Override
@@ -154,19 +273,10 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        switchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
                 database.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
 
-                if (isChecked) {
-                    database.child("DataControlSettings").child("is_profile_searchable").setValue(true);
-                } else {
-                    database.child("DataControlSettings").child("is_profile_searchable").setValue(false);
-                }
-            }
-        });
         change_profile_picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,6 +293,31 @@ public class ProfileFragment extends Fragment {
         });
 
 
+
+    }
+
+    private void saveValuesFromEditText(DatabaseReference ref) {
+        ref.child("Phone").setValue(phoneNumber.getText().toString().trim());
+        ref.child("Bio").setValue(bio.getText().toString());
+        ref.child("Height").setValue(height.getRawText().toString());
+        ref.child("Weight").setValue(weight.getRawText().toString());
+        ref.child("Age").setValue(age.getRawText().toString());
+        ref.child("DoctorInfo").child("Email").setValue(doctor_email.getText().toString().trim());
+        ref.child("DoctorInfo").child("Phone").setValue(doctor_phone.getRawText().toString().trim());
+        ref.child("DoctorInfo").child("Name").setValue(doctor_name.getText().toString().trim());
+        ref.child("DataControlSettings").child("is_profile_searchable").setValue(switchButton.isChecked());
+    }
+
+    private void setAllEditTextsEditStatus(boolean b) {
+        phoneNumber.setEnabled(b);
+        switchButton.setEnabled(b);
+        bio.setEnabled(b);
+        height.setEnabled(b);
+        weight.setEnabled(b);
+        age.setEnabled(b);
+        doctor_email.setEnabled(b);
+        doctor_name.setEnabled(b);
+        doctor_phone.setEnabled(b);
 
     }
 

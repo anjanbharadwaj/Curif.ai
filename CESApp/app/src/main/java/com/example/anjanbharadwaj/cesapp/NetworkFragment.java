@@ -239,16 +239,12 @@ public class NetworkFragment extends Fragment {
                 holder.email.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-                        Toast.makeText(getContext(), "EMAIL INTENT HERE", Toast.LENGTH_LONG).show();
                        emailIntent(user);
                     }
                 });
                 holder.phone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-                        Toast.makeText(getContext(), "PHONE INTENT HERE", Toast.LENGTH_LONG).show();
                         phoneIntent(user);
                     }
                 });
@@ -357,7 +353,7 @@ public class NetworkFragment extends Fragment {
                     error_image.setVisibility(View.INVISIBLE);
                     enable_public_search.setVisibility(View.INVISIBLE);
                     recyclerView.setVisibility(View.VISIBLE);
-                    Toasty.success(getContext(), "Privacy Permissions Granted", Toast.LENGTH_LONG, true).show();
+                    //Toasty.success(getContext(), "Privacy Permissions Granted", Toast.LENGTH_LONG, true).show();
                 }
 
             }
