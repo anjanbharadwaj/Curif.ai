@@ -360,12 +360,14 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
                 Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.RED);
 
 
+        int randomColor = colorArray.get((int) (Math.random() * colorArray.size()));
+
         TextView title = pointViewHolder.title_data;
 
         LineDataSet dataset2 = new LineDataSet(point.feelings, point.getTitle().toString());
 
         dataset2.setDrawFilled(true);
-        dataset2.setFillColor(colorArray.get((int) (Math.random() * colorArray.size())));
+        dataset2.setFillColor(randomColor);
 
         LineData lineData2 = new LineData(dataset2);
         pointViewHolder.graph_feeling.setData(lineData2);
@@ -399,7 +401,7 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         LineDataSet dataSet = new LineDataSet(point.percentages, point.getTitle().toString()); // add entries to dataset
 
         dataSet.setDrawFilled(true);
-        dataSet.setFillColor(colorArray.get((int) (Math.random() * colorArray.size())));
+        dataSet.setFillColor(randomColor);
 
         LineData lineData = new LineData(dataSet);
         pointViewHolder.graph_data.setData(lineData);
