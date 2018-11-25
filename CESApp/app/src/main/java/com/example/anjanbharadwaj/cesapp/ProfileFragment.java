@@ -103,7 +103,8 @@ public class ProfileFragment extends Fragment {
                             url = url.replace("~",".");
                             url = url.replace("|","#");
                             url = url.replace("^","$");
-
+                            //TODO: FIX THE PERCENTAGES SUCH THAT WE DONT USE PERIODS BECAUSE THEY ARE MESSING UP THIS PART OF CODE
+                            //TODO: this will require us to change a bunch more
                             Uri uri = Uri.parse(url);
                             SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
                             String dateString = formatter.format(new Date(Long.valueOf(pictureKey)));
