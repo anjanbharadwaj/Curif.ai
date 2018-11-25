@@ -43,6 +43,8 @@ public class DataDetailActivity extends SlidingActivity {
     TextView dateExpectedValue;
     SmileRating feelingValue;
     TextView moreInfoValue;
+    TextView locationValue;
+
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
     //private int numCopies;
@@ -57,6 +59,7 @@ public class DataDetailActivity extends SlidingActivity {
         final String date = dpp.date;
         final String unformatdate = dpp.nonformatdate;
         final String location = dpp.location;
+
         String url = dpp.url;
         Bitmap bitmap = null;
         primaryColorDark = Color.BLACK;
@@ -98,6 +101,8 @@ public class DataDetailActivity extends SlidingActivity {
         dateExpectedValue = (TextView)findViewById(R.id.detailExpectedDate);
         feelingValue = (SmileRating)findViewById(R.id.smile_rating);
         moreInfoValue = (TextView)findViewById(R.id.detailMoreInfo);
+        locationValue = (TextView)findViewById(R.id.detailLocationInfo);
+
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         reference.child("Users").child(uid).child("Pictures").child(location).child(unformatdate).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -143,6 +148,7 @@ public class DataDetailActivity extends SlidingActivity {
         ImageView icon3 = (ImageView)findViewById(R.id.profile_bio_icon);
         ImageView icon4 = (ImageView)findViewById(R.id.detailFeelingImageView);
         ImageView icon5 = (ImageView)findViewById(R.id.detailMoreInfoImageView);
+        ImageView icon6 = (ImageView)findViewById(R.id.detailLocationImageView);
 
         //save the color of our button so that if the user holds and un-holds, we can keep this color scheme
 
@@ -152,12 +158,21 @@ public class DataDetailActivity extends SlidingActivity {
         icon3.setColorFilter(primaryColorDark);
         icon4.setColorFilter(primaryColorDark);
         icon5.setColorFilter(primaryColorDark);
+        icon6.setColorFilter(primaryColorDark);
         diagnosisValue.setText(diagnosis);
         dateValue.setText(date);
         dateExpectedValue.setText("12/1/2018");
         feelingValue.setSelectedSmile(BaseRating.OKAY);
-        moreInfoValue.setText("According to Mayo Clinic, this disease is pretty common!");
-
+        if(diagnosis.equals("Diagnosis 1")) {
+            moreInfoValue.setText("According to Mayo Clinic, disease 1 is rare!");
+        } else if(diagnosis.equals("Diagnosis 2")) {
+            moreInfoValue.setText("According to Mayo Clinic, disease 2 is pretty common!");
+        }else if(diagnosis.equals("Diagnosis 3")) {
+            moreInfoValue.setText("According to Mayo Clinic,  disease 3 is VERY common!");
+        }else if(diagnosis.equals("Diagnosis 4")) {
+            moreInfoValue.setText("According to Mayo Clinic, disease is the rarest disease ever.");
+        }
+        locationValue.setText(location);
         //diagnosisValue.setTextColor(primaryColorDark);
         dateValue.setTextColor(primaryColorDark);
         dateExpectedValue.setTextColor(primaryColorDark);
