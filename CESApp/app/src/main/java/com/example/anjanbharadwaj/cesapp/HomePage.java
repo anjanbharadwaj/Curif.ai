@@ -2,11 +2,13 @@ package com.example.anjanbharadwaj.cesapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -23,6 +25,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -30,16 +33,23 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -608,16 +618,69 @@ NetworkFragment.OnFragmentInteractionListener{
                     getContentResolver().notifyChange(selectedImage, null);
                     ContentResolver cr = getContentResolver();
 
-                    new MaterialDialog.Builder(this)
-                            .title("Location of Infection")
-                            .content("")
-                            .inputType(InputType.TYPE_CLASS_TEXT)
-                            .input("Where was the wound found", "", new MaterialDialog.InputCallback() {
-                                @Override
-                                public void onInput(MaterialDialog dialog, CharSequence charSequence) {
-                                    Log.v("dialog_output", charSequence.toString());
-                                    String location_of_wound = charSequence.toString();
 
+                    final Dialog dialog = new Dialog(this);
+
+                    dialog.setContentView(R.layout.post_photo_chooser_selector);
+                    dialog.setTitle("Wound Location Selector");
+
+                    dialog.show();
+
+                    final RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioGroup);
+                    final Button daignoseButton = (Button) dialog.findViewById(R.id.process_photo);
+                    final EditText editText = (EditText) dialog.findViewById(R.id.add_a_new_body_location);
+
+                    radioGroup.setOrientation(RadioGroup.VERTICAL);
+
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
+                    reference.child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            ArrayList<String> locations = new ArrayList<>();
+
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                String location = snapshot.getKey().toString();
+
+                                locations.add(location);
+                            }
+
+                            for (int i = 0; i < locations.size(); i++) {
+                                RadioButton radioButtonForNewLocation = new RadioButton(getApplicationContext());
+                                radioButtonForNewLocation.setText(locations.get(i));
+                                radioButtonForNewLocation.setId(i);
+
+                                TypedValue typedValue = new TypedValue();
+
+                                TypedArray a = mContext.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+                                int color = a.getColor(0, 0);
+
+                                radioButtonForNewLocation.setHighlightColor(color);
+
+                                radioGroup.addView(radioButtonForNewLocation);
+                            }
+
+                            daignoseButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    String location = "";
+
+                                    if (!editText.getText().toString().isEmpty()) {
+                                        location = editText.getText().toString();
+                                    } else {
+                                        int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                                        View radioButton = radioGroup.findViewById(radioButtonID);
+                                        int idx = radioGroup.indexOfChild(radioButton);
+                                        RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
+                                        location = r.getText().toString();
+                                    }
+
+                                    Log.v("selection", "selected location is " + location);
+                                    //start
+
+                                    dialog.dismiss();
+
+                                    final String location_of_wound = location;
 
                                     try {
                                         Bitmap bitmap = android.provider.MediaStore.Images.Media
@@ -713,16 +776,21 @@ NetworkFragment.OnFragmentInteractionListener{
                                                 .show();
                                         Log.e("Camera", e.toString());
                                     }
+
+
                                 }
+                            });
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-
-                            }).show();
-
-
+                        }
+                    });
                 }
+            }
+
         }
 
-    }
     public void saveData(float[] probabilities, Bitmap bitmap, String wound_location){
         final String time = ""+System.currentTimeMillis();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
