@@ -346,7 +346,7 @@ public class NetworkFragment extends Fragment {
                     all_perms_met.setVisibility(View.INVISIBLE);
                     error_image.setVisibility(View.VISIBLE);
                     enable_public_search.setVisibility(View.VISIBLE);
-                    Toasty.warning(getContext(), "Enable Public Searching", Toast.LENGTH_LONG, true).show();
+                    //Toasty.warning(getContext(), "Enable Public Searching", Toast.LENGTH_LONG, true).show();
                     recyclerView.setVisibility(View.INVISIBLE);
                 } else {
                     all_perms_met.setVisibility(View.INVISIBLE);

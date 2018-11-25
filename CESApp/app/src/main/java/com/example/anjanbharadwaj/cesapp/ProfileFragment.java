@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -38,7 +39,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.suke.widget.SwitchButton;
 
 import java.io.ByteArrayOutputStream;
 
@@ -70,7 +70,7 @@ public class ProfileFragment extends Fragment {
 
     ImageView profile_image;
     MaskedEditText phoneNumber;
-    SwitchButton switchButton;
+    Switch switchButton;
     TextView profile_name;
     ImageView change_profile_picture;
     Button editProfile;
@@ -140,7 +140,7 @@ public class ProfileFragment extends Fragment {
         profile_name = view.findViewById(R.id.nameTag);
         profile_image = (ImageView) view.findViewById(R.id.imageView);
         phoneNumber = (MaskedEditText)view.findViewById(R.id.profile_phone_text);
-        switchButton = (SwitchButton)view.findViewById(R.id.profile_data_switch);
+        switchButton = (Switch) view.findViewById(R.id.profile_data_switch);
         change_profile_picture = (ImageView) view.findViewById(R.id.change_profile_picture);
         editProfile = (Button)view.findViewById(R.id.editProfileButton);
         bio = (TextInputEditText) view.findViewById(R.id.profile_bio_text);
