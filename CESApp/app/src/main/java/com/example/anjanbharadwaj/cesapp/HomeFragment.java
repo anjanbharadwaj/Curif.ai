@@ -374,9 +374,6 @@ class DataPointProfileArrayAdapter extends ArrayAdapter<DataPointProfile> {
         TextView date = (TextView) view.findViewById(R.id.date);
         TextView location = (TextView)view.findViewById(R.id.location);
         //loading book image async with Glide loading library.
-        dataPoint.url = dataPoint.url.replace("~",".");
-        dataPoint.url = dataPoint.url.replace("|","#");
-        dataPoint.url = dataPoint.url.replace("^","$");
 
         Glide.with(context).load(dataPoint.url).into(picture);
 
@@ -416,9 +413,6 @@ class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapt
         pointViewHolder.date.setText(point.date);
         pointViewHolder.location.setText(point.location);
         //Load the proper image into the imageView using the Glide framework
-        point.url = point.url.replace("~",".");
-        point.url = point.url.replace("|","#");
-        point.url = point.url.replace("^","$");
 
         Glide.with(HomeFragment.context)
                 .load(point.url)

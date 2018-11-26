@@ -837,10 +837,6 @@ NetworkFragment.OnFragmentInteractionListener{
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         String url = task.getResult().toString();
-                        url = url.replace(".","~");
-                        url = url.replace("#","|");
-                        url = url.replace("$","^");
-                        Log.v("URL MADE", url);
                         ref.child(time).child("URL").setValue(url);
                         noReload = false;
                     }

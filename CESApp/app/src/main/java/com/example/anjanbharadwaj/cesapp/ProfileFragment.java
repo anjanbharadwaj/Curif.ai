@@ -64,7 +64,7 @@ import br.com.sapereaude.maskedEditText.MaskedEditText;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-
+/*
     public void createAndSendReport() {
         ActivityCompat.requestPermissions(getActivity(),
                 new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -151,7 +151,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
-
+*/
 
 
 
@@ -256,19 +256,9 @@ public class ProfileFragment extends Fragment {
         doctor_email = (EditText)view.findViewById(R.id.profile_doctor_text_email);
         doctor_name = (EditText)view.findViewById(R.id.profile_doctor_text_name);
         doctor_phone = (MaskedEditText)view.findViewById(R.id.profile_doctor_text_phone);
-        sendAll = (Button)view.findViewById(R.id.sendAllData);
         profile_name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         setAllEditTextsEditStatus(false);
 
-        sendAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                createAndSendReport();
-
-
-            }
-        });
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
