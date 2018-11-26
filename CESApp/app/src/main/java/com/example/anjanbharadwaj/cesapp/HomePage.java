@@ -688,7 +688,7 @@ NetworkFragment.OnFragmentInteractionListener{
                                                 .getBitmap(cr, selectedImage);
 
                                         FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_local_model")
-                                                .setAssetFilePath("quantized_model.tflite")  // Or setFilePath if you downloaded from your host
+                                                .setAssetFilePath("model_300epoch_64img_300epoch_100train_54test_batch1.tflite")  // Or setFilePath if you downloaded from your host
                                                 .build();
                                         FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
 
