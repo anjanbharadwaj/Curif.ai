@@ -93,7 +93,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -121,6 +123,21 @@ NetworkFragment.OnFragmentInteractionListener{
     private Context mContext=HomePage.this;
     private static final int REQUEST = 112;
     RecyclerViewClickListener listener;
+
+
+    //converting between the diagnosis integer and the actual string scientific name
+
+    public static final Map<Integer, String> conversionMap;
+    static
+    {
+        conversionMap = new HashMap<Integer, String>();
+
+        conversionMap.put(0, "Actinic Keratosis");
+        conversionMap.put(1, "Basel Cell Carcinoma");
+        conversionMap.put(2, "Melanoma");
+        conversionMap.put(3, "Seaborrheic Keratosis");
+
+    }
 
 
     protected void onCreate(Bundle savedInstanceState) {
