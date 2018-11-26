@@ -98,6 +98,8 @@ import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import es.dmoral.toasty.Toasty;
+
 public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener,
 NetworkFragment.OnFragmentInteractionListener{
     static boolean noReload = false;
@@ -210,8 +212,8 @@ NetworkFragment.OnFragmentInteractionListener{
                         //Send a bug report via email using email intent.
                         Intent intent = new Intent(Intent.ACTION_SEND);
                         intent.setType("text/html");
-                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cesapp@gmail.com"});
-                        intent.putExtra(Intent.EXTRA_SUBJECT, "CES App Bug Report");
+                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"anjanbharadwaj02@gmail.com","sreehari.rammohan@gmail.com"});
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Curifai Bug Report");
                         intent.putExtra(Intent.EXTRA_TEXT, "My bug...");
 
                         startActivity(Intent.createChooser(intent, "Send Email"));
@@ -311,7 +313,7 @@ NetworkFragment.OnFragmentInteractionListener{
 
 
 
-    private void createAndSendReport() {
+    public void createAndSendReport() {
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 500);
@@ -347,7 +349,7 @@ NetworkFragment.OnFragmentInteractionListener{
                     String location = selectedItem.getLocation();
 
                     body += "Photo " + (i+1) + ": taken on " + date + "\n\tDiagnosis: " + diagnosis + "\n\tLocation: " +location + "\n\n\n";
-                    File file = saveToInternalStorage(diagnosis.trim() + "-" + date.replaceAll("/","_").trim(),photo);
+                    File file = saveToInternalStorage(diagnosis.trim() + "-" + date.replace("/","_").trim(),photo);
 
                     Uri pngUri = Uri.fromFile(file);
                     uris.add(pngUri);
@@ -368,7 +370,7 @@ NetworkFragment.OnFragmentInteractionListener{
         });
     }
 
-    private File saveToInternalStorage(String name, Bitmap bitmapImage){
+    public File saveToInternalStorage(String name, Bitmap bitmapImage){
         File file = new File(Environment.getExternalStorageDirectory() + File.separator + name + "-- " + System.currentTimeMillis() + ".jpg");
         OutputStream os = null;
         try {
@@ -803,6 +805,14 @@ NetworkFragment.OnFragmentInteractionListener{
             }
             ref.child("Users").child(uid).child("Pictures").child(wound_location).child(time).child("FullPredictions").child("Diagnosis "+(i+1)).setValue(probabilities[i]);
         }
+        if(probabilities[maxIndex]<0.2){
+            Toasty.success(getApplicationContext(), "No disease detected!", Toast.LENGTH_LONG,true).show();
+            ref.child("Users").child(uid).child("Pictures").child(wound_location).child(time).removeValue();
+            noReload = false;
+            return;
+        } else{
+            ref.child("Users").child(uid).child("Conditions").child(""+(maxIndex+1)).setValue((maxIndex+1));
+        }
         maxIndex+=1;
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("Pictures").child(wound_location);
         ref.child(time).child("Feeling").setValue(3);
@@ -826,7 +836,12 @@ NetworkFragment.OnFragmentInteractionListener{
                 imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
-                        ref.child(time).child("URL").setValue(task.getResult().toString());
+                        String url = task.getResult().toString();
+                        url = url.replace(".","~");
+                        url = url.replace("#","|");
+                        url = url.replace("$","^");
+                        Log.v("URL MADE", url);
+                        ref.child(time).child("URL").setValue(url);
                         noReload = false;
                     }
                 });

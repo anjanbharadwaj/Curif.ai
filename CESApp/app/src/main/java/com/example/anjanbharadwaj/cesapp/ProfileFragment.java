@@ -6,10 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -40,7 +42,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
 import br.com.sapereaude.maskedEditText.MaskedEditText;
 
@@ -54,6 +64,100 @@ import br.com.sapereaude.maskedEditText.MaskedEditText;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
+
+    public void createAndSendReport() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                500);
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid().toString());
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("Name").getValue().toString();
+                String doctor_email = dataSnapshot.child("DoctorInfo").child("Email").getValue().toString();
+                String doctor_name = dataSnapshot.child("DoctorInfo").child("Name").getValue().toString();
+
+
+
+
+                Log.v("SELECTION", "In create and send report");
+
+                Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                emailIntent.setType("text/plain");
+
+                emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{doctor_email});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, name+"'s Lesion Report");
+                String body = "Hi Dr. " + doctor_name + ",\nAttached are my selected images from Curif.ai!\n\n";
+                Iterator iterator = dataSnapshot.child("Pictures").getChildren().iterator();
+                int count = 0;
+                ArrayList<Uri> uris = new ArrayList<Uri>();
+
+                while(iterator.hasNext()){
+                        String bodypart = iterator.next().toString();
+                        Iterator iteratorBody = dataSnapshot.child("Pictures").child(bodypart).getChildren().iterator();
+                        while(iteratorBody.hasNext()){
+                            String pictureKey = iteratorBody.next().toString();
+                            String diagnosis = dataSnapshot.child("Pictures").child(bodypart).child(pictureKey).child("Diagnosis").getValue().toString();
+                            String url = dataSnapshot.child("Pictures").child(bodypart).child(pictureKey).child("URL").toString();
+                            url = url.replace("~",".");
+                            url = url.replace("|","#");
+                            url = url.replace("^","$");
+                            //TODO: FIX THE PERCENTAGES SUCH THAT WE DONT USE PERIODS BECAUSE THEY ARE MESSING UP THIS PART OF CODE
+                            //TODO: this will require us to change a bunch more
+                            Uri uri = Uri.parse(url);
+                            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+                            String dateString = formatter.format(new Date(Long.valueOf(pictureKey)));
+                            uris.add(uri);
+
+                            body += "Photo " + (count+1) + ": taken on " + dateString + "\n\tDiagnosis: " + diagnosis + "\n\tLocation: " +bodypart + "\n\n\n";
+
+                            //BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageView)(holder.cardView.findViewById(R.id.picture))).getDrawable();
+                            //Bitmap bitmap = bitmapDrawable.getBitmap();
+                            count++;
+                        }
+
+                }
+
+
+                emailIntent.putExtra(Intent.EXTRA_STREAM, uris);
+
+                emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+                emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                startActivityForResult(Intent.createChooser(emailIntent, "Send report..."),12);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public File saveToInternalStorage(String name, Bitmap bitmapImage){
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + name + "-- " + System.currentTimeMillis() + ".jpg");
+        OutputStream os = null;
+        try {
+            os = new BufferedOutputStream(new FileOutputStream(file));
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+
+
+    }
+
+
+
+
+
+
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,6 +185,8 @@ public class ProfileFragment extends Fragment {
     EditText doctor_name;
     EditText doctor_email;
     MaskedEditText doctor_phone;
+
+    Button sendAll;
     boolean editEnabled = false;
     public ProfileFragment() {
         // Required empty public constructor
@@ -150,8 +256,19 @@ public class ProfileFragment extends Fragment {
         doctor_email = (EditText)view.findViewById(R.id.profile_doctor_text_email);
         doctor_name = (EditText)view.findViewById(R.id.profile_doctor_text_name);
         doctor_phone = (MaskedEditText)view.findViewById(R.id.profile_doctor_text_phone);
+        sendAll = (Button)view.findViewById(R.id.sendAllData);
         profile_name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         setAllEditTextsEditStatus(false);
+
+        sendAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                createAndSendReport();
+
+
+            }
+        });
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

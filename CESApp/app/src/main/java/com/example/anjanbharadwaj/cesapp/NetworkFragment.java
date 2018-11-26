@@ -475,6 +475,7 @@ class NetworkUserAdapter extends RecyclerView.Adapter<NetworkUserAdapter.Network
         //setting the textview to our data
         holder.name_textview.setText(name);
         holder.description.setText(description);
+
         Glide.with(context).load(uri).into(holder.profilepic);
 
     }

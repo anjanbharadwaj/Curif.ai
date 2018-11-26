@@ -192,6 +192,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias="0.0"
                                 app:srcCompat="@drawable/description" />
 
                             <android.support.design.widget.TextInputLayout
@@ -398,6 +399,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias="0.0"
                                 app:srcCompat="@drawable/health" />
 
                         </android.support.constraint.ConstraintLayout>
@@ -511,6 +513,22 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
 
+                            <Button
+                                android:id="@+id/sendAllData"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/roundshapebutton"
+                                android:text="          Send All Data         "
+                                android:textColor="?android:attr/textColorPrimaryInverse"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/profile_doctor_text_email" />
+
                             <TextView
                                 android:id="@+id/profile_doctor"
                                 android:layout_width="wrap_content"
@@ -532,6 +550,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias="0.0"
                                 app:srcCompat="@drawable/doctor1" />
 
                             <EditText
@@ -579,7 +598,6 @@
                                 android:hint="mydoctor@gmail.com"
                                 android:inputType="textEmailAddress"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toEndOf="@+id/profile_doctor_icon"
