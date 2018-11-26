@@ -700,16 +700,20 @@ NetworkFragment.OnFragmentInteractionListener{
                                         FirebaseModelInterpreter firebaseInterpreter =
                                                 FirebaseModelInterpreter.getInstance(options);
 
+                                        int width = 64;
+                                        int height = 64;
+
+
                                         FirebaseModelInputOutputOptions inputOutputOptions =
                                                 new FirebaseModelInputOutputOptions.Builder()
-                                                        .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 56, 75, 3})
+                                                        .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, width, height, 3})
                                                         .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
                                                         .build();
 
-                                        Bitmap scaled_bitmap = getResizedBitmap(bitmap, 56, 75);
+                                        Bitmap scaled_bitmap = getResizedBitmap(bitmap, width, height);
 
 
-                                        float[][][][] input = new float[1][56][75][3];
+                                        float[][][][] input = new float[1][width][height][3];
 
                                         //Converting bitmap to byte array for ML processing
                                         for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
@@ -731,7 +735,7 @@ NetworkFragment.OnFragmentInteractionListener{
                                         System.out.println("Here before floating point model");
 
                                         // Floating-point model:
-                                        float[][][][] postNormalizedInput = new float[1][56][75][3];
+                                        float[][][][] postNormalizedInput = new float[1][width][height][3];
                                         for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
                                             for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
                                                 for (int c = 0; c < 3; c++) {
