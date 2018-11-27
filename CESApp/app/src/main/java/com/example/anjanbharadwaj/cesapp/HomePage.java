@@ -57,6 +57,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.ml.common.FirebaseMLException;
 import com.google.firebase.ml.custom.FirebaseModelDataType;
 import com.google.firebase.ml.custom.FirebaseModelInputOutputOptions;
 import com.google.firebase.ml.custom.FirebaseModelInputs;
@@ -77,7 +78,9 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -714,115 +717,142 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
                                 final String location_of_wound = location;
 
+                                ContentResolver cr = getContentResolver();
+                                int width = 64;
+                                int height = 64;
+                                Bitmap bitmap = null;
+
+
                                 try {
-                                    ContentResolver cr = getContentResolver();
-
-                                    Bitmap bitmap = MediaStore.Images.Media
+                                    bitmap = MediaStore.Images.Media
                                             .getBitmap(cr, imageUri);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Bitmap scaled_bitmap = getResizedBitmap(bitmap, width, height);
 
-                                    //original local model name: "my_local_model"
-                                    //4 class - 300 epoch name: "my_better_local_model"
+                                final Bitmap bitmap1 = bitmap;
 
+                                try {
 
-                                    Log.v("model_issues", "here before loaded model");
+                                    //run firebase prediction on new thread to avoid working too much on main thread.
 
-                                    FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_better_local_model")
-                                            .setAssetFilePath("model_300epoch_64img_300epoch_100train_54test_batch1.tflite")  // Or setFilePath if you downloaded from your host
-                                            .build();
-                                    FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
-
-                                    FirebaseModelOptions options = new FirebaseModelOptions.Builder()
-                                            .setLocalModelName("my_better_local_model")
-                                            .build();
-                                    FirebaseModelInterpreter firebaseInterpreter =
-                                            FirebaseModelInterpreter.getInstance(options);
-
-                                    Log.v("model_issues", "loaded model");
-
-                                    int width = 64;
-                                    int height = 64;
-
-                                    FirebaseModelInputOutputOptions inputOutputOptions =
-                                            new FirebaseModelInputOutputOptions.Builder()
-                                                    .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, width, height, 3})
-                                                    .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
-                                                    .build();
-
-                                    Bitmap scaled_bitmap = getResizedBitmap(bitmap, width, height);
-
-                                    Log.v("model_issues", "resized bitmap");
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
 
 
-                                    float[][][][] input = new float[1][width][height][3];
+                                            Log.v("model_issues", "inside the runnable");
 
-                                    //Converting bitmap to byte array for ML processing
-                                    for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
-                                        for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
+                                            try {
 
-                                            int color = scaled_bitmap.getPixel(x, y);
+                                                //original local model name: "my_local_model"
+                                                //4 class - 300 epoch name: "my_better_local_model"
 
-                                            float red = Color.red(color);
-                                            float blue = Color.blue(color);
-                                            float green = Color.green(color);
-                                            float alpha = Color.alpha(color);
 
-                                            input[0][x][y][0] = red;
-                                            input[0][x][y][1] = green;
-                                            input[0][x][y][2] = blue;
-                                        }
-                                    }
+                                                Log.v("model_issues", "here before loaded model");
 
-                                    Log.v("model_issues", "created array");
+                                                FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("model_ready_for_inference")
+                                                        .setAssetFilePath("model_ready_for_inference.tflite")  // Or setFilePath if you downloaded from your host
+                                                        .build();
+                                                FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
 
-                                    // Floating-point model:
-                                    float[][][][] postNormalizedInput = new float[1][width][height][3];
-                                    for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
-                                        for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
-                                            for (int c = 0; c < 3; c++) {
-                                                // Normalize channel values to [-1.0, 1.0]
-                                                postNormalizedInput[0][x][y][c] = input[0][x][y][c] / 255.0f;
+                                                FirebaseModelOptions options = new FirebaseModelOptions.Builder()
+                                                        .setLocalModelName("model_ready_for_inference")
+                                                        .build();
+                                                FirebaseModelInterpreter firebaseInterpreter =
+                                                        FirebaseModelInterpreter.getInstance(options);
+
+                                                Log.v("model_issues", "loaded model");
+
+
+
+                                                FirebaseModelInputOutputOptions inputOutputOptions =
+                                                        new FirebaseModelInputOutputOptions.Builder()
+                                                                .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, width, height, 3})
+                                                                .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
+                                                                .build();
+
+
+                                                Log.v("model_issues", "resized bitmap");
+
+
+                                                float[][][][] input = new float[1][width][height][3];
+
+                                                //Converting bitmap to byte array for ML processing
+                                                for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
+                                                    for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
+
+                                                        int color = scaled_bitmap.getPixel(x, y);
+
+                                                        float red = Color.red(color);
+                                                        float blue = Color.blue(color);
+                                                        float green = Color.green(color);
+                                                        float alpha = Color.alpha(color);
+
+                                                        input[0][x][y][0] = red;
+                                                        input[0][x][y][1] = green;
+                                                        input[0][x][y][2] = blue;
+                                                    }
+                                                }
+
+                                                Log.v("model_issues", "created array");
+
+                                                // Floating-point model:
+                                                float[][][][] postNormalizedInput = new float[1][width][height][3];
+                                                for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
+                                                    for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
+                                                        for (int c = 0; c < 3; c++) {
+                                                            // Normalize channel values to [-1.0, 1.0]
+                                                            postNormalizedInput[0][x][y][c] = input[0][x][y][c] / 255.0f;
+                                                        }
+                                                    }
+                                                }
+
+                                                FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
+                                                        .add(postNormalizedInput)  // add() as many input arrays as your model requires
+                                                        .build();
+
+
+                                                Task<FirebaseModelOutputs> result =
+                                                        firebaseInterpreter.run(inputs, inputOutputOptions)
+                                                                .addOnSuccessListener(
+                                                                        new OnSuccessListener<FirebaseModelOutputs>() {
+                                                                            @Override
+                                                                            public void onSuccess(FirebaseModelOutputs result) {
+                                                                                System.out.println("Successfully got a result from ML Model");
+
+                                                                                Log.v("model_issues", "made prediction");
+
+
+                                                                                float[][] output = result.<float[][]>getOutput(0);
+                                                                                float[] probabilities = output[0];
+
+                                                                                Log.e("PROBS", Arrays.toString(probabilities));
+                                                                                System.out.println(Arrays.toString(probabilities));
+                                                                                noReload = true;
+                                                                                //Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
+                                                                                saveData(probabilities, bitmap1, location_of_wound);
+
+                                                                                Log.v("model_issues", "sent data to firebase");
+
+                                                                            }
+                                                                        })
+                                                                .addOnFailureListener(
+                                                                        new OnFailureListener() {
+                                                                            @Override
+                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                e.printStackTrace();
+                                                                            }
+                                                                        });
+                                            } catch (FirebaseMLException e) {
+                                                e.printStackTrace();
                                             }
                                         }
-                                    }
-
-                                    Log.v("model_issues", "created floating point array w/normalization");
+                                    }).start();
 
 
-                                    FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
-                                            .add(postNormalizedInput)  // add() as many input arrays as your model requires
-                                            .build();
-                                    Task<FirebaseModelOutputs> result =
-                                            firebaseInterpreter.run(inputs, inputOutputOptions)
-                                                    .addOnSuccessListener(
-                                                            new OnSuccessListener<FirebaseModelOutputs>() {
-                                                                @Override
-                                                                public void onSuccess(FirebaseModelOutputs result) {
-                                                                    System.out.println("Successfully got a result from ML Model");
-
-                                                                    Log.v("model_issues", "made prediction");
-
-
-                                                                    float[][] output = result.<float[][]>getOutput(0);
-                                                                    float[] probabilities = output[0];
-
-                                                                    Log.e("PROBS", Arrays.toString(probabilities));
-                                                                    System.out.println(Arrays.toString(probabilities));
-                                                                    noReload = true;
-                                                                    //Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
-                                                                    saveData(probabilities, bitmap, location_of_wound);
-
-                                                                    Log.v("model_issues", "sent data to firebase");
-
-                                                                }
-                                                            })
-                                                    .addOnFailureListener(
-                                                            new OnFailureListener() {
-                                                                @Override
-                                                                public void onFailure(@NonNull Exception e) {
-                                                                    e.printStackTrace();
-                                                                }
-                                                            });
-
+                                    Log.v("model_issues", "UI THREAD");
 
 
                                 } catch (Exception e) {

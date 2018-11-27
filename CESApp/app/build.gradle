@@ -61,6 +61,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'ru.egslava:MaskedEditText:1.0.5'
     compile 'com.github.yalantis:ucrop:2.2.2-native'
+    compile 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
 //    implementation 'com.google.android.gms:play-services-auth:16.0.1'
 
 
