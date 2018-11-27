@@ -277,7 +277,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="24dp"
                     android:layout_marginTop="12dp"
-                    android:text="Feeling"
+                    android:text="Pain"
                     android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
                     app:layout_constraintLeft_toRightOf="@+id/detailFeelingImageView"
                     app:layout_constraintTop_toTopOf="parent" />
