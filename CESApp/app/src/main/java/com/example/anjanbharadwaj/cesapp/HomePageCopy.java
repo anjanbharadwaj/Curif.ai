@@ -1,19 +1,31 @@
+
+
+
+
+
+
+
+
+
+
 package com.example.anjanbharadwaj.cesapp;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
@@ -22,12 +34,18 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatRadioButton;
+import android.support.v7.widget.Toolbar;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -35,14 +53,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -73,10 +94,18 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -84,7 +113,7 @@ import java.util.zip.ZipOutputStream;
 import es.dmoral.toasty.Toasty;
 
 public class HomePageCopy extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, ProgressFragment.OnFragmentInteractionListener,
-NetworkFragment.OnFragmentInteractionListener{
+        NetworkFragment.OnFragmentInteractionListener{
     static boolean noReload = false;
     TabLayout tabLayout;
     ViewPager viewPager;
@@ -95,7 +124,7 @@ NetworkFragment.OnFragmentInteractionListener{
     DatabaseReference ref = database.getReference();
     static FloatingActionButton fab;
     static ArrayList<PersonSearchItem> suggestions = new ArrayList<>();
-    Uri picImage;
+
     final int VOICE_SEARCH_CODE = 3012;
 
     private static final int NOTIFICATION_ID = 12345;
@@ -106,6 +135,22 @@ NetworkFragment.OnFragmentInteractionListener{
     RecyclerViewClickListener listener;
 
 
+    //converting between the diagnosis integer and the actual string scientific name
+
+    public static final Map<Integer, String> conversionMap;
+
+    static
+    {
+        conversionMap = new HashMap<Integer, String>();
+
+        conversionMap.put(0, "Actinic Keratosis");
+        conversionMap.put(1, "Basel Cell Carcinoma");
+        conversionMap.put(2, "Melanoma");
+        conversionMap.put(3, "Seborrheic Keratosis");
+
+    }
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
@@ -114,7 +159,7 @@ NetworkFragment.OnFragmentInteractionListener{
         StrictMode.VmPolicy.Builder builder1 = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder1.build());
         if (Build.VERSION.SDK_INT >= 23) {
-            String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            String[] PERMISSIONS = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
             if (!hasPermissions(mContext, PERMISSIONS)) {
                 ActivityCompat.requestPermissions((Activity) mContext, PERMISSIONS, REQUEST );
             } else {
@@ -266,7 +311,7 @@ NetworkFragment.OnFragmentInteractionListener{
                         String phoneNumber = dataSnapshot.child("Phone").getValue().toString();
 
                         String body1 = "Hi " + name + ", \n\n";
-                        Intent sharingIntent = new Intent(Intent.ACTION_VIEW);
+                        Intent sharingIntent = new Intent(android.content.Intent.ACTION_VIEW);
                         sharingIntent.setType("vnd.android-dir/mms-sms");
                         sharingIntent.setData(Uri.parse("sms:"+phoneNumber));
 
@@ -298,7 +343,7 @@ NetworkFragment.OnFragmentInteractionListener{
 
     public void createAndSendReport() {
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 500);
 
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid().toString());
@@ -408,7 +453,7 @@ NetworkFragment.OnFragmentInteractionListener{
 
         final String newQuery = query;
         final DatabaseReference searchRef = database.getReference().child("Users");
-               // .child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+        // .child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
 
         searchRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -513,7 +558,7 @@ NetworkFragment.OnFragmentInteractionListener{
 
         //noinspection SimplifiableIfStatement
         //if (id == R.id.action_settings) {
-         //   return true;
+        //   return true;
         //}
 
         return super.onOptionsItemSelected(item);
@@ -589,58 +634,18 @@ NetworkFragment.OnFragmentInteractionListener{
         imageUri = Uri.fromFile(photo);
         startActivityForResult(intent, TAKE_PICTURE);
     }
-    final int PIC_CROP = 2;
 
     public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
         return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
     }
-    private void performCrop(){
-        try {
-            Intent cropIntent = new Intent("com.android.camera.action.CROP");
-            //indicate image type and Uri
-            cropIntent.setDataAndType(picImage, "image/*");
-            //set crop properties
-            cropIntent.putExtra("crop", "true");
-            //indicate aspect of desired crop
-            cropIntent.putExtra("aspectX", 1);
-            cropIntent.putExtra("aspectY", 1);
-            //indicate output X and Y
-            cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 256);
-            //retrieve data on return
-            cropIntent.putExtra("return-data", true);
-            //start the activity - we handle returning in onActivityResult
-            startActivityForResult(cropIntent, PIC_CROP);
-        }
-        catch(ActivityNotFoundException anfe){
-            //display an error message
-            String errorMessage = "Whoops - your device doesn't support the crop action!";
-            Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }
-    int timesCount = 0;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(timesCount==2){
-            Log.v("i should", "be leaving");
-            timesCount=0;
-            return;
-        }
         switch (requestCode) {
-            case PIC_CROP:
-                Log.v("DONE","DONE");
-                timesCount++;
-                Log.v("CROPPED", "DONE"+timesCount);
+            case TAKE_PICTURE:
                 if (resultCode == Activity.RESULT_OK) {
-                    Bundle extras = data.getExtras();
-                    // get the cropped bitmap
-                    Bitmap thePic = extras.getParcelable("data");
-
-                    Uri selectedImage = data.getData();
-//                    Bitmap thePic = extras.getParcelable("data");
-//                    Uri selectedImage = data.getData();
+                    Uri selectedImage = imageUri;
                     getContentResolver().notifyChange(selectedImage, null);
                     ContentResolver cr = getContentResolver();
 
@@ -709,11 +714,11 @@ NetworkFragment.OnFragmentInteractionListener{
                                     final String location_of_wound = location;
 
                                     try {
-                                        Bitmap bitmap = MediaStore.Images.Media
+                                        Bitmap bitmap = android.provider.MediaStore.Images.Media
                                                 .getBitmap(cr, selectedImage);
 
                                         FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_local_model")
-                                                .setAssetFilePath("model_300epoch_64img_300epoch_100train_54test_batch1.tflite")  // Or setFilePath if you downloaded from your host
+                                                .setAssetFilePath("quantized_model.tflite")  // Or setFilePath if you downloaded from your host
                                                 .build();
                                         FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
 
@@ -723,16 +728,20 @@ NetworkFragment.OnFragmentInteractionListener{
                                         FirebaseModelInterpreter firebaseInterpreter =
                                                 FirebaseModelInterpreter.getInstance(options);
 
+                                        int width = 56;
+                                        int height = 75;
+
+
                                         FirebaseModelInputOutputOptions inputOutputOptions =
                                                 new FirebaseModelInputOutputOptions.Builder()
-                                                        .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 56, 75, 3})
+                                                        .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, width, height, 3})
                                                         .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
                                                         .build();
 
-                                        Bitmap scaled_bitmap = getResizedBitmap(bitmap, 56, 75);
+                                        Bitmap scaled_bitmap = getResizedBitmap(bitmap, width, height);
 
 
-                                        float[][][][] input = new float[1][56][75][3];
+                                        float[][][][] input = new float[1][width][height][3];
 
                                         //Converting bitmap to byte array for ML processing
                                         for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
@@ -754,7 +763,7 @@ NetworkFragment.OnFragmentInteractionListener{
                                         System.out.println("Here before floating point model");
 
                                         // Floating-point model:
-                                        float[][][][] postNormalizedInput = new float[1][56][75][3];
+                                        float[][][][] postNormalizedInput = new float[1][width][height][3];
                                         for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
                                             for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
                                                 for (int c = 0; c < 3; c++) {
@@ -785,7 +794,7 @@ NetworkFragment.OnFragmentInteractionListener{
                                                                         noReload = true;
                                                                         //Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
                                                                         saveData(probabilities, bitmap, location_of_wound);
-                                                                        return;
+
                                                                     }
                                                                 })
                                                         .addOnFailureListener(
@@ -813,14 +822,9 @@ NetworkFragment.OnFragmentInteractionListener{
                         }
                     });
                 }
-            case TAKE_PICTURE:
-                timesCount++;
-                Log.v("TAKEPIC", "NOTDONE"+timesCount);
-                picImage = data.getData();
-                performCrop();
         }
 
-        }
+    }
 
     public void saveData(float[] probabilities, Bitmap bitmap, String wound_location){
         final String time = ""+System.currentTimeMillis();
@@ -829,7 +833,7 @@ NetworkFragment.OnFragmentInteractionListener{
         int maxIndex = 0;
         for(int i = 0; i<probabilities.length; i++){
             if(probabilities[i]>probabilities[maxIndex]){
-              maxIndex = i;
+                maxIndex = i;
             }
             ref.child("Users").child(uid).child("Pictures").child(wound_location).child(time).child("FullPredictions").child("Diagnosis "+(i+1)).setValue(probabilities[i]);
         }
