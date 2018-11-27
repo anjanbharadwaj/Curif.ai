@@ -7,8 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +65,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             login.setVisibility(View.INVISIBLE);
             getstarted.setVisibility(View.VISIBLE);
             logout.setVisibility(View.VISIBLE);
+            //imageview.se
             getstarted.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -83,6 +86,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
             });
             //they've already signed into the app
+        }else{
+
         }
 
         // Intialize the widgets/views by using their ids
@@ -134,7 +139,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
+    public void changelogo(int w, int h){
+        ImageView imageview = (ImageView)findViewById(R.id.imageView2);
+        ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.root_layout);
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+    // Changes the height and width to the specified *pixels*
+        params.height = h;
+        params.width = w;
+        layout.setLayoutParams(params);
 
+    }
     @Override
     public void onStart() {
         super.onStart();
