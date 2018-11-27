@@ -119,7 +119,13 @@ public class NetworkFragment extends Fragment {
                             conditions.add( ((DataSnapshot)(conditionsI.next())).getValue().toString());
                         }
                         ArrayList<String> common = common(conditions,diseases);
+                        for(int jk = 0; jk<common.size(); jk++){
 
+                            String diag = common.get(jk);
+                            diag = diag.replace("Diagnosis ","");
+                            common.set(jk, HomePage.conversionMap.get(new Integer(diag)).toString());
+
+                        }
                         String name = dataSnapshot.child(uid1).child("Name").getValue().toString();
 
                         StorageReference ref = FirebaseStorage.getInstance().getReference().child("Users").child(uid1).child("Profile").child("profilepic.jpg");

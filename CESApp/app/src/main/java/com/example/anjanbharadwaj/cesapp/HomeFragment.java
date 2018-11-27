@@ -377,8 +377,15 @@ class DataPointProfileArrayAdapter extends ArrayAdapter<DataPointProfile> {
 
         Glide.with(context).load(dataPoint.url).into(picture);
 
+
+
+
         //adding proper data to views.
-        diagnosis.setText(dataPoint.diagnosis);
+        String diag = dataPoint.diagnosis;
+        diag = diag.replace("Diagnosis ","");
+        diagnosis.setText(HomePage.conversionMap.get(new Integer(diag)).toString());
+
+
         date.setText(dataPoint.date);
         location.setText(dataPoint.location);
 
@@ -409,7 +416,11 @@ class DataPointProfileAdapter extends RecyclerView.Adapter<DataPointProfileAdapt
     public void onBindViewHolder(DataPointViewHolder pointViewHolder, int i) {
         //Set each field to its corresponding attribute
         DataPointProfile point = datapoints.get(i);
-        pointViewHolder.diagnosis.setText(point.diagnosis);
+
+        String diag = point.diagnosis;
+        diag = diag.replace("Diagnosis ","");
+        pointViewHolder.diagnosis.setText(HomePage.conversionMap.get(new Integer(diag)).toString());
+
         pointViewHolder.date.setText(point.date);
         pointViewHolder.location.setText(point.location);
         //Load the proper image into the imageView using the Glide framework

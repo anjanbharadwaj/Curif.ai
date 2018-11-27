@@ -442,8 +442,13 @@ class GraphCardAdapter extends RecyclerView.Adapter<GraphCardAdapter.GraphViewHo
         graph2.invalidate(); // refresh
 
 
-        pointViewHolder.title_data.setText("Treatment Of " + point.title);
-        pointViewHolder.title_feeling.setText("Happiness Associated with " + point.title);
+        String diag = point.title;
+        diag = diag.replace("Diagnosis ","");
+
+
+        pointViewHolder.title_data.setText("Treatment Of " + HomePage.conversionMap.get(new Integer(diag)).toString());
+
+        pointViewHolder.title_feeling.setText("Happiness Associated with " + HomePage.conversionMap.get(new Integer(diag)).toString());
         pointViewHolder.location_data.setText("Site of Picture: " + point.location);
         pointViewHolder.location_feeling.setText("Site of Picture: " + point.location);
         Log.v("InBindHolder",point.percentages.toString());
