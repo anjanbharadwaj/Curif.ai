@@ -67,6 +67,7 @@ import com.google.firebase.ml.custom.model.FirebaseLocalModelSource;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -107,6 +108,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
     private static final int REQUEST = 112;
     RecyclerViewClickListener listener;
 
+    final int PIC_CROP = 2;
 
 
 
@@ -130,6 +132,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
         StrictMode.VmPolicy.Builder builder1 = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder1.build());
+
         if (Build.VERSION.SDK_INT >= 23) {
             String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
             if (!hasPermissions(mContext, PERMISSIONS)) {
@@ -385,9 +388,6 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
     }
 
-    public void onFragmentInteraction(Uri uri) {
-
-    }
     public void zip(String[] _files, String zipFileName) {
         int BUFFER = 2048;
 
@@ -536,6 +536,11 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -606,239 +611,197 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
         imageUri = Uri.fromFile(photo);
         startActivityForResult(intent, TAKE_PICTURE);
     }
-    final int PIC_CROP = 2;
 
     public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
         return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
     }
-    private void performCrop(){
-        try {
-            Intent cropIntent = new Intent("com.android.camera.action.CROP");
-            //indicate image type and Uri
-            cropIntent.setDataAndType(picImage, "image/*");
-            //set crop properties
-            cropIntent.putExtra("crop", "true");
-            //indicate aspect of desired crop
-            cropIntent.putExtra("aspectX", 1);
-            cropIntent.putExtra("aspectY", 1);
-            //indicate output X and Y
-            cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 256);
-            //retrieve data on return
-            cropIntent.putExtra("return-data", true);
 
-            File photo = new File(Environment.getExternalStorageDirectory(),  "Pic1.jpg");
-            cropIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                    Uri.fromFile(photo));
-            imageUri = Uri.fromFile(photo);
-            //start the activity - we handle returning in onActivityResult
-            startActivityForResult(cropIntent, PIC_CROP);
-        }
-        catch(ActivityNotFoundException anfe){
-            //display an error message
-            String errorMessage = "Whoops - your device doesn't support the crop action!";
-            Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }
-    private void doModelStuff(Uri selectedImage, ContentResolver cr){
-
-        final Dialog dialog = new Dialog(this);
-
-        dialog.setContentView(R.layout.post_photo_chooser_selector);
-        dialog.setTitle("Wound Location Selector");
-
-        dialog.show();
-
-        final RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioGroup);
-        final Button daignoseButton = (Button) dialog.findViewById(R.id.process_photo);
-        final EditText editText = (EditText) dialog.findViewById(R.id.add_a_new_body_location);
-
-        radioGroup.setOrientation(RadioGroup.VERTICAL);
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
-
-        reference.child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<String> locations = new ArrayList<>();
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String location = snapshot.getKey().toString();
-
-                    locations.add(location);
-                }
-
-                for (int i = 0; i < locations.size(); i++) {
-                    RadioButton radioButtonForNewLocation = new RadioButton(getApplicationContext());
-                    radioButtonForNewLocation.setText(locations.get(i));
-                    radioButtonForNewLocation.setId(i);
-
-                    TypedValue typedValue = new TypedValue();
-
-                    TypedArray a = mContext.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-                    int color = a.getColor(0, 0);
-
-                    radioButtonForNewLocation.setHighlightColor(color);
-
-                    radioGroup.addView(radioButtonForNewLocation);
-                }
-
-                daignoseButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String location = "";
-
-                        if (!editText.getText().toString().isEmpty()) {
-                            location = editText.getText().toString();
-                        } else {
-                            int radioButtonID = radioGroup.getCheckedRadioButtonId();
-                            View radioButton = radioGroup.findViewById(radioButtonID);
-                            int idx = radioGroup.indexOfChild(radioButton);
-                            RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
-                            location = r.getText().toString();
-                        }
-
-                        Log.v("selection", "selected location is " + location);
-                        //start
-
-                        dialog.dismiss();
-
-                        final String location_of_wound = location;
-
-                        try {
-                            Bitmap bitmap = MediaStore.Images.Media
-                                    .getBitmap(cr, selectedImage);
-
-                            FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_local_model")
-                                    .setAssetFilePath("quantized_model.tflite")  // Or setFilePath if you downloaded from your host
-                                    .build();
-                            FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
-
-                            FirebaseModelOptions options = new FirebaseModelOptions.Builder()
-                                    .setLocalModelName("my_local_model")
-                                    .build();
-                            FirebaseModelInterpreter firebaseInterpreter =
-                                    FirebaseModelInterpreter.getInstance(options);
-
-                            FirebaseModelInputOutputOptions inputOutputOptions =
-                                    new FirebaseModelInputOutputOptions.Builder()
-                                            .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 56, 75, 3})
-                                            .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
-                                            .build();
-
-                            Bitmap scaled_bitmap = getResizedBitmap(bitmap, 56, 75);
-
-
-                            float[][][][] input = new float[1][56][75][3];
-
-                            //Converting bitmap to byte array for ML processing
-                            for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
-                                for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
-
-                                    int color = scaled_bitmap.getPixel(x, y);
-
-                                    float red = Color.red(color);
-                                    float blue = Color.blue(color);
-                                    float green = Color.green(color);
-                                    float alpha = Color.alpha(color);
-
-                                    input[0][x][y][0] = red;
-                                    input[0][x][y][1] = green;
-                                    input[0][x][y][2] = blue;
-                                }
-                            }
-
-                            System.out.println("Here before floating point model");
-
-                            // Floating-point model:
-                            float[][][][] postNormalizedInput = new float[1][56][75][3];
-                            for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
-                                for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
-                                    for (int c = 0; c < 3; c++) {
-                                        // Normalize channel values to [-1.0, 1.0]
-                                        postNormalizedInput[0][x][y][c] = input[0][x][y][c] / 255.0f;
-                                    }
-                                }
-                            }
-
-                            System.out.println("Normalized Data");
-
-
-                            FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
-                                    .add(postNormalizedInput)  // add() as many input arrays as your model requires
-                                    .build();
-                            Task<FirebaseModelOutputs> result =
-                                    firebaseInterpreter.run(inputs, inputOutputOptions)
-                                            .addOnSuccessListener(
-                                                    new OnSuccessListener<FirebaseModelOutputs>() {
-                                                        @Override
-                                                        public void onSuccess(FirebaseModelOutputs result) {
-                                                            System.out.println("Successfully got a result from ML Model");
-                                                            float[][] output = result.<float[][]>getOutput(0);
-                                                            float[] probabilities = output[0];
-
-                                                            Log.e("PROBS", Arrays.toString(probabilities));
-                                                            System.out.println(Arrays.toString(probabilities));
-                                                            noReload = true;
-                                                            //Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
-                                                            saveData(probabilities, bitmap, location_of_wound);
-                                                        }
-                                                    })
-                                            .addOnFailureListener(
-                                                    new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                    });
-
-
-
-                        } catch (Exception e) {
-                            Toast.makeText(HomePage.this, "Failed to load", Toast.LENGTH_SHORT)
-                                    .show();
-                            Log.e("Camera", e.toString());
-                        }
-
-                    }
-                });
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case PIC_CROP:
-                Log.v("DONE","DONE");
-                Log.v("CROPPED", "DONE");
-                   // Bundle extras = data.getExtras();
-                    // get the cropped bitmap
-                    //Bitmap thePic = extras.getParcelable("data");
-
-                    Uri selectedImage = imageUri;
-//                    Bitmap thePic = extras.getParcelable("data");
-//                    Uri selectedImage = data.getData();
-                    getContentResolver().notifyChange(selectedImage, null);
-                    ContentResolver cr = getContentResolver();
-
-                    doModelStuff(selectedImage, cr);
-                    break;
-
 
             case TAKE_PICTURE:
-                Log.v("TAKEPIC", "NOTDONE");
+                Log.v("debug", "before ucrop");
                 picImage = data.getData();
-                performCrop();
+
+                Log.v("cropping", ""+imageUri);
+
+                UCrop.of(imageUri, imageUri)
+                        .withAspectRatio(16, 9)
+                        .withMaxResultSize(3024, 4032)
+                        .start(HomePage.this);
+
+                final Dialog dialog = new Dialog(this);
+
+                dialog.setContentView(R.layout.post_photo_chooser_selector);
+                dialog.setTitle("Wound Location Selector");
+
+                dialog.show();
+
+                final RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioGroup);
+                final Button daignoseButton = (Button) dialog.findViewById(R.id.process_photo);
+                final EditText editText = (EditText) dialog.findViewById(R.id.add_a_new_body_location);
+
+                radioGroup.setOrientation(RadioGroup.VERTICAL);
+
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString());
+
+                reference.child("Pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<String> locations = new ArrayList<>();
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String location = snapshot.getKey().toString();
+
+                            locations.add(location);
+                        }
+
+                        for (int i = 0; i < locations.size(); i++) {
+                            RadioButton radioButtonForNewLocation = new RadioButton(getApplicationContext());
+                            radioButtonForNewLocation.setText(locations.get(i));
+                            radioButtonForNewLocation.setId(i);
+
+                            TypedValue typedValue = new TypedValue();
+
+                            TypedArray a = mContext.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+                            int color = a.getColor(0, 0);
+
+                            radioButtonForNewLocation.setHighlightColor(color);
+
+                            radioGroup.addView(radioButtonForNewLocation);
+                        }
+
+                        daignoseButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String location = "";
+
+                                if (!editText.getText().toString().isEmpty()) {
+                                    location = editText.getText().toString();
+                                } else {
+                                    int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                                    View radioButton = radioGroup.findViewById(radioButtonID);
+                                    int idx = radioGroup.indexOfChild(radioButton);
+                                    RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
+                                    location = r.getText().toString();
+                                }
+
+                                Log.v("selection", "selected location is " + location);
+                                //start
+
+                                dialog.dismiss();
+
+                                final String location_of_wound = location;
+
+                                try {
+                                    ContentResolver cr = getContentResolver();
+
+                                    Bitmap bitmap = MediaStore.Images.Media
+                                            .getBitmap(cr, imageUri);
+
+                                    FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_local_model")
+                                            .setAssetFilePath("quantized_model.tflite")  // Or setFilePath if you downloaded from your host
+                                            .build();
+                                    FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
+
+                                    FirebaseModelOptions options = new FirebaseModelOptions.Builder()
+                                            .setLocalModelName("my_local_model")
+                                            .build();
+                                    FirebaseModelInterpreter firebaseInterpreter =
+                                            FirebaseModelInterpreter.getInstance(options);
+
+                                    FirebaseModelInputOutputOptions inputOutputOptions =
+                                            new FirebaseModelInputOutputOptions.Builder()
+                                                    .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 56, 75, 3})
+                                                    .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
+                                                    .build();
+
+                                    Bitmap scaled_bitmap = getResizedBitmap(bitmap, 56, 75);
+
+
+                                    float[][][][] input = new float[1][56][75][3];
+
+                                    //Converting bitmap to byte array for ML processing
+                                    for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
+                                        for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
+
+                                            int color = scaled_bitmap.getPixel(x, y);
+
+                                            float red = Color.red(color);
+                                            float blue = Color.blue(color);
+                                            float green = Color.green(color);
+                                            float alpha = Color.alpha(color);
+
+                                            input[0][x][y][0] = red;
+                                            input[0][x][y][1] = green;
+                                            input[0][x][y][2] = blue;
+                                        }
+                                    }
+
+                                    System.out.println("Here before floating point model");
+
+                                    // Floating-point model:
+                                    float[][][][] postNormalizedInput = new float[1][56][75][3];
+                                    for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
+                                        for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
+                                            for (int c = 0; c < 3; c++) {
+                                                // Normalize channel values to [-1.0, 1.0]
+                                                postNormalizedInput[0][x][y][c] = input[0][x][y][c] / 255.0f;
+                                            }
+                                        }
+                                    }
+
+                                    System.out.println("Normalized Data");
+
+
+                                    FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
+                                            .add(postNormalizedInput)  // add() as many input arrays as your model requires
+                                            .build();
+                                    Task<FirebaseModelOutputs> result =
+                                            firebaseInterpreter.run(inputs, inputOutputOptions)
+                                                    .addOnSuccessListener(
+                                                            new OnSuccessListener<FirebaseModelOutputs>() {
+                                                                @Override
+                                                                public void onSuccess(FirebaseModelOutputs result) {
+                                                                    System.out.println("Successfully got a result from ML Model");
+                                                                    float[][] output = result.<float[][]>getOutput(0);
+                                                                    float[] probabilities = output[0];
+
+                                                                    Log.e("PROBS", Arrays.toString(probabilities));
+                                                                    System.out.println(Arrays.toString(probabilities));
+                                                                    noReload = true;
+                                                                    //Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
+                                                                    saveData(probabilities, bitmap, location_of_wound);
+                                                                }
+                                                            })
+                                                    .addOnFailureListener(
+                                                            new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                            });
+
+
+
+                                } catch (Exception e) {
+                                    Toast.makeText(HomePage.this, "Failed to load", Toast.LENGTH_SHORT)
+                                            .show();
+                                    Log.e("Camera", e.toString());
+                                }
+
+                            }
+                        });
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 break;
         }
 
