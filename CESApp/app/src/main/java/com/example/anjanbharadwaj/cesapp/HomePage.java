@@ -629,8 +629,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                 Log.v("cropping", ""+imageUri);
 
                 UCrop.of(imageUri, imageUri)
-                        .withAspectRatio(16, 9)
-                        .withMaxResultSize(3024, 4032)
+                        .withAspectRatio(1, 1)
                         .start(HomePage.this);
 
                 final Dialog dialog = new Dialog(this);
@@ -806,6 +805,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
         }
 
     }
+
 
     public void saveData(float[] probabilities, Bitmap bitmap, String wound_location){
         final String time = ""+System.currentTimeMillis();
