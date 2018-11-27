@@ -327,6 +327,10 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                 String name = dataSnapshot.child("Name").getValue().toString();
                 String doctor_email = dataSnapshot.child("DoctorInfo").child("Email").getValue().toString();
                 String doctor_name = dataSnapshot.child("DoctorInfo").child("Name").getValue().toString();
+                String weight = dataSnapshot.child("Weight").getValue().toString() + " lbs";
+                String height = dataSnapshot.child("Height").getValue().toString();
+                height = ""+height.charAt(0)+" ft " + height.charAt(1) + "in";
+                String age = dataSnapshot.child("Age").getValue().toString() + " yrs";
 
 
 
@@ -356,6 +360,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                     Uri pngUri = Uri.fromFile(file);
                     uris.add(pngUri);
                 }
+                body+="\n\nPersonal Information: \n\nName of patient: " + name + "\nAge: " + age + "\nHeight: " + height + "\nWeight" + weight;
                 emailIntent.putExtra(Intent.EXTRA_STREAM, uris);
 
                 emailIntent.putExtra(Intent.EXTRA_TEXT, body);
