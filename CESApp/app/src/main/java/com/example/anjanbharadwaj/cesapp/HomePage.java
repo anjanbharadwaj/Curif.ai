@@ -25,6 +25,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -68,6 +69,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.model.AspectRatio;
+import com.yalantis.ucrop.view.CropImageView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -628,9 +631,29 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
 
                 Log.v("cropping", ""+imageUri);
 
-                UCrop.of(imageUri, imageUri)
-                        .withAspectRatio(1, 1)
-                        .start(HomePage.this);
+                UCrop ucrop = UCrop.of(imageUri, imageUri);
+
+                UCrop.Options options = new UCrop.Options();
+
+                options.setToolbarColor(getApplicationContext().getResources().getColor(R.color.colorPrimary));
+
+                options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorDark));
+//                options.setActiveWidgetColor(ContextCompat.getColor(this, R.color.your_color_res));
+                options.setToolbarWidgetColor(ContextCompat.getColor(this, R.color.colorDark));
+//                options.setRootViewBackgroundColor(ContextCompat.getColor(this, R.color.your_color_res));
+
+                // Aspect ratio options
+                options.setAspectRatioOptions(1,
+                        new AspectRatio("1X2", 1, 2),
+                        new AspectRatio("3X4", 3, 4),
+                        new AspectRatio("Ratio", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+                        new AspectRatio("16X9", 16, 9),
+                        new AspectRatio("1X1", 1, 1));
+
+
+                ucrop.withOptions(options);
+
+                ucrop.start(HomePage.this);
 
                 final Dialog dialog = new Dialog(this);
 
