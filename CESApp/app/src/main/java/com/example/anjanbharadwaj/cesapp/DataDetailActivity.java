@@ -65,7 +65,7 @@ public class DataDetailActivity extends SlidingActivity {
         diag = diag.replace("Diagnosis ","");
 
         String diagCopy = HomePage.conversionMap.get(new Integer(diag)).toString();
-        diagnosis = ("Treatment Of " + HomePage.conversionMap.get(new Integer(diag)).toString());
+        diagnosis = (HomePage.conversionMap.get(new Integer(diag)).toString());
 
 
         String url = dpp.url;

@@ -111,10 +111,6 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
     private static final int REQUEST = 112;
     RecyclerViewClickListener listener;
 
-    final int PIC_CROP = 2;
-
-
-
     public static final Map<Integer, String> conversionMap;
 
     static
@@ -724,27 +720,40 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                                     Bitmap bitmap = MediaStore.Images.Media
                                             .getBitmap(cr, imageUri);
 
-                                    FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_local_model")
-                                            .setAssetFilePath("quantized_model.tflite")  // Or setFilePath if you downloaded from your host
+                                    //original local model name: "my_local_model"
+                                    //4 class - 300 epoch name: "my_better_local_model"
+
+
+                                    Log.v("model_issues", "here before loaded model");
+
+                                    FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_better_local_model")
+                                            .setAssetFilePath("model_300epoch_64img_300epoch_100train_54test_batch1.tflite")  // Or setFilePath if you downloaded from your host
                                             .build();
                                     FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
 
                                     FirebaseModelOptions options = new FirebaseModelOptions.Builder()
-                                            .setLocalModelName("my_local_model")
+                                            .setLocalModelName("my_better_local_model")
                                             .build();
                                     FirebaseModelInterpreter firebaseInterpreter =
                                             FirebaseModelInterpreter.getInstance(options);
 
+                                    Log.v("model_issues", "loaded model");
+
+                                    int width = 64;
+                                    int height = 64;
+
                                     FirebaseModelInputOutputOptions inputOutputOptions =
                                             new FirebaseModelInputOutputOptions.Builder()
-                                                    .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 56, 75, 3})
+                                                    .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, width, height, 3})
                                                     .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 4})
                                                     .build();
 
-                                    Bitmap scaled_bitmap = getResizedBitmap(bitmap, 56, 75);
+                                    Bitmap scaled_bitmap = getResizedBitmap(bitmap, width, height);
+
+                                    Log.v("model_issues", "resized bitmap");
 
 
-                                    float[][][][] input = new float[1][56][75][3];
+                                    float[][][][] input = new float[1][width][height][3];
 
                                     //Converting bitmap to byte array for ML processing
                                     for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
@@ -763,10 +772,10 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                                         }
                                     }
 
-                                    System.out.println("Here before floating point model");
+                                    Log.v("model_issues", "created array");
 
                                     // Floating-point model:
-                                    float[][][][] postNormalizedInput = new float[1][56][75][3];
+                                    float[][][][] postNormalizedInput = new float[1][width][height][3];
                                     for (int y = 0; y < scaled_bitmap.getHeight(); y++) {
                                         for (int x = 0; x < scaled_bitmap.getWidth(); x++) {
                                             for (int c = 0; c < 3; c++) {
@@ -776,7 +785,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                                         }
                                     }
 
-                                    System.out.println("Normalized Data");
+                                    Log.v("model_issues", "created floating point array w/normalization");
 
 
                                     FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
@@ -789,6 +798,10 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                                                                 @Override
                                                                 public void onSuccess(FirebaseModelOutputs result) {
                                                                     System.out.println("Successfully got a result from ML Model");
+
+                                                                    Log.v("model_issues", "made prediction");
+
+
                                                                     float[][] output = result.<float[][]>getOutput(0);
                                                                     float[] probabilities = output[0];
 
@@ -797,6 +810,9 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                                                                     noReload = true;
                                                                     //Toast.makeText(mContext, "Prediction Made!", Toast.LENGTH_LONG).show();
                                                                     saveData(probabilities, bitmap, location_of_wound);
+
+                                                                    Log.v("model_issues", "sent data to firebase");
+
                                                                 }
                                                             })
                                                     .addOnFailureListener(
