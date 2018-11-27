@@ -128,6 +128,7 @@ NetworkFragment.OnFragmentInteractionListener{
     //converting between the diagnosis integer and the actual string scientific name
 
     public static final Map<Integer, String> conversionMap;
+
     static
     {
         conversionMap = new HashMap<Integer, String>();
@@ -135,7 +136,7 @@ NetworkFragment.OnFragmentInteractionListener{
         conversionMap.put(0, "Actinic Keratosis");
         conversionMap.put(1, "Basel Cell Carcinoma");
         conversionMap.put(2, "Melanoma");
-        conversionMap.put(3, "Seaborrheic Keratosis");
+        conversionMap.put(3, "Seborrheic Keratosis");
 
     }
 
@@ -707,7 +708,7 @@ NetworkFragment.OnFragmentInteractionListener{
                                                 .getBitmap(cr, selectedImage);
 
                                         FirebaseLocalModelSource localSource = new FirebaseLocalModelSource.Builder("my_local_model")
-                                                .setAssetFilePath("model_300epoch_64img_300epoch_100train_54test_batch1.tflite")  // Or setFilePath if you downloaded from your host
+                                                .setAssetFilePath("quantized_model.tflite")  // Or setFilePath if you downloaded from your host
                                                 .build();
                                         FirebaseModelManager.getInstance().registerLocalModelSource(localSource);
 
@@ -717,8 +718,8 @@ NetworkFragment.OnFragmentInteractionListener{
                                         FirebaseModelInterpreter firebaseInterpreter =
                                                 FirebaseModelInterpreter.getInstance(options);
 
-                                        int width = 64;
-                                        int height = 64;
+                                        int width = 56;
+                                        int height = 75;
 
 
                                         FirebaseModelInputOutputOptions inputOutputOptions =
