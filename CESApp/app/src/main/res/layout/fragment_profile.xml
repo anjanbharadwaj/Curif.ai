@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical"
-    tools:context="com.example.anjanbharadwaj.cesapp.ProfileFragment">
+    tools:context="com.android.anjansree.curifai.ProfileFragment">
 
 
     <ScrollView

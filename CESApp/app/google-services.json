@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:82806449296:android:ae35b184b3c159ce",
         "android_client_info": {
-          "package_name": "com.example.anjanbharadwaj.cesapp"
+          "package_name": "com.healthapp.anjansree.curifai"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "82806449296-4935s8kta6l4drhd68vh8le5bd0uac25.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.anjanbharadwaj.cesapp",
+            "package_name": "com.healthapp.anjansree.curifai",
             "certificate_hash": "63380f37a08568dadd1a6b1f76b9da1f35d7ec51"
           }
         },

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
-tools:context="com.example.anjanbharadwaj.cesapp.HomePage">
+tools:context="com.android.anjansree.curifai.HomePage">
 <item
     android:id="@+id/voice"
     android:icon="@drawable/ic_mic_black_24dp_xhdpi"
